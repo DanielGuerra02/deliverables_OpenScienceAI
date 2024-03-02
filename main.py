@@ -58,10 +58,13 @@ def create_figures_visualization(xml_directory):
 def extract_links(xml_file_path):
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
-    # Busca elementos <ref> con el atributo type="bibr"
-    link_elements = root.findall('.//{http://www.tei-c.org/ns/1.0}ref[@type="bibr"]', namespaces=namespace_map)
-    # Extrae el valor del atributo 'target' y filtra los que no son None
-    links = [element.get('target') for element in link_elements if element.get('target') is not None]
+    # Busca elementos <biblStruct> y luego <ptr> dentro de ellos
+    biblStruct_elements = root.findall('.//{http://www.tei-c.org/ns/1.0}biblStruct', namespaces=namespace_map)
+    links = []
+    for biblStruct in biblStruct_elements:
+        ptr = biblStruct.find('.//{http://www.tei-c.org/ns/1.0}ptr', namespaces=namespace_map)
+        if ptr is not None:
+            links.append(ptr.get('target'))
     return links
 
 # Función principal para ejecutar las funcionalidades
