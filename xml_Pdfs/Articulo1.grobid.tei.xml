@@ -1,0 +1,1437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Language Models Represent Beliefs of Self and Others</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2024-02-28">28 Feb 2024</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Wentao</forename><surname>Zhu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Peking University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Zhining</forename><surname>Zhang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Peking University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yizhou</forename><surname>Wang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Peking University</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Language Models Represent Beliefs of Self and Others</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2024-02-28">28 Feb 2024</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">F576920F570E498D840ABD1771DD194F</idno>
+					<idno type="arXiv">arXiv:2402.18496v1[cs.AI]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2024-03-01T18:58+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Understanding and attributing mental states, known as Theory of Mind (ToM), emerges as a fundamental capability for human social reasoning. While Large Language Models (LLMs) appear to possess certain ToM abilities, the mechanisms underlying these capabilities remain elusive. In this study, we discover that it is possible to linearly decode the belief status from the perspectives of various agents through neural activations of language models, indicating the existence of internal representations of self and others' beliefs. By manipulating these representations, we observe dramatic changes in the models' ToM performance, underscoring their pivotal role in the social reasoning process. Additionally, our findings extend to diverse social reasoning tasks that involve different causal inference patterns, suggesting the potential generalizability of these representations.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>Developing machine systems that can engage in sophisticated social reasoning in a human-like manner represents one of the paramount goals in artificial intelligence. At the core of such an endeavor is the necessity for these systems to possess a "Theory of Mind" (ToM) capability, which involves recognizing and attributing mental states -such as beliefs, desires, intentions, and emotions -to oneself and others, while acknowledging that others may possess mental states distinct from one's own <ref type="bibr" target="#b23">(Leslie, 1987;</ref><ref type="bibr">Wellman et al., 2001)</ref>. This foundational capability is crucial not only for the nuanced navigation of human social interactions but also for enabling machines to engage in cooperative, adaptive, and sympathetic behaviors in diverse social environments <ref type="bibr" target="#b20">(Kleiman-Weiner et al., 2016;</ref><ref type="bibr" target="#b34">Rabinowitz et al., 2018)</ref>.</p><p>The recent advancements in Large Language Models (LLMs) appear to be a promising approach towards this objective, as emerging research indicates that LLMs exhibit reasonable ToM capabilities <ref type="bibr" target="#b21">(Kosinski, 2023;</ref><ref type="bibr" target="#b5">Bubeck et al., 2023)</ref>. These studies suggest that LLMs could, to some extent, predict and understand human intentions and beliefs, thereby demonstrating a foundational level of social reasoning. Meanwhile, some other research underscores that these capabilities tend to be superficial and fragile <ref type="bibr" target="#b36">(Shapira et al., 2023;</ref><ref type="bibr" target="#b36">Ullman, 2023;</ref><ref type="bibr" target="#b26">Ma et al., 2023;</ref><ref type="bibr">Verma et al., 2024)</ref>. Critics argue that while LLMs may mimic the outward appearance of understanding social contexts and mental states, this performance may not stem from a deep, genuine comprehension similar to human ToM. Instead, it may simply reflect the models' ability to replicate patterns observed in their training data.</p><p>These observations highlight a critical gap in our understanding of LLM social reasoning capabilities extending beyond mere black-box tests. Key questions remain unanswered, such as whether LLMs develop an internal representation of others' mental states, and whether it is feasible to distinguish between the mental states of others and those of the LLMs when the two have a conflict due to reasons such as information mismatch. Addressing these questions not only helps us gain a deeper insight on how LLMs understand others' mental states and perform social reasoning, but is also meaningful for the trustworthiness and alignment of AI systems <ref type="bibr" target="#b17">(Wang et al., 2023;</ref><ref type="bibr" target="#b32">Ngo et al., 2023;</ref><ref type="bibr" target="#b17">Ji et al., 2023)</ref>.</p><p>In this work, we undertake a preliminary exploration to understand the ToM capabilities of LLMs by studying their internal representations, going beyond merely analyzing the text responses they generate. Firstly, we seek to identify if LLMs have internal representations of others' beliefs and their own <ref type="bibr">( § 3)</ref>. If the answer is true, models potentially possess the ability to recognize others' mental states and differentiate them from their own prior to generating a final response. Specifically, we prompt the model with a short story in third-person narrative paired with a belief, which may or may not hold true, and attempt to classify the belief's validness from both the main character's perspective and the model's ("God's-eye view"), based on the model's intermediate activations. Furthermore, we explore the possibility of modifying the internal representations to steer the model's behavior towards or away from reflecting others' mental states <ref type="bibr">( § 4.2)</ref>. Lastly, we assess how our findings generalize across various social reasoning tasks with different causal inference patterns ( § 4.3).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Related Work</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1.">Human Theory-of-Mind</head><p>Theory of Mind (ToM), recognized as a cornerstone of human social cognition, facilitates individuals to infer the mental states of others, including their beliefs, desires, and intentions. Research indicates that infants as young as 12 months exhibit the ability to ascribe mental states to others, showcasing early development of ToM <ref type="bibr" target="#b33">(Onishi &amp; Baillargeon, 2005;</ref><ref type="bibr" target="#b38">Spelke &amp; Kinzler, 2007)</ref>. The false-belief task <ref type="bibr" target="#b2">(Baron-Cohen et al., 1985;</ref><ref type="bibr">Wellman et al., 2001)</ref> stands as a critical experimental approach for evaluating ToM. In this task, participants are required to predict a protagonist's actions based on her incorrect beliefs, which are separate from the participant's own knowledge. Cognitive scientists design meticulous experiments to dissect the nuances of reasoning related to agents' desires and beliefs, employing rigorous control conditions to eliminate simplistic heuristic explanations <ref type="bibr" target="#b13">(Goodman et al., 2009;</ref><ref type="bibr" target="#b1">Baker et al., 2009;</ref><ref type="bibr" target="#b1">2017;</ref><ref type="bibr" target="#b16">Jara-Ettinger et al., 2020)</ref>. Furthermore, neuroscientific studies seek to pinpoint the neural basis of social cognition, particularly highlighting the roles of the medial prefrontal cortex (mPFC) and the temporoparietal junction (TPJ) <ref type="bibr" target="#b10">(Frith &amp; Frith, 2006;</ref><ref type="bibr" target="#b7">Döhnel et al., 2012;</ref><ref type="bibr" target="#b29">Molenberghs et al., 2016)</ref>. The significance of ToM extends beyond individual interactions, influencing the spread of culture and the unity of social groups. The cognitive mechanisms enabled by ToM play a crucial role in forming and sustaining social norms, fostering cooperative behavior, and perpetuating shared cultural practices <ref type="bibr" target="#b40">(Tomasello et al., 2005;</ref><ref type="bibr" target="#b15">Henrich, 2016)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2.">Machine Theory-of-Mind</head><p>Developing machine systems that exhibit human-like ToM ability has been a long-standing endeavor in artificial intelligence research. Notably, Rabinowitz et al. design a ToMnet that utilizes meta-learning to build models of the agents it encounters based solely on observations of their behaviors. <ref type="bibr">Track et al.</ref> introduces the concept of Satisficing Theory of Mind. <ref type="bibr">Shum et al.</ref> explore the application of Bayesian inference to decipher group behaviors and anticipate group dynamics. Wang et al. propose to integrate ToM reasoning within multi-agent communication frameworks, enhancing the cooperative capabilities. These studies primarily focus on deducing the mental states of others explicitly and forming neural representations thereof. The remarkable achievements of LLMs have spurred further exploration into the ToM capabilities of these models. Research works in this field <ref type="bibr" target="#b21">(Kosinski, 2023;</ref><ref type="bibr" target="#b36">Shapira et al., 2023;</ref><ref type="bibr" target="#b36">Ullman, 2023)</ref> predominantly evaluates model performance using various prompts related to false-belief tests, yielding diverse outcomes. Additional studies <ref type="bibr" target="#b28">(Moghaddam &amp; Honey, 2023;</ref><ref type="bibr">Wilf et al., 2023)</ref> advocate for enhancing the ToM performance of LLMs via strategic prompting. To facilitate a more uniform assessment of machine ToM abilities, numerous benchmarks have been established, including ToM-QA <ref type="bibr" target="#b31">(Nematzadeh et al., 2018)</ref>, ToMi <ref type="bibr" target="#b22">(Le et al., 2019)</ref>, SocialIQA <ref type="bibr" target="#b35">(Sap et al., 2019)</ref>, BIB <ref type="bibr" target="#b11">(Gandhi et al., 2021)</ref>, <ref type="bibr">Agent (Shu et al., 2021)</ref>, BigToM <ref type="bibr" target="#b12">(Gandhi et al., 2023)</ref>, ToMChallenges <ref type="bibr" target="#b26">(Ma et al., 2023)</ref>, MMToM-QA <ref type="bibr" target="#b19">(Jin et al., 2024), and</ref><ref type="bibr">T4D (Zhou et al., 2023)</ref>. Our research diverges from the prevailing focus by delving into the intrinsic mechanisms of LLM ToM reasoning, specifically through the examination of internal neural representations.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Belief Representations in Language Models</head><p>We first explore if and how LLMs characterize the beliefs of different agents. Previous works in neural network interpretability <ref type="bibr" target="#b3">(Bau et al., 2020;</ref><ref type="bibr" target="#b6">Burns et al., 2022;</ref><ref type="bibr" target="#b30">Moschella et al., 2022;</ref><ref type="bibr" target="#b24">Li et al., 2023a)</ref> suggest that there often exist interpretable directions in the latent representation space of the model. Therefore, some research works propose to linearly project the learned representation to the target directions to uncover meaningful variables <ref type="bibr" target="#b27">(Mikolov et al., 2013;</ref><ref type="bibr" target="#b13">Goh et al., 2021;</ref><ref type="bibr" target="#b9">Elhage et al., 2022;</ref><ref type="bibr" target="#b14">Gurnee &amp; Tegmark, 2024;</ref><ref type="bibr" target="#b33">Park et al., 2023)</ref>. Motivated by this insight, we start by training linear classifier probes <ref type="bibr" target="#b0">(Alain &amp; Bengio, 2016;</ref><ref type="bibr" target="#b4">Belinkov, 2022)</ref> on the latent representations of a language model to estimate the likelihood of a belief from a certain agent's perspective.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.">Setup</head><p>Model. We employ Mistral-7B-Instruct <ref type="bibr" target="#b17">(Jiang et al., 2023)</ref> which is an instruction fine-tuned autoregressive language model with state-of-the-art performance. We focus on the activations of self-attention heads that enable Transformerbased language models to transfer information across various token positions <ref type="bibr">(Vaswani et al., 2017;</ref><ref type="bibr" target="#b8">Elhage et al., 2021;</ref><ref type="bibr" target="#b39">Todd et al., 2023)</ref>.</p><p>Dataset. We utilize the BigToM dataset <ref type="bibr" target="#b12">(Gandhi et al., 2023)</ref> which is constructed with a causal template and an example scenario including prior desires, actions, beliefs, and a causal event that changes the state of the environment. The protagonist could be aware or unaware of the causal event, which results in different beliefs. In this section, we focus on the "Forward Belief" setting, where the model infers the belief of the agent given the agent's percepts of the causal event. We train and evaluate the probes on a held-out subset without access to the stories in the test set of the benchmark.</p><p>Story: Noor is working as a barista at a busy coffee shop.</p><p>Noor wants to make a delicious cappuccino for a customer who asked for oat milk. Noor grabs a milk pitcher and fills it with oat milk. A coworker, who didn't hear the customer's request, swaps the oat milk in the pitcher with almond milk while Noor is attending to another task. Noor sees her coworker swapping the milk.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Belief:</head><p>The milk pitcher contains almond milk.</p><p>( =True, =True)</p><formula xml:id="formula_0">y p y o</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>True Belief False Belief</head><p>Story: Noor is working as a barista at a busy coffee shop.</p><p>Noor wants to make a delicious cappuccino for a customer who asked for oat milk. Noor grabs a milk pitcher and fills it with oat milk. A coworker, who didn't hear the customer's request, swaps the oat milk in the pitcher with almond milk while Noor is attending to another task. Noor does not see her coworker swapping the milk.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Belief:</head><p>The milk pitcher contains oat milk.</p><p>( =False, =False)</p><formula xml:id="formula_1">y p y o</formula><p>Belief: The milk pitcher contains almond milk.</p><p>( =False, =True)</p><formula xml:id="formula_2">y p y o</formula><p>Belief: The milk pitcher contains oat milk.</p><p>( =True, =False)</p><formula xml:id="formula_3">y p y o Figure 1.</formula><p>Example case of belief representation probing. Left: a "True Belief" story where the protagonist shares the same belief with oracle. Right: a "False belief" story where the protagonist has different belief with oracle. For both stories, we concatenate them with the two beliefs respectively and directly feed to the model. The ground-truth belief label from the protagonist's perspective yp and the oracle's perspective yo can be decided accordingly.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.">Probing</head><p>Feature Extraction. Our goal is to decode the belief status of different agents from the activations of attention heads, given a narrative and a corresponding belief statement. Specifically, we focus on two agents, namely protagonist, the central figure of the narrative, and oracle, which represents an omniscient spectator's perspective. By prompting the model with pairs of story and belief without explicit directives, we capture the attention head activations at the final token position, denoted as X ∈ R L×H×D . Here, L, H, and D represent the number of layers, the number of attention heads per layer, and the dimensionality of the attention head features, respectively. Concurrently, we acquire the corresponding ground-truth belief labels y p and y o , as illustrated in Figure <ref type="figure" target="#fig_11">1</ref>.</p><p>Binary Probing. We first train individual linear probes for each attention head at every layer to fit the belief labels y p and y o separately. For ease of explanation, we denote the activation of a particular attention head as x ∈ R N ×D where N is the size of the dataset, and the ground-truth belief labels as y ∈ {0, 1} N . We employ a logistic regression model to predict the probability of the belief being true:</p><formula xml:id="formula_4">ŷ = σ(xW + b),<label>(1)</label></formula><p>where σ(•) is the logistic sigmoid function, W ∈ R D is the weight vector, b ∈ R is the bias. The optimization of parameters W and b is achieved through minimizing the cross-entropy loss</p><formula xml:id="formula_5">L(W , b) = − 1 N y T log( ŷ) + (1 − y) T log(1 − ŷ) . (2)</formula><p>Figure <ref type="figure" target="#fig_0">2</ref> (A) and (B) display the validation accuracies of the linear probes. It reveals that a large number of attention heads can accurately capture the oracle's belief status. These informative attention heads are distributed across various layers, particularly excluding the initial layers, with those in the middle layers demonstrating superior accuracy.</p><p>It implies that the language model indeed develops intermediate representations that reflect its own belief status based on the full information provided. In contrast, the majority of attention heads only reach baseline accuracy in predicting the protagonist's belief status, performing no better than random guess. However, it is worth noting that a specific group of attention heads in the middle layers exhibits remarkably better performance, achieving over 80% validation accuracy. This phenomenon suggests that these attention heads implicitly encode the belief status of other agents in a linearly-decodable way.</p><p>Multinomial Probing. We further explore the possibility of estimating the belief statuses of both agents from the activations simultaneously. For this purpose, we combine the belief labels of both agents into a four-dimensional variable representing their joint belief statuses using one-hot encoding, where each dimension corresponds to a unique  combination of y o and y p . For brevity, we define this joint belief variable as y m ∈ {0, 1} N ×4 . A multinomial logistic regression model is utilized to predict the joint belief ŷm . Specifically, the class probabilities are derived by applying the softmax function to the linear transformations of x:</p><formula xml:id="formula_6">ŷm = softmax(xW m + b m ),<label>(3)</label></formula><p>where W m ∈ R D×4 is the weight matrix for multinomial logistic regression, and b m ∈ R 4 is the bias vector. These parameters can be optimized by minimizing the cross-entropy loss of all classes</p><formula xml:id="formula_7">L(W m , b m ) = − 1 N Tr y T m log( ŷm ) .<label>(4)</label></formula><p>Figure <ref type="figure" target="#fig_0">2</ref> (C) illustrates the accuracies of multinomial probing on the validation set, which demonstrates that it is possible to train linear probes with decent accuracy in the quater-nary classification task for specific attention heads. In other words, there exist individual attention heads (mostly in the middle layers) that could encode the belief statuses of both agents not only independently but also in conjunction, such as indicating whether protagonist and oracle share identical beliefs. This observation underscores the nuanced capability of these attention heads to represent complex relational information between agents' beliefs.</p><p>Visualizing the Belief Representations. In order to better understand the belief representations in the attention head activation space, we further visualize the linear regressors. We perform canonical-correlation analysis (CCA) to reduce the dimensionality of the activations to two and plot the linear decision boundaries in the reduced space. Figure <ref type="figure" target="#fig_1">3</ref> demonstrates two representative categories of the attention heads. The first category predominantly encodes the belief of oracle, showing a bias toward this perspective. The second category, on the other hand, more comprehensively captures the beliefs of both agents (B). We further visualize the decision boundaries of multinomial probes in (C).</p><p>Although geometries in the high-dimensional space can be much more complicated, the 2D visualizations offer some basic intuitions of linearly-separable belief representations. Figure <ref type="figure" target="#fig_0">2</ref> reveals that, although a significant portion of the attention heads fall into the first category, a distinct subset aligns with the second category.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Manipulating the Belief Representations</head><p>Although the probing results support the presence of belief representations for different agents within the attention head activation spaces, it remains unclear if these representations contribute to the overall social reasoning process. In this section, we aim to explore the functional roles of belief representations by explicitly manipulating them. We design experiments to address the following questions: Can we alter the social reasoning capabilities of language models by manipulating their internal representations? If so, how can this be achieved? And, how does the practice impact various types of social reasoning tasks?</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.">ToM Evaluation</head><p>We evaluate the ToM capabilities of language models using the BigToM <ref type="bibr" target="#b12">(Gandhi et al., 2023)</ref> benchmark. We focus on the 0-shot setting and do not explicitly reveal the agent's initial belief. We study three social reasoning tasks, namely Forward Belief , Forward Action, and Backward Belief , each focuses on different causal inference patterns. Detailed descriptions of the three tasks are provided in § 4.3. The tasks are presented as a comprehension question with a story in third-person narrative, followed by a question and two options. We evaluate the models based on their accuracy in responding to these questions, specifically under two conditions for each narrative scenario: True Belief (TB) and False Belief (FB). We also evaluate the percentage of scenarios where the model correctly answers both TB and FB questions.</p><p>We conduct experiments on two language models, Mistral-7B-Instruct <ref type="bibr" target="#b17">(Jiang et al., 2023)</ref> and DeepSeek-LLM-7B-Chat <ref type="bibr" target="#b4">(Bi et al., 2024)</ref>. Both models are tested using the most deterministic setting with a temperature of 0 following <ref type="bibr" target="#b12">(Gandhi et al., 2023)</ref>. As the baseline results in Table <ref type="table" target="#tab_0">1</ref> show, both models exhibit a distinct performance gap between True Belief and False Belief conditions when tested directly. It suggests that the models fail to recognize that other agents may hold beliefs different from their own due to perception differences. Specifically, in the classical False Belief test, Mistral is more biased towards the wrong answer, while DeepSeek's choices are closer to random guess. These tendencies might be attributed to the biased internal belief representations as previously discovered in § 3.2. The probe accuracies for DeepSeek are presented in Appendix B.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.">Activation Intervention</head><p>4.2.1. STRATEGY.</p><p>We apply inference-time intervention <ref type="bibr" target="#b25">(Li et al., 2023b)</ref> to manipulate the attention head activations. Specifically, it involves first selecting the top-K heads based on their probing</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>True Belief False Belief</head><p>Figure <ref type="figure">4</ref>. Impact of varying intervention strength α on the Forward Belief task using Mistral-7B. "Invalid" denotes the answer is not recognized by the grading mechanism as the model fails to provide answer in the required format, e.g., delivering uncertain responses.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Prompt:</head><p>… However, a sudden storm appears on the horizon, bringing rough seas and strong winds. Kofi does not notice the approaching storm.</p><p>Question: Does Kofi believe the weather is perfect for sailing or is there a storm approaching?</p><p>Choose one of the following: a) Kofi believes the weather is perfect for sailing.</p><p>b) Kofi believes there is a storm approaching.</p><p>Answer: accuracy on the validation set, then steering their activations towards certain directions for α× the standard deviation for next token prediction autoregressively. We set K and α with grid search following previous works, and present the ablations in Appendix D. Our primary focus is on identifying effective directions for altering the model behavior purposefully. Specifically, we explore the usage of the following directions:</p><p>• Random directions within the activation spaces R D .</p><p>• Weight directions for oracle and protagonist, respectively, derived from binary probing. We focus on the direction to maximize the probability of predicting protagonist's belief as True (+ protagonist), and the direction to minimize the probability of predicting oracle's belief as True (-oracle)</p><p>• Weight directions for joint belief status prediction, derived from multinomial probing. We focus on the direction which maximizes the probability of recognizing protagonist's belief as True and meanwhile distinguishes it from oracle's belief (+ T p F o ).</p><p>For random directions, we use the top-K informative heads identified with multinomial probing. For different social reasoning tasks, we separately probe the attention head activations by constructing the corresponding prompt templates. For example, for the Forward Action task, we utilize the story-action pairs, while for the Backward Belief task, we include the protagonist's next-step actions in the story. More details can be found in Appendix A.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.2.">RESULTS.</head><p>We evaluate different activation intervention strategies and present the results in Table <ref type="table" target="#tab_0">1</ref>. For different tasks, we perform intervention based on their respective probing results. The (+ random) results indicate that random perturbations of attention heads have marginal impact on model performance, which is in line with the findings in <ref type="bibr" target="#b25">(Li et al., 2023b)</ref>. Directly targeting activations towards the protagonist belief direction also fails to significantly change the model performances, possibly due to overpowering oracle belief signals with heavily-biased belief representation. To investigate this, we conduct intervention along the oracle belief direction reversely (-oracle), and discover a noteworthy change of model behaviors. Furthermore, we explore a direction that could distinguish between the belief of both agents, amplifying the protagonist's belief likelihood and weakening the oracle's belief likelihood. This direction could be derived from the corresponding dimension of the weight matrix in the multinomial logistic regression probes. We find that intervention towards this direction (+ T p F o ) remarkably changes the model performance, effectively improving the overall ToM reasoning capabilities.</p><p>Additionally, we seek to better understand the functionality of identified belief directions through continuous interventions along these vectors. As demonstrated in Figure <ref type="figure">4</ref>, The (+ T p F o ) direction exhibits significant impacts on benchmark performance, underscoring its pivotal role in ToM reasoning process. Specifically, steering towards this direction consistently enhances ToM accuracy in False Belief cases, while slightly decreases the True Belief accuracy (partially due to an increase of invalid responses). At a finer  level, we explore changes in model behavior by examining the fluctuations in the probabilities of next-token predictions. Figure <ref type="figure" target="#fig_2">5</ref> illustrates how steering head activations to the specific directions could influence next-token predictions and invert the selection of choices.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3.">Varying Social Reasoning Tasks</head><p>Furthermore, we investigate how various social reasoning tasks differ in terms of their underlying representations and whether these representations could generalize across different tasks or not. As illustrated in Figure <ref type="figure" target="#fig_4">7</ref>, we study three different causal inference tasks as defined in <ref type="bibr" target="#b12">(Gandhi et al., 2023)</ref>:</p><p>1. The Forward Belief task entails deducing the agent's beliefs given its percepts of a causal event. This inference can be expressed as: P (Belief | Percept). agent's future action based on the percepts. This process implicitly requires an initial inference of the agent's beliefs, followed by the deduction of the agent's action considering both percepts and desires:</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">The Forward Action task involves predicting the</head><p>Belief P (Action | Percept, Desire, Belief). 3. The Backward Belief task aims to infer the agent's beliefs from the observed actions. This task poses a significant challenge as it demands a joint inference of unknown beliefs and percepts based on an observed action:</p><formula xml:id="formula_8">Percept Belief P (Action | Desire, Percept, Belief).</formula><p>First of all, we explore the interrelationships among the identified ToM representations across different tasks. The probing results of each task are presented in Appendix B. Figure <ref type="figure" target="#fig_3">6</ref> illustrates a strong correlation between the probing accuracies in different task scenarios, suggesting related representational capabilities under various causal inference conditions. Remarkably, the top-performing heads in one task tend to include the predictive features in another task as well, and the directions they identify exhibit high similarity. Considering that all three tasks implicitly or explicitly involve belief inference, we propose that a subset of atten-</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>[Desire]</head><p>"A coworker, who didn't hear the customer's request, swaps the oat milk …" "Noor wants to …" "Noor grabs a milk …" "Noor does not see her coworker swapping the milk."</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>[Action] [Causal Event] [Percept]</head><p>Figure <ref type="figure">8</ref>. Magnitudes of gradients on the token embeddings with respect to the projection of attention head activations over the corresponding joint belief directions. Each line represents a specific attention head in Mistral-7B. We highlight the prominent segments and the corresponding causal variables.</p><p>tion head spaces might contain belief representations which potentially contribute to a range of social reasoning tasks.</p><p>This hypothesis motivates us to conduct a generalization test across different social reasoning tasks. We specifically intervene in the (+ T p F o ) directions identified under Forward Belief conditions when evaluating the other two tasks.</p><p>Table <ref type="table" target="#tab_1">2</ref> indicates that the directions identified in one task do generalize to others, suggesting that these directions might encapsulate a more universal function as belief representations.</p><p>Moreover, we seek to understand why these directions could act as generalizable belief representations. Specifically, we first prompt the model with story narratives, then respectively project the attention head activations onto the target (+ T p F o ) directions of the top probes. We then back-propagate the projection norm through the model and calculate the gradient magnitudes in input token embeddings, which approximately reflects the relevance of individual input tokens to the target directions. Figure <ref type="figure">8</ref> reveals that the identified directions in attention head activation spaces primarily focus on tokens denoting key causal variables, including the protagonist's desires and initial actions, the causal event that changes the environmental states, and the protagonist's percept status of the causal event. These elements collectively facilitate a comprehensive inference of both agents' beliefs.</p><p>These insights may shed light on the generalization potential of these directions across various social reasoning tasks. Despite the diverse causal inference dynamics required by these tasks, they share common underlying causal variables and all necessitate inference regarding the agent's belief status, whether explicitly or implicitly.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">Discussions</head><p>In this study, we investigate the ToM capabilities in LLMs, specifically examining their ability to internally represent and attribute beliefs. We discover that LLMs can distinguish between different belief states of multiple perspectives through their intermediate activation with simple linear models. Additionally, we show that manipulation of these representations significantly affects the model's social reasoning performances. Finally, we demonstrate the generalization of the internal belief representations in diverse social reasoning task scenarios.</p><p>Our study contributes to the ongoing dialogue on the social reasoning capabilities of LLMs, providing new insights into their ability to simulate ToM through internal representations. Looking ahead, our study opens avenues for further investigation, including the development and processing of belief representations during training, their scalability in more complex LLMs like mixture of expert (MoE) models <ref type="bibr" target="#b18">(Jiang et al., 2024)</ref>, and methods to enhance ToM capabilities in alignment with human values. While our research provides valuable insights, it comes with its limitations. The scope of our exploration was confined to certain types of LLMs and specific social reasoning tasks, which may not capture the full spectrum of ToM capabilities. Future work should aim to address these gaps, broadening the understanding of ToM in AI systems across various models and more complex contexts.</p><p>Ullman, T. Large language models fail on trivial alterations to theory-of-mind tasks. arXiv preprint arXiv:2302.08399, 2023.</p><p>Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., and Polosukhin, I. Attention is all you need. Advances in neural information processing systems, 30, 2017.</p><p>Verma, M., Bhambri, S., and Kambhampati, S. Theory of mind abilities of large language models in human-robot interaction: An illusion? arXiv preprint arXiv:2401.05302, 2024. Broader Impact Statement. Our study on the Theory of Mind (ToM) capabilities in Large Language Models (LLMs) illuminates the potential for more empathetic AI, enhancing human-machine interactions in various sectors. Ethically, it necessitates careful consideration to prevent misuse and bias propagation, ensuring AI's societal impact is positive.</p><p>Responsible development and transparent deployment are imperative to safeguard against unintended consequences and maintain trust in AI advancements.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Probing Prompts for Different Tasks</head><p>We develop corresponding prompt templates for different social reasoning tasks by casting the choices to statements. For the Forward Action task, we utilize the story-action pairs as shown in Figure <ref type="figure">9</ref>. For the Backward Belief task, we include the protagonist's next-step actions in the story and present the story-belief pairs as shown in Figure <ref type="figure" target="#fig_11">10</ref>. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Additional Probing Results</head><p>We present the full probing results in all three tasks for both models using logistic regression models in Figure <ref type="figure" target="#fig_6">11</ref> and Figure <ref type="figure" target="#fig_7">12</ref>. The probing accuracies vary across models and tasks. Generally, linear belief representations exist in different models and tasks, and are biased towards representing oracle's belief.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Forward Belief</head><p>Backward Belief Forward Action Furthermore, we explore non-linear probing by fitting an MLP with one hidden layer of 256 channels. Figure <ref type="figure" target="#fig_8">13</ref> shows that the overall probing accuracy increases, suggesting that while some activation heads can decode beliefs linearly, more complex representational structures within certain activation spaces also exist.    We provide additional results of token gradients with regard to the belief directions given different story prompts, which localizes the key causal elements related to agent beliefs.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Additional Token Gradient Heatmaps</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Hyperparameter Analysis</head><p>True Belief False Belief</p><p>True Belief False Belief</p><p>Figure <ref type="figure" target="#fig_11">16</ref>. Impact of varying intervention strength α on the Forward Belief task using Mistral-7B. "Invalid" denotes the answer is not recognized by the grading mechanism as the model fails to provide answer in the required format, e.g., delivering uncertain responses.</p><p>We provide intervention results with different (K, α) combinations in Figure <ref type="figure" target="#fig_11">16</ref>. K = 16 yields the most steady performance and is used in our experiments for the model.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Detailed Comparison of LLM Responses</head><p>Below, we compare the performance of two models (Mistral-7B, DeepSeek-7B) on the Forward Belief reasoning task before and after intervention in two settings (False Belief , True Belief ). Instances where the model's response changes from incorrect to correct, or from correct to incorrect, are recorded in the tables below. Story: Mei is a pearl diver in a small coastal village in Japan. Mei wants to find a perfect pearl to give to her grandmother for her birthday. Mei spots an oyster at the bottom of the sea that looks to be the right size and age to contain a pearl. A curious octopus opens the oyster, revealing that there is no pearl inside, and then swims away. Mei does not notice the octopus opening the oyster. Question: Does Mei believe the oyster she spotted contains a pearl or that it is empty? Choose one of the following: Story: Heiwa is a skilled fisherman in a coastal village in Japan. Heiwa wants to catch a large number of fish to sell at the local market. The sea appears calm and full of fish, making it an ideal time for fishing. Suddenly, a massive school of fish moves away from the area, leaving very few fish near Heiwa's fishing spot. Heiwa does not notice the fish moving away. Question: Does Heiwa believe the sea is calm and full of fish or that the fish have moved away? Choose one of the following: a) Heiwa believes the sea is calm and full of fish. b) Heiwa believes the fish have moved away.</p><p>Correct Answer: a) Unintervened: b) Heiwa believes the sea is calm and full of fish, but the fish have moved Intervened: a) Heiwa believes the sea is calm and full of fish.</p><p>Story: Fatima is a potter in a small Moroccan village known for its vibrant ceramics. Fatima wants to create a beautiful vase as a wedding gift for her cousin. Fatima has left her kiln turned off overnight to cool down. A power surge during the night causes the kiln to turn on unexpectedly, making it dangerously hot. Fatima does not feel the heat emanating from the kiln. Question: Does Fatima believe her kiln is off and cool or unexpectedly hot? Choose one of the following: Story: Hiro is a bonsai enthusiast in a small village in Japan. He wants to trim his favorite bonsai tree to maintain its shape and health. Hiro sees that the tree's branches are overgrown and need pruning. A gust of wind blows through Hiro's garden, snapping off several of the overgrown branches from the bonsai tree. Hiro does not see the gust of wind snapping off the branches. Question: Does Hiro believe the bonsai tree has overgrown branches or that they have been snapped off by the wind? Choose one of the following: a) Hiro believes the bonsai tree has overgrown branches. b) Hiro believes the branches have been snapped off by the wind.</p><p>Correct Answer: a) Unintervened: b) Hiro believes the branches have been snapped off by the wind. Intervened: a. Hiro believes the bonsai tree has overgrown branches.</p><p>Story: Tumelo is a skilled fisherman in a coastal village in South Africa. He wants to catch fish using his large, sturdy fishing net. Tumelo inspected the net before leaving home and saw that it was in perfect condition. As he walks to the shore, a mischievous seagull pecks at the net, causing a large tear in it. Tumelo does not see the seagull damaging the net. Question: Does Tumelo believe the fishing net is in perfect condition or torn? Choose one of the following: a) Tumelo believes the fishing net is torn. b) Tumelo believes the fishing net is in perfect condition. Correct Answer: b) Unintervened: a) Tumelo believes the fishing net is in perfect condition. Intervened: Before leaving[PAD]=&gt;Tumelo believes the fishing net is in perfect condition. Answer:</p><p>Story: Kofi is a fisherman in a small coastal village in Ghana. He wants to set sail on his boat to catch fish for his family and the village market. Kofi checks the weather and sees clear skies and calm waters. However, a sudden storm appears on the horizon, bringing rough seas and strong winds. Kofi does not notice the approaching storm. Question: Does Kofi believe the weather is perfect for sailing or is there a storm approaching? Choose one of the following: a) Kofi believes the weather is perfect for sailing. b) Kofi believes there is a storm approaching. Correct Answer: a) Unintervened: b) Kofi believes the weather is perfect for sailing (but he is wrong). Intervened: a) Kofi believes the weather is perfect for sailing.</p><p>Story: Mei is a fisherman in a small coastal village in China. She wants to go fishing early in the morning when the tide is high. Mei checks the tide chart and sees that the tide will be high at 5 AM. However, a strong storm far out at sea has caused the tide to come in much earlier, at 3 AM. Mei does not look out the window and does not notice the high tide. Question: Does Mei believe the tide is high at 5 AM or 3 AM? Choose one of the following: a) Mei believes the tide is high at 5 AM. Story: Rohan is a potter in a small Indian village. Rohan wants to make a beautiful ceramic vase as a gift for his friend's housewarming party. Rohan selects a bag of high-quality clay in his workshop that appears to be soft and malleable. While Rohan is away for lunch, the hot sun dries the clay, making it hard and unworkable. Rohan does not notice the dried, hard clay. Question: Does Rohan believe the bag of clay is soft and malleable or hard and unworkable? Choose one of the following: a) Rohan believes the bag of clay is hard and unworkable. b) Rohan believes the bag of clay is soft and malleable. Correct Answer: b) Unintervened: a) Rohan believes the bag of clay is soft and malleable (but it's Intervened: Rohan believes the bag of clay is soft and malleable (before the incident), but later Story: Rohit is a renowned painter from India who has been commissioned to create a mural on a city building. Rohit wants to paint an intricate scene depicting the vibrant culture and history of India. Rohit selects a set of high-quality, long-lasting paint colors for the mural. While Rohit is out for lunch, a leak in the ceiling drips water onto the paint colors, diluting them and making them less durable. Rohit does not notice the water-damaged paint colors. Question: Does Rohit believe the paint colors are of high quality and long-lasting or water-damaged and less durable? Choose one of the following: a) Rohit believes the paint colors are water-damaged and less durable. b) Rohit believes the paint colors are of high quality and long-lasting. Correct Answer: b) Unintervened: a) Rohit does not know the true condition of the paint colors. However, due to the Intervened: b) Rohit believes the paint colors are of high quality and long-lasting. (at Story: Amara is a talented henna artist in a bustling Indian market. Amara wants to create intricate henna designs for a group of bridesmaids attending a wedding. Amara checks her supply of henna paste and finds it to be smooth and consistent. While Amara is busy servicing another client, a sudden rainstorm causes the henna paste to become diluted and runny. Amara does not realize the rain has affected the henna paste. Question: Does Amara believe the henna paste is smooth and consistent or diluted and runny? Choose one of the following: a) Amara believes the henna paste is smooth and consistent. b) Amara believes the henna paste is diluted and runny. Correct Answer: a) Unintervened: b) Amara believes the henna paste is smooth and consistent (but it is actually dilut Intervened: a) Amara believes the henna paste is smooth and consistent.</p><p>Story: Kalyani is a traditional Indian dancer in a temple in Kerala, India. Kalyani wants to perform a special dance for the upcoming festival to pay homage to the temple's deity. The temple floor is clean and free of any obstacles, as Kalyani has prepared the space for her dance practice. An accidental spill of oil from a temple lamp causes a slippery patch on the floor. Kalyani does not notice the oil spill. Question: Does Kalyani believe the temple floor is clean and perfect for dancing or slippery due to the oil spill? Choose one of the following: a) Kalyani believes the temple floor is clean and perfect for dancing. b) Kalyani believes the floor is slippery due to the oil spill. Correct Answer: a) Unintervened: b) Kalyani believes the floor is slippery due to the oil spill. Intervened: a) Kalyani believes the temple floor is clean and perfect for dancing.</p><p>Story: Naledi is a young astronomer in a remote observatory in South Africa. Naledi wants to observe a distant supernova to gather data for her research. The telescope is pointed at the coordinates of the supernova, ready for observation. A minor earthquake occurs, causing the telescope to shift its position slightly. Naledi does not notice the earthquake and its effect on the telescope. Question: Does Naledi believe the telescope is aimed at the correct location or has shifted due to the earthquake? Choose one of the following: a) Naledi believes the telescope is aimed at the correct location. b) Naledi believes the telescope has shifted due to the earthquake. Correct Answer: a) Unintervened: b) Naledi is unaware that the telescope has shifted due to the earthquake. Intervened: a) Naledi believes the telescope is aimed at the correct location.</p><p>Story: Emilia is a talented baker in a small Italian town. She plans to bake a large batch of biscotti to sell at the local market. Emilia inspects the oven's temperature, which appears to be set at the correct temperature for baking. A power surge causes the oven's temperature to spike, making it too hot for baking biscotti. Emilia does not notice the oven's temperature increase. Question: Does Emilia believe the oven is set at the correct temperature for baking biscotti or too hot? Choose one of the following: a) Emilia believes the oven is set at the correct temperature for baking biscotti. b) Emilia believes the oven is too hot for baking biscotti.</p><p>Correct Answer: a) Unintervened: b) Emilia believes the oven is too hot for baking biscotti (even though she doesn Intervened: a) Emilia believes the oven is set at the correct temperature for baking biscotti. ( Story: Emeka is a skilled fisherman in a small Nigerian village. He wants to catch fish to feed his family and sell at the market. Emeka prepares his fishing net, which appears to be strong and without any holes. However, while Emeka is not looking, a mischievous child cuts a large hole in the net with a knife. Emeka does not see the child cutting the hole in the fishing net. Question: Does Emeka believe the fishing net is strong and without holes, or that it has a large hole in it? Choose one of the following: a) Emeka believes the fishing net is strong and without holes. b) Emeka believes that the fishing net has a large hole in it.</p><p>Correct Answer: a) Unintervened: b) Emeka believes that the fishing net has a large hole in it (without knowing it Intervened: a) Emeka believes the fishing net is strong and without holes.</p><p>Story: Aria is a talented baker from Italy who has been asked to bake a cake for a friend's birthday party. She wants to create a delicious, multi-layered cake that will impress everyone. Aria has a fresh batch of ingredients ready to use for the cake. However, a mischievous cat sneaks into her kitchen and nibbles on some of the ingredients, making them no longer fresh. Aria does not notice the cat or the nibbled ingredients. Question: Does Aria believe her ingredients are fresh and suitable or nibbled on and no longer fresh? Choose one of the following: a) Aria believes the ingredients are nibbled on and no longer fresh. b) Aria believes her ingredients are fresh and suitable for baking the cake. Correct Answer: b) Unintervened: a) Aria believes her ingredients are fresh and suitable for baking the cake (but they are actually Intervened: b) Aria believes her ingredients are fresh and suitable for baking the cake.</p><p>Story: Ailani is a skilled Hawaiian chef preparing a traditional luau feast for her community. She wants to make a delicious laulau dish using fresh taro leaves. Ailani examines the taro leaves, which look fresh and green. However, a sudden downpour soaks the taro leaves, causing them to become wilted and less ideal for the dish. Ailani does not notice the downpour and the effect it has on the taro leaves. Question: Does Ailani believe the taro leaves are fresh and of high quality or wilted and less ideal? Choose one of the following: a) Ailani believes the taro leaves are fresh and of high quality. b) Ailani believes the taro leaves are wilted and less ideal.</p><p>Correct Answer: a) Unintervened: b) Ailani believes the taro leaves are wilted and less ideal. Intervened: Ailani believes the taro leaves are fresh and of high quality. (Based on the context Story: Ravi is a fisherman living in a coastal village in India. Ravi wants to catch a large amount of fish to sell at the market and provide for his family. The waters near the shore are calm and full of fish, making it an ideal location for fishing. An underwater earthquake occurs, causing the fish to frantically swim away from the coast. Ravi does not sense the earthquake. Question: Does Ravi believe the waters near the shore are calm and full of fish, or that the fish have frantically swum away? Choose one of the following: a) Ravi believes the fish have frantically swum away from the coast. b) Ravi believes the waters near the shore are calm and full of fish. Correct Answer: b) Unintervened: a) Ravi believes the waters near the shore are calm and full of fish (but he is Intervened: b) Ravi believes the waters near the shore are calm and full of fish.</p><p>Story: Surya is a fisherman in a coastal village in India. Surya plans to go fishing early in the morning to catch fish for his family and to sell at the local market. Surya's fishing net looks strong and ready for another day of fishing. Overnight, a group of mischievous monkeys rummage through the fishing equipment and badly damage Surya's fishing net. Surya does not realize the monkeys have damaged his fishing net. Question: Does Surya believe that his fishing net is strong and ready to be used, or that it has been badly damaged? Choose one of the following: a) Surya believes his fishing net has been badly damaged. b) Surya believes his fishing net is strong and ready to be used. Correct Answer: b) Unintervened: a) Surya believes his fishing net is strong and ready to be used (but it has Intervened: b) Surya believes his fishing net is strong and ready to be used.</p><p>Story: Takeshi is a fisherman in a small Japanese coastal village. Takeshi's goal is to catch enough fish to provide for his family and sell at the market. The ocean is calm and teeming with fish, making it an ideal day for fishing. However, a sudden underwater volcanic eruption nearby causes the fish to scatter, leaving the area devoid of fish. Takeshi does not notice the sudden disappearance of fish in the area. Question: Does Takeshi believe the ocean is teeming with fish, or devoid of fish due to the volcanic eruption? Choose one of the following: a) Takeshi believes the ocean is devoid of fish due to the volcanic eruption. b) Takeshi believes the ocean is teeming with fish. Correct Answer: b) Unintervened: a) Takeshi believes the ocean is teeming with fish (but is unaware of Intervened: Takeshi believes the ocean is teeming with fish.</p><p>Story: Hiroshi is a fisherman in a small coastal village in Japan. Hiroshi wishes to catch enough fish to feed his family and sell the surplus at the local market. The fishing nets are in excellent condition, ready to be cast into the sea. However, a curious pod of dolphins swims by and accidentally tears the nets with their sharp dorsal fins. Hiroshi does not see the dolphins or the damage they caused to the nets. Story: Mei, a talented pastry chef from a small town in China, is preparing to bake a large cake for a local celebration. Mei wants to use a specific cake mold to create a unique and intricate design. Mei sees the cake mold hanging on the wall, clean and ready for use. However, during a brief power outage, a gust of wind blows through the kitchen, knocking the cake mold off the wall and denting it severely. Mei does not notice the dented cake mold on the floor. Question: Does Mei believe the cake mold is clean and ready for use or severely dented and unsuitable for use? Choose one of the following: a) Mei believes the cake mold is clean and ready for use.  Story: Hiro is a bonsai enthusiast in a small village in Japan. He wants to trim his favorite bonsai tree to maintain its shape and health. Hiro sees that the tree's branches are overgrown and need pruning. A gust of wind blows through Hiro's garden, snapping off several of the overgrown branches from the bonsai tree. Hiro witnesses the gust of wind snapping off the branches. Question: Does Hiro believe the bonsai tree has overgrown branches or that they have been snapped off by the wind? Choose one of the following: a) Hiro believes the branches have been snapped off by the wind. b) Hiro believes the bonsai tree has overgrown branches. Correct Answer: a) Unintervened: a) Hiro believes the branches have been snapped off by the wind. Intervened: Hiro believes the bonsai tree has overgrown branches. (initially)</p><p>Story: Olumide, a skilled woodcarver in a Nigerian village, is preparing to carve a beautiful sculpture for the village chief. Olumide wants to use a sharp chisel to create intricate details on the sculpture. Olumide observes his set of chisels and sees one that appears to be sharp and in perfect condition. However, while Olumide is talking to a fellow artisan, a child from the village accidentally drops the chisel, causing it to become blunt and damaged. Olumide notices the damaged chisel on the ground. Question: Does Olumide believe the chisel is sharp and in perfect condition or blunt and damaged? Choose one of the following: a) Olumide believes the chisel is sharp and in perfect condition. b) Olumide believes the chisel is blunt and damaged. Correct Answer: b) Unintervened: b) Olumide believes the chisel is blunt and damaged. Intervened: a -Story: Olumide, a skilled woodcarver in a Story: Odion is an archaeologist conducting research at an ancient Egyptian site. He wants to discover a hidden chamber within the pyramid he is exploring. Odion observes a wall with an unusual pattern that appears to be a concealed entrance. While Odion is away, a sandstorm fills the entrance, making it impossible to access the hidden chamber. Odion sees the sand-filled entrance after the storm. Question: Does Odion believe the wall with the unusual pattern is hiding the entrance or that the entrance is blocked by sand? Choose one of the following: a) Odion believes the entrance is blocked by sand. b) Odion believes the wall with the unusual pattern is hiding the entrance. Correct Answer: a) Unintervened: a) Odion believes the entrance is blocked by sand. Intervened: b) Odion believes the wall with the unusual pattern is hiding the entrance.</p><p>Story: Kunal is a talented potter in a small Indian village. Kunal wants to create a set of earthenware bowls as a gift for his friend's housewarming. Kunal inspects a large lump of clay, finding it to be moist and malleable. However, while Kunal is away for a short break, the sun beats down on the clay, drying it out and making it hard and brittle. Kunal notices the sun-dried, brittle clay. Question: Does Kunal believe the clay is moist and malleable or hard and brittle? Choose one of the following: a) Kunal believes the clay is moist and malleable. b) Kunal believes the clay is hard and brittle. Correct Answer: b) Unintervened: b) Kunal believes the clay is hard and brittle. Intervened: a. (Kunal believes the clay is moist and malleable.)</p><p>Story: Naledi is a talented South African chef preparing a traditional braai for her friends and family. Naledi wants to make a delicious marinade for the meats and vegetables to be grilled. She takes a bottle of vinegar from the cupboard to mix with other ingredients for the marinade. Her cousin, who was helping in the kitchen earlier, accidentally placed a bottle of water in the vinegar's spot, and Naledi unknowingly grabs the bottle of water instead. Naledi notices the water and puts it back. Question: Does Naledi believe the bottle she took from the cupboard contains vinegar or water? Choose one of the following: Story: Ravi is a farmer in a small Indian village, tending to his mango orchard. Ravi wants to harvest ripe mangoes to sell at the local market. He notices a mango tree with a heavy branch laden with ripe mangoes. A mischievous monkey comes along and eats all the ripe mangoes on the branch while Ravi is gathering his harvesting tools. Ravi does not see the monkey eating the ripe mangoes. Question: Does Ravi believe the branch has ripe mangoes or no ripe mangoes? Choose one of the following: Story: Farhan is a street food vendor in a bustling market in Istanbul. Farhan wants to prepare a delicious chicken shawarma wrap for a customer who asked for extra garlic sauce. Farhan takes a bottle of garlic sauce from the shelf and pours it onto the shawarma wrap. His assistant, who is busy preparing a different wrap, accidentally swaps the garlic sauce with a bottle of hot sauce, and Farhan unknowingly pours the hot sauce onto the shawarma wrap. Farhan does not notice the sauce swap. Question: Does Farhan believe the sauce he poured is garlic sauce or hot sauce? Choose one of the following: a) Farhan believes the sauce he poured is garlic sauce. b) Farhan believes the sauce he poured is hot sauce. Correct Answer: a) Unintervened: b) Farhan believes the sauce he poured is hot sauce. Intervened: a) Farhan believes the sauce he poured is garlic sauce.</p><p>Story: Lila is a beekeeper in a small village in Eastern Europe. She wants to harvest honey from one of her beehives. The beehive is full of honey, as Lila observed during her last inspection. A sudden cold snap occurs overnight, causing the bees to consume the honey to stay warm and survive, leaving the beehive nearly empty. Lila does not notice the cold snap and the decreased honey in her beehive. Question: Does Lila believe the beehive is full of honey or nearly empty? Choose one of the following: a) Lila believes the beehive is full of honey. b) Lila believes the beehive is nearly empty. Correct Answer: a) Unintervened: b) Lila believes the beehive is nearly empty. Intervened: a) Lila believes the beehive is full of honey.</p><p>Story: Kavi is a chef at a popular Indian restaurant in a bustling city. Kavi wants to make his signature dish, a spicy curry, for the customers tonight. Kavi checks the pantry and sees a full bottle of his favorite hot sauce. When Kavi is away, a new chef accidentally knocks over the hot sauce, spilling its contents all over the floor. Kavi does not see the spilled hot sauce on the floor. Question: Does Kavi believe there is a full bottle of hot sauce available or that the hot sauce has been spilled? Choose one of the following: a) Kavi believes the hot sauce has been spilled. b) Kavi believes there is a full bottle of hot sauce available. Correct Answer: b) Unintervened: a) Kavi believes the hot sauce has been spilled. Intervened: b) Kavi believes there is a full bottle of hot sauce available.</p><p>Story: Juan is a young chef in a small Mexican town. He wants to make a delicious salsa for the upcoming town festival. Juan buys fresh tomatoes from the market, which he believes are ripe and perfect for the salsa. While Juan is away from his kitchen, a mischievous cat knocks over the bag of tomatoes, crushing them and making them unsuitable for the salsa. Juan does not notice the crushed tomatoes on the floor. Question: Does Juan believe the tomatoes are ripe and perfect or crushed and unsuitable? Choose one of the following: Story: Mei is a pearl diver in a small coastal town in Japan. Mei wants to dive deep into the sea to find a rare and valuable black pearl for her grandmother's birthday gift. The water in the cove is calm with barely any waves. Suddenly, a storm rolls in, and the once calm water becomes rough and choppy. Mei does not notice the change in the water as the storm approaches. Question: Does Mei believe the water is calm and perfect for diving or rough and choppy due to the storm? Choose one of the following: a) Mei believes the water is calm and perfect for diving. b) Mei believes the water is rough and choppy due to the storm. Correct Answer: a) Unintervened: b) Mei believes the water is rough and choppy due to the storm. Intervened: a) Mei believes the water is calm and perfect for diving.</p><p>Story: Amina is an archaeologist working on an excavation site in Egypt. Amina wants to carefully remove a valuable artifact from the ground using her brush and trowel. The artifact appears to be intact and undamaged. Suddenly, the ground shifts slightly, causing a small crack to form on the artifact. Amina does not notice the ground shift and the crack on the artifact. Question: Does Amina believe the artifact is in perfect condition or cracked? Choose one of the following: a) Amina believes the artifact is in perfect condition. b) Amina believes the artifact is cracked. Correct Answer: a) Unintervened: b) Amina believes the artifact is cracked. Intervened: a) Amina believes the artifact is in perfect condition.</p><p>Story: Kofi is a fisherman in a small coastal village in Ghana. He wants to set sail on his boat to catch fish for his family and the village market. Kofi checks the weather and sees clear skies and calm waters. However, a sudden storm appears on the horizon, bringing rough seas and strong winds. Kofi does not notice the approaching storm. Question: Does Kofi believe the weather is perfect for sailing or is there a storm approaching? Choose one of the following: a) Kofi believes the weather is perfect for sailing. b) Kofi believes there is a storm approaching.</p><p>Correct Answer: a) Unintervened: b) Kofi believes there is a storm approaching. Intervened: a) Kofi believes the weather is perfect for sailing.</p><p>Story: Mei is a fisherman in a small coastal village in China. She wants to go fishing early in the morning when the tide is high. Mei checks the tide chart and sees that the tide will be high at 5 AM. However, a strong storm far out at sea has caused the tide to come in much earlier, at 3 AM. Mei does not look out the window and does not notice the high tide.</p><p>Question: Does Mei believe the tide is high at 5 AM or 3 AM? Choose one of the following: a) Mei believes the tide is high at 5 AM. b) Mei believes the tide is high at 3 AM. Correct Answer: a) Unintervened: b) Mei believes the tide is high at 3 AM. Intervened: a) Mei believes the tide is high at 5 AM.</p><p>Story: Kwame is a skilled woodcarver in a small African village known for its exceptional craftsmanship. Kwame wants to create a beautiful wooden sculpture for the upcoming village festival. Kwame examines a large piece of wood and notices it is strong and free of imperfections. While Kwame is away, termites infest the wood, weakening its structure and leaving it unsuitable for carving. Kwame does not notice the termite-infested wood. Question: Does Kwame believe the piece of wood is strong and free of imperfections or weakened and infested with termites? Choose one of the following: a) Kwame believes the piece of wood is strong and free of imperfections. b) Kwame believes the piece of wood is weakened and infested with termites.</p><p>Correct Answer: a) Unintervened: b) Kwame believes the piece of wood is weakened and infested with termites. Intervened: a) Kwame believes the piece of wood is strong and free of imperfections.</p><p>Story: Luka is a skilled woodworker in a small Croatian village known for its traditional crafts. Luka intends to carve an intricate wooden sculpture as a gift for his friend's wedding. Luka spots a large piece of high-quality wood in his workshop. Just when Luka steps away for a moment, his dog chews on the wood, leaving teeth marks and damage to the surface. Luka does not see the damaged wood. Question: Does Luka believe the wood is perfect for carving or damaged with teeth marks? Choose one of the following: a) Luka believes the wood is perfect for carving. b) Luka believes the wood is damaged with teeth marks. Correct Answer: a) Unintervened: b) Luka believes the wood is damaged with teeth marks. Intervened: a) Luka believes the wood is perfect for carving.</p><p>Story: Amara is a talented henna artist in a bustling Indian market. Amara wants to create intricate henna designs for a group of bridesmaids attending a wedding. Amara checks her supply of henna paste and finds it to be smooth and consistent. While Amara is busy servicing another client, a sudden rainstorm causes the henna paste to become diluted and runny. Amara does not realize the rain has affected the henna paste. Question: Does Amara believe the henna paste is smooth and consistent or diluted and runny? Choose one of the following: a) Amara believes the henna paste is smooth and consistent. b) Amara believes the henna paste is diluted and runny. Correct Answer: a) Unintervened: b) Amara believes the henna paste is diluted and runny. Intervened: a) Amara believes the henna paste is smooth and consistent.</p><p>Story: Leilani is a skilled hula dancer from Hawaii who has been asked to perform at a cultural event. Leilani wants to wear her favorite traditional hula skirt made of ti leaves for the performance. Leilani sees her ti leaf skirt hanging in her closet, appearing to be in good condition. While Leilani is away from her room, her younger brother accidentally spills a glass of water near the closet, causing her ti leaf skirt to become wet and wilted. Leilani does not notice the wet and wilted ti leaf skirt. Question: Does Leilani believe the ti leaf skirt is in good condition or wet and wilted? Choose one of the following: a) Leilani believes the ti leaf skirt is in good condition. Story: Amara is a skilled potter in a small Nigerian village. Amara wants to create a beautiful, large clay pot to be used in the village's upcoming festival. The kiln, used for firing pottery, has been heated to the appropriate temperature for the clay. Unbeknownst to her, a sudden gust of wind blows open the kiln door, causing the temperature to drop significantly. Amara does not notice the kiln door has been blown open. Question: Does Amara believe the kiln is at the right temperature for firing the large pot or that the temperature has dropped significantly? Choose one of the following: a) Amara believes the kiln is at the right temperature for firing the large pot. b) Amara believes the temperature in the kiln has dropped significantly. Correct Answer: a) Unintervened: b) Amara believes the temperature in the kiln has dropped significantly. Intervened: a) Amara believes the kiln is at the right temperature for firing the large pot Story: Naledi is a young astronomer in a remote observatory in South Africa. Naledi wants to observe a distant supernova to gather data for her research. The telescope is pointed at the coordinates of the supernova, ready for observation. A minor earthquake occurs, causing the telescope to shift its position slightly. Naledi does not notice the earthquake and its effect on the telescope. Question: Does Naledi believe the telescope is aimed at the correct location or has shifted due to the earthquake? Choose one of the following: a) Naledi believes the telescope is aimed at the correct location. b) Naledi believes the telescope has shifted due to the earthquake. Correct Answer: a) Unintervened: b) Naledi believes the telescope has shifted due to the earthquake. Intervened: a) Naledi believes the telescope is aimed at the correct location.</p><p>Story: Emeka is a skilled fisherman in a small Nigerian village. He wants to catch fish to feed his family and sell at the market. Emeka prepares his fishing net, which appears to be strong and without any holes. However, while Emeka is not looking, a mischievous child cuts a large hole in the net with a knife. Emeka does not see the child cutting the hole in the fishing net. Question: Does Emeka believe the fishing net is strong and without holes, or that it has a large hole in it? Choose one of the following: a) Emeka believes the fishing net is strong and without holes. Story: Kwame is a skilled woodcarver in a small village in Ghana. Kwame wants to create a beautiful wooden sculpture of an elephant for his friend's birthday. He selects a block of wood from his workshop that appears to be solid and strong. However, as he begins to carve, he discovers a hidden pocket of termites inside the wood, rendering it unsuitable for his project. Kwame does not notice the termites inside the block of wood. Question: Does Kwame believe the block of wood is sturdy and suitable for carving or that it contains termites? Choose one of the following: Story: Mei, a talented pastry chef from a small town in China, is preparing to bake a large cake for a local celebration. Mei wants to use a specific cake mold to create a unique and intricate design. Mei sees the cake mold hanging on the wall, clean and ready for use. However, during a brief power outage, a gust of wind blows through the kitchen, knocking the cake mold off the wall and denting it severely. Mei does not notice the dented cake mold on the floor. Question: Does Mei believe the cake mold is clean and ready for use or severely dented and unsuitable for use? Choose one of the following: Story: Mei is a dedicated librarian in a small town in China. She wants to organize a reading corner for children using a large, colorful rug. Mei sees the rug rolled up in a storage room, appearing to be in good condition. However, when Mei is not looking, a leak in the storage room ceiling drips water onto the rug, causing it to become soaked and damp. Mei does not notice the dampness of the rug and the leak in the ceiling. Question: Does Mei believe the rug is in good condition or damp and soaked? Choose one of the following: Story: Lila is a talented violinist who lives in a bustling city in India. Today, she has an important audition for a renowned symphony orchestra. Lila picks up her violin case, which she assumes contains her valuable violin. However, her younger brother, who was playing around earlier, accidentally swapped her violin case with his identical-looking case containing a beginner's violin. Lila does not notice the swapped violin cases. Question: Does Lila believe the violin case contains her valuable violin or a beginner's violin? Choose one of the following: Story: Amaury is a baker in a small village in France. Amaury wants to make pain aux raisins, a pastry filled with raisins and custard, for the customers visiting his bakery. Amaury takes a jar of raisins from the pantry to add to the pastry dough. His assistant, while tidying the pantry, accidentally replaces the raisin jar with a jar containing sultanas without realizing the difference. Amaury notices the jar swap. Question: Does Amaury believe the jar contains raisins or sultanas? Choose one of the following: a) Amaury believes the jar contains sultanas. b) Amaury believes the jar contains raisins. Correct Answer: a) Unintervened: b) Amaury believes the jar contains raisins. Intervened: a) Amaury believes the jar contains sultanas.</p><p>Story: Amara is a sculptor in a small town in Greece. She wants to carve a statue of Aphrodite using a large piece of marble. Amara selects a slab of marble from her workshop, which she thinks is free from cracks and imperfections. However, a hairline crack is present in the marble slab, which goes unnoticed by her. Amara discovers the hairline crack in the marble slab. Question: Does Amara believe the marble slab is free from cracks or has a hairline crack? Choose one of the following: a) Amara believes the marble slab has a hairline crack. b) Amara believes the marble slab is free from cracks. Correct Answer: a) Unintervened: b) Amara believes the marble slab is free from cracks. Intervened: a) Amara believes the marble slab has a hairline crack.</p><p>Changed to Incorrect Answer: 16/100</p><p>Story: Abhay is a young farmer in a small Indian village. He wants to water his crops with the water stored in a large clay pot. Abhay checks the water level and sees that the pot is full. Unbeknownst to him, a hole in the bottom of the pot has caused the water to leak out, leaving the pot empty. Abhay notices the hole and the water leaking out. Question: Does Abhay believe the pot is full of water or empty? Choose one of the following: Story: Hiroshi is a fisherman in a small coastal village in Japan. Hiroshi wants to catch some fish to provide dinner for his family. Hiroshi checks the weather forecast and sees that it will be sunny throughout the day. Suddenly, a heavy rainstorm moves in, darkening the sky and causing strong waves. Hiroshi notices the rainstorm approaching. Question: Does Hiroshi believe the weather will be sunny or does he expect a rainstorm? Choose one of the following: a) Hiroshi believes the weather will be sunny all day. b) Hiroshi believes there will be a rainstorm. Correct Answer: b) Unintervened: b) Hiroshi believes there will be a rainstorm. Intervened: a) Hiroshi believes the weather will be sunny all day.</p><p>Story: Cheng is a teacher in a rural Chinese village. Cheng wants to use a projector to show a documentary about Chinese history to his students. The projector is plugged in and turned on, as Cheng has prepared it beforehand. As the wind blows outside, the power goes out, causing the projector to turn off. Cheng notices the power outage. Question: Does Cheng believe the projector is ready to use or turned off? Choose one of the following: a) Cheng believes the projector is ready to use. b) Cheng believes the projector is turned off. Correct Answer: b) Unintervened: b) Cheng believes the projector is turned off. Intervened: a) Cheng believes the projector is ready to use.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 2 .</head><label>2</label><figDesc>Figure 2. Probe accuracies based on the attention head activations in all layers of Mistral-7B. (A) Belief status estimation for oracle using logistic regression (binary). (B) Belief status estimation for protagonist using logistic regression (binary). (C) Joint belief status estimation for both agents using multinomial logistic regression (quaternary).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 .</head><label>3</label><figDesc>Figure3. Illustration of linear separability of the belief representations. We show visual explanations for typical representation spaces: In (A), oracle belief status can be precisely estimated with a linear model, while protagonist cannot. The red and blue lines represent linear decision boundaries for oracle and protagonist, respectively; In (B), the belief statuses of both oracle and protagonist can be accurately modeled using linear models; (C) further shows the decision boundaries for joint belief status estimation using multinomial linear regression model, with arrows indicating the probing weight directions for each class.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 5 .</head><label>5</label><figDesc>Figure 5. (Left) Question prompt of the False Belief condition for the Forward Belief task. The story background is omitted for simplicity. (Right) Changes of next-token probability with regard to different intervention strength α on Mistral-7B.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>ForwardFigure 6 .</head><label>6</label><figDesc>Figure 6. Pairwise comparisons of multinomial probing results on Mistral-7B. Each point represents a specific attention head. The point position denotes its probe accuracies in the two tasks, and point color denotes the cosine similarity between the (+ TpFo) probe directions of the two tasks.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 7 .</head><label>7</label><figDesc>Figure 7. Different social reasoning tasks and the underlying causal graph.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Story:Figure 9 .Figure 10 .</head><label>910</label><figDesc>Figure9. Example case of representation probing for the Forward Action task. Left: a "True Belief" story where the protagonist shares the same belief with oracle. Right: a "False belief" story where the protagonist has different belief with oracle. For both stories, we concatenate them with the two actions respectively and directly feed to the model. The ground-truth action label from the protagonist's perspective yp and the oracle's perspective yo can then be decided accordingly.</figDesc><graphic coords="12,413.28,321.82,176.35,124.84" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Figure 11 .</head><label>11</label><figDesc>Figure11. Probe accuracies on different tasks based on the attention head activations in all layers of Mistral-7B. (A) Belief status estimation for oracle using logistic regression (binary). (B) Belief status estimation for protagonist using logistic regression (binary). (C) Joint belief status estimation for both agents using multinomial logistic regression (quaternary).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Figure 12 .</head><label>12</label><figDesc>Figure12. Probe accuracies on different tasks based on the attention head activations in all layers of DeepSeek-7B. (A) Belief status estimation for oracle using logistic regression (binary). (B) Belief status estimation for protagonist using logistic regression (binary). (C) Joint belief status estimation for both agents using multinomial logistic regression (quaternary).</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 13 .</head><label>13</label><figDesc>Figure 13. Non-linear probe accuracies on different tasks based on the attention head activations in all layers of Mistral-7B. (A) Belief status estimation for oracle using binary classification. (B) Belief status estimation for protagonist using binary classification. (C) Joint belief status estimation for both agents using quaternary classification.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Figure 14 .</head><label>14</label><figDesc>Figure 14. Magnitudes of gradients on the token embeddings with respect to the projection of attention head activations over the corresponding joint belief directions. Each line represents a specific attention head in Mistral-7B.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Figure 15 .</head><label>15</label><figDesc>Figure 15. Magnitudes of gradients on the token embeddings with respect to the projection of attention head activations over the corresponding joint belief directions. Each line represents a specific attention head in Mistral-7B.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>E. 1 .</head><label>1</label><figDesc> False Belief    Changed to Correct Answer: 33/100 Story: Ravi is a farmer in a small Indian village, tending to his mango orchard. Ravi wants to harvest ripe mangoes to sell at the local market. He notices a mango tree with a heavy branch laden with ripe mangoes. A mischievous monkey comes along and eats all the ripe mangoes on the branch while Ravi is gathering his harvesting tools. Ravi does not see the monkey eating the ripe mangoes. Question: Does Ravi believe the branch has ripe mangoes or no ripe mangoes? Choose one of the following: a) Ravi believes the branch has ripe mangoes. b) Ravi believes the branch has no ripe mangoes. Correct Answer: a) Unintervened: b) Ravi believes the branch has no ripe mangoes. Intervened: a. Ravi believes the branch has ripe mangoes. Story: Aniket is a marine biologist studying coral reefs off the coast of India. Aniket needs to collect samples of coral to analyze the effects of climate change on the reef. Aniket spots a healthy-looking coral formation in a specific area of the reef. A sudden wave surge stirs up sediment, covering the once healthy coral formation and causing it to become damaged. Aniket does not notice the wave surge or the sediment covering the coral. Question: Does Aniket believe the coral formation is healthy or damaged? Choose one of the following: a) Aniket believes the coral formation is damaged. b) Aniket believes the coral formation is healthy. Correct Answer: b) Unintervened: a) Aniket believes the coral formation is damaged. (The context states that the cor Intervened: b) Aniket believes the coral formation is healthy. (at the time of reading theStory: Juan is a young chef in a small Mexican town. He wants to make a delicious salsa for the upcoming town festival. Juan buys fresh tomatoes from the market, which he believes are ripe and perfect for the salsa. While Juan is away from his kitchen, a mischievous cat knocks over the bag of tomatoes, crushing them and making them unsuitable for the salsa. Juan does not notice the crushed tomatoes on the floor. Question: Does Juan believe the tomatoes are ripe and perfect or crushed and unsuitable? Choose one of the following: a) Juan believes the tomatoes are ripe and perfect. b) Juan believes the tomatoes are crushed and unsuitable. Correct Answer: a) Unintervened: b) Juan believes the tomatoes are ripe and perfect, but they are actually crushed and un Intervened: a) Juan believes the tomatoes are ripe and perfect.Story: Cheng is a teacher in a rural Chinese village. Cheng wants to use a projector to show a documentary about Chinese history to his students. The projector is plugged in and turned on, as Cheng has prepared it beforehand. As the wind blows outside, the power goes out, causing the projector to turn off. Cheng does not notice the power outage. Question: Does Cheng believe the projector is ready to use or turned off? Choose one of the following: a) Cheng believes the projector is turned off. b) Cheng believes the projector is ready to use. Correct Answer: b) Unintervened: a) Cheng believes the projector is ready to use. (However, it is actually turned Intervened: Cheng believes the projector is ready to use. (before the power outage) Story: Isabela is a baker in a small Argentinian town known for its delicious pastries. Isabela wants to make a batch of alfajores, a traditional Argentinian dessert, for her bakery's customers. Isabela gets a bag of powdered sugar from her pantry to dust the alfajores. Her assistant, who was organizing the pantry earlier, accidentally placed a bag of flour in the powdered sugar's spot, and Isabela unknowingly grabs the bag of flour instead. Isabela does not notice the flour. Question: Does Isabela believe the bag she took from the pantry contains powdered sugar or flour? Choose one of the following: a) Isabela believes the bag she took from the pantry contains powdered sugar. b) Isabela believes the bag she took from the pantry contains flour. Correct Answer: a) Unintervened: b) Isabela believes the bag she took from the pantry contains flour. Intervened: a) Isabela believes the bag she took from the pantry contains powdered sugar.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_12"><head></head><label></label><figDesc>a) Mei believes the oyster she spotted is empty. b) Mei believes the oyster she spotted contains a pearl. Correct Answer: b) Unintervened: a) Mei believes the oyster she spotted[PAD]it;s empty. Intervened: b) Mei believes the oyster she spotted contains a pearl.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_13"><head></head><label></label><figDesc>a) Fatima believes her kiln is unexpectedly hot. b) Fatima believes her kiln is off and cool. Correct Answer: b) Unintervened: a) Fatima believes her kiln is unexpectedly hot. Intervened: b) Fatima believes her kiln is off and cool. Story: Aiko is a florist in a small Japanese town. Aiko wants to create an exquisite flower arrangement for a customer's wedding. Aiko sees a vase filled with fresh, colorful flowers in her shop. Overnight, a sudden drop in temperature causes the flowers in the vase to wilt. Aiko does not notice the wilted flowers in the vase. Question: Does Aiko believe the vase contains fresh, colorful flowers or wilted flowers? Choose one of the following: a) Aiko believes the vase contains fresh, colorful flowers. b) Aiko believes the vase contains wilted flowers. Correct Answer: a) Unintervened: b) Aiko believes the vase contains wilted flowers. (She did not notice the Intervened: Aiko believes the vase contains fresh, colorful flowers. (At the time of reading the Story: Carlos is a farmer in a small village in the Andes. Carlos wants to collect fresh eggs from his chickens to sell at the local market. The nest appears to be full of eggs when Carlos checks it in the morning. A crafty fox sneaks into the chicken coop and steals all the eggs from the nest. Carlos does not see the fox stealing the eggs. Question: Does Carlos believe the nest contains eggs or that the fox has stolen them? Choose one of the following: a) Carlos believes the fox has stolen the eggs. b) Carlos believes the nest contains eggs. Correct Answer: b) Unintervened: a) Carlos believes the nest contains eggs. Intervened: b) Carlos believes the nest contains eggs. (at the time of asking)Story: Amara is an artist living in a bustling city in Nigeria. She wants to create a beautiful painting for her friend's birthday present. She finds a smooth, flawless canvas in her art studio. Later, her mischievous little brother accidentally spills black paint all over the canvas, leaving it ruined. Amara does not discover the ruined canvas. Question: Does Amara believe the canvas is smooth and flawless or ruined with black paint? Choose one of the following: a) Amara believes the canvas is ruined with black paint. b) Amara believes the canvas is smooth and flawless. Correct Answer: b) Unintervened: a) Amara believes the canvas is smooth and flawless (but it is actually ruined). Intervened: Amara believes the canvas is smooth and flawless. (At the time of the story, she Story: Fatima is a talented artist living in a small Moroccan village. Fatima wants to create a beautiful painting to donate for the local charity auction. She has a brand-new set of high-quality paintbrushes in her studio. While she is away, her younger brother accidentally ruins the paintbrushes by using them for a school project with glue. Fatima does not notice the ruined paintbrushes. Question: Does Fatima believe she has high-quality paintbrushes or ruined paintbrushes in her studio? Choose one of the following: a) Fatima believes the paintbrushes are ruined. b) Fatima believes she has high-quality paintbrushes in her studio. Correct Answer: b) Unintervened: a) Fatima believes the paintbrushes are ruined. (The context states that the paintbr Intervened: b) Fatima believes she has high-quality paintbrushes in her studio. (At the Story: Fatima is an archaeologist working at an excavation site in Egypt. She wants to carefully remove an ancient artifact from the ground to study and preserve it. The artifact appears to be intact and in good condition. Suddenly, a sandstorm blows through the area, burying the artifact in sand and causing some damage to it. Fatima does not witness the sandstorm and its effect on the artifact. Question: Does Fatima believe the artifact is intact and in good condition or damaged by the sandstorm? Choose one of the following: a) Fatima believes the artifact is intact and in good condition. b) Fatima believes the artifact is damaged by the sandstorm. Correct Answer: a) Unintervened: b) Fatima believes the artifact is damaged by the sandstorm. Intervened: a. (Fatima believes the artifact is intact and in good condition.) Story: Juan is a gardener in a small village in Mexico, tending to a flower garden near the town plaza. Juan wants to water a specific flower bed to ensure its health and beauty. Juan sees that the garden hose is neatly coiled and ready for use. Unexpectedly, a group of children playing nearby accidentally puncture the hose with a sharp stick while running around. Juan does not see the children accidentally puncture the hose. Question: Does Juan believe the garden hose is in good condition and functional or punctured and non-functional? Choose one of the following: a) Juan believes the garden hose is in good condition and functional. b) Juan believes the garden hose is punctured and non-functional. Correct Answer: a) Unintervened: b) Juan believes the garden hose is punctured and non-functional. (Juan Intervened: a) Juan believes the garden hose is in good condition and functional. (At the moment,</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_14"><head></head><label></label><figDesc>b) Mei believes the tide is high at 3 AM. Correct Answer: a) Unintervened: b) Mei believes the tide is high at 3 AM (based on the actual situation). Intervened: Mei believes the tide is high at 5 AM. (This is what Mei currently believesStory: Fatima is an archaeologist working on a dig site in Egypt, searching for ancient artifacts. She wants to carefully excavate a small, fragile artifact she has discovered. Fatima observes that the soil around the artifact is soft and loose. Just as Fatima is about to begin excavating, a strong gust of wind blows through the site, hardening the soil around the artifact. Fatima does not notice the gust of wind or the change in the soil's condition. Question: Does Fatima believe the soil around the artifact is soft and loose or hardened? Choose one of the following: a) Fatima believes the soil around the artifact has hardened. b) Fatima believes the soil around the artifact is soft and loose. Correct Answer: b) Unintervened: a) Fatima believes the soil around the artifact has hardened. Intervened: b) Fatima believes the soil around the artifact is soft and loose.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_15"><head></head><label></label><figDesc>Question: Does Hiroshi believe the fishing nets are in excellent condition or torn by the dolphins? Choose one of the following: a) Hiroshi believes the fishing nets are in excellent condition. b) Hiroshi believes the fishing nets are torn by the dolphins. Correct Answer: a) Unintervened: b) Hiroshi is unaware that the fishing nets are torn by the dolph Intervened: a) Hiroshi believes the fishing nets are in excellent condition.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_16"><head></head><label></label><figDesc>a) Azola believes the package contains a hand-knit scarf. b) Azola believes the package contains the book she ordered. Correct Answer: a) Unintervened: a) Azola believes the package contains a hand-knit scarf. Intervened: a (This question is a part of a multiple-choice quiz. Since there is Story: Ravi is a farmer in a small Indian village, tending to his mango orchard. Ravi wants to harvest ripe mangoes to sell at the local market. He notices a mango tree with a heavy branch laden with ripe mangoes. A mischievous monkey comes along and eats all the ripe mangoes on the branch while Ravi is gathering his harvesting tools. Ravi sees the monkey eating the ripe mangoes. Question: Does Ravi believe the branch has ripe mangoes or no ripe mangoes? Choose one of the following: a) Ravi believes the branch has no ripe mangoes. b) Ravi believes the branch has ripe mangoes. Correct Answer: a) Unintervened: a) Ravi believes the branch has no ripe mangoes. Intervened: Ravi believes the branch has ripe mangoes. (At the moment, he still believes Story: Farhan is a street food vendor in a bustling market in Istanbul. Farhan wants to prepare a delicious chicken shawarma wrap for a customer who asked for extra garlic sauce. Farhan takes a bottle of garlic sauce from the shelf and pours it onto the shawarma wrap. His assistant, who is busy preparing a different wrap, accidentally swaps the garlic sauce with a bottle of hot sauce, and Farhan unknowingly pours the hot sauce onto the shawarma wrap. Farhan notices the sauce swap. Question: Does Farhan believe the sauce he poured is garlic sauce or hot sauce? Choose one of the following: a) Farhan believes the sauce he poured is hot sauce. b) Farhan believes the sauce he poured is garlic sauce. Correct Answer: a) Unintervened: a) Farhan believes the sauce he poured is hot sauce. Intervened: b) Farhan believes the sauce he poured is garlic sauce. (At the time of pouring Story: Chi is a fisherman living on a small island in the South Pacific. Chi wants to go on a fishing trip to catch some fish for his family's dinner. The sea appears calm and inviting. Suddenly, a strong storm rolls in, causing the sea to become rough and dangerous. Chi notices the storm and the change in the sea. Question: Does Chi believe the sea is calm and inviting or rough and dangerous? Choose one of the following: a) Chi believes the sea is rough and dangerous. b) Chi believes the sea is calm and inviting. Correct Answer: a) Unintervened: a) Chi believes the sea is rough and dangerous. Intervened: a -Story: Chi is a fisherman living on a small island in</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_17"><head></head><label></label><figDesc>a) Naledi believes the bottle she took from the cupboard contains water. b) Naledi believes the bottle she took from the cupboard contains vinegar. Correct Answer: a) Unintervened: a) Naledi believes the bottle she took from the cupboard contains water. Intervened: b) Naledi believes the bottle she took from the cupboard contains vinegar. (At E.3. DeepSeek-7B on Forward Belief, False Belief Changed to Correct Answer: 32/100Story: Zara is attending an art exhibition at a local gallery in her town. Zara wants to learn more about a particular abstract painting she admires. The label next to the artwork states that the painting is the work of a famous artist, and Zara reads the label carefully. A gallery staff member, realizing there was a mix-up, changes the label with the correct information attributing the painting to an emerging artist instead. Zara does not read the updated label. Question: Does Zara believe the painting is the work of a famous artist or an emerging artist? Choose one of the following: a) Zara believes the painting is the work of a famous artist. b) Zara believes the painting is the work of an emerging artist. Correct Answer: a) Unintervened: b) Zara believes the painting is the work of an emerging artist. Intervened: a) Zara believes the painting is the work of a famous artist.Story: Azola is a teacher at a small school in rural China. She wants to surprise her students with a new book for the school library. Azola got a notification from Amazon stating that the package containing the book was left at her doorstep. A gust of wind blows the package off her doorstep, and a neighbor replaces it with a different package containing a hand-knit scarf. Azola does not witness the package swap. Question: Does Azola believe the package contains the book she ordered or a hand-knit scarf? Choose one of the following: a) Azola believes the package contains the book she ordered. b) Azola believes the package contains a hand-knit scarf. Correct Answer: a) Unintervened: b) Azola believes the package contains a hand-knit scarf. Intervened: a) Azola believes the package contains the book she ordered.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_18"><head></head><label></label><figDesc>a) Ravi believes the branch has ripe mangoes. b) Ravi believes the branch has no ripe mangoes. Correct Answer: a) Unintervened: b) Ravi believes the branch has no ripe mangoes. Intervened: a) Ravi believes the branch has ripe mangoes. Story: Kael is a farmer in a remote village in the Andes. Kael wants to plant a new crop of high-altitude potatoes in one of his terraced fields. The soil in the field appears rich and well-fertilized. Overnight, heavy rainfall washes away much of the fertile soil, leaving mostly rocky dirt behind. Kael does not notice the change in the soil after the rainfall. Question: Does Kael believe the soil is rich and well-fertilized or mostly rocky dirt? Choose one of the following: a) Kael believes the soil is rich and well-fertilized. b) Kael believes the soil is mostly rocky dirt. Correct Answer: a) Unintervened: b) Kael believes the soil is mostly rocky dirt. Intervened: a) Kael believes the soil is rich and well-fertilized.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_19"><head></head><label></label><figDesc>a) Juan believes the tomatoes are ripe and perfect. b) Juan believes the tomatoes are crushed and unsuitable. Correct Answer: a) Unintervened: b) Juan believes the tomatoes are crushed and unsuitable. Intervened: a) Juan believes the tomatoes are ripe and perfect.Story: Isabela is a baker in a small Argentinian town known for its delicious pastries. Isabela wants to make a batch of alfajores, a traditional Argentinian dessert, for her bakery's customers. Isabela gets a bag of powdered sugar from her pantry to dust the alfajores. Her assistant, who was organizing the pantry earlier, accidentally placed a bag of flour in the powdered sugar's spot, and Isabela unknowingly grabs the bag of flour instead. Isabela does not notice the flour. Question: Does Isabela believe the bag she took from the pantry contains powdered sugar or flour? Choose one of the following: a) Isabela believes the bag she took from the pantry contains powdered sugar. b) Isabela believes the bag she took from the pantry contains flour. Correct Answer: a) Unintervened: b) Isabela believes the bag she took from the pantry contains flour. Intervened: a) Isabela believes the bag she took from the pantry contains powdered sugar.Story: Chi is a fisherman living on a small island in the South Pacific. Chi wants to go on a fishing trip to catch some fish for his family's dinner. The sea appears calm and inviting. Suddenly, a strong storm rolls in, causing the sea to become rough and dangerous. Chi does not notice the storm and the change in the sea. Question: Does Chi believe the sea is calm and inviting or rough and dangerous? Choose one of the following: a) Chi believes the sea is calm and inviting. b) Chi believes the sea is rough and dangerous. Correct Answer: a) Unintervened: b) Chi believes the sea is rough and dangerous. Intervened: a)</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_20"><head></head><label></label><figDesc>b) Leilani believes the ti leaf skirt is wet and wilted. Correct Answer: a) Unintervened: b) Leilani believes the ti leaf skirt is wet and wilted. Intervened: a) Leilani believes the ti leaf skirt is in good condition. Story: Isabella is a skilled baker in a small Italian town. She wants to bake a fresh batch of her famous ciabatta bread for the local market. Isabella has prepared the dough earlier and left it to rise in a warm spot in her kitchen. A curious cat enters the kitchen and jumps onto the counter, accidentally flattening the dough. Isabella does not see the cat and the flattened dough. Question: Does Isabella believe the dough has risen enough or has it been flattened? Choose one of the following: a) Isabella believes the dough has risen enough. b) Isabella believes the dough has been flattened. Correct Answer: a) Unintervened: b) Isabella believes the dough has been flattened. Intervened: a) Isabella believes the dough has risen enough.Story: Kalyani is a traditional Indian dancer in a temple in Kerala, India. Kalyani wants to perform a special dance for the upcoming festival to pay homage to the temple's deity. The temple floor is clean and free of any obstacles, as Kalyani has prepared the space for her dance practice. An accidental spill of oil from a temple lamp causes a slippery patch on the floor. Kalyani does not notice the oil spill. Question: Does Kalyani believe the temple floor is clean and perfect for dancing or slippery due to the oil spill? Choose one of the following: a) Kalyani believes the temple floor is clean and perfect for dancing. b) Kalyani believes the floor is slippery due to the oil spill. Correct Answer: a) Unintervened: b) Kalyani believes the floor is slippery due to the oil spill. Intervened: a) Kalyani believes the temple floor is clean and perfect for dancing.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_21"><head></head><label></label><figDesc>b) Emeka believes that the fishing net has a large hole in it. Correct Answer: a) Unintervened: b) Emeka believes that the fishing net has a large hole in it. Intervened: a) Emeka believes the fishing net is strong and without holes.Story: Hiroshi is a fisherman in a small coastal village in Japan. Hiroshi wishes to catch enough fish to feed his family and sell the surplus at the local market. The fishing nets are in excellent condition, ready to be cast into the sea. However, a curious pod of dolphins swims by and accidentally tears the nets with their sharp dorsal fins. Hiroshi does not see the dolphins or the damage they caused to the nets. Question: Does Hiroshi believe the fishing nets are in excellent condition or torn by the dolphins? Choose one of the following: a) Hiroshi believes the fishing nets are in excellent condition. b) Hiroshi believes the fishing nets are torn by the dolphins. Correct Answer: a) Unintervened: b) Hiroshi believes the fishing nets are torn by the dolphins. Intervened: a) Hiroshi believes the fishing nets are in excellent condition.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_22"><head></head><label></label><figDesc>a) Kwame believes the block of wood contains termites. b) Kwame believes the block of wood is sturdy and suitable for carving. Correct Answer: b) Unintervened: a) Kwame believes the block of wood contains termites. Intervened: b)Story: Naledi is a talented South African chef preparing a traditional braai for her friends and family. Naledi wants to make a delicious marinade for the meats and vegetables to be grilled. She takes a bottle of vinegar from the cupboard to mix with other ingredients for the marinade. Her cousin, who was helping in the kitchen earlier, accidentally placed a bottle of water in the vinegar's spot, and Naledi unknowingly grabs the bottle of water instead. Naledi does not notice the water. Question: Does Naledi believe the bottle she took from the cupboard contains vinegar or water? Choose one of the following: a) Naledi believes the bottle she took from the cupboard contains vinegar. b) Naledi believes the bottle she took from the cupboard contains water. Correct Answer: a) Unintervened: b) Naledi believes the bottle she took from the cupboard contains water. Intervened: a) Naledi believes the bottle she took from the cupboard contains vinegar.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_23"><head></head><label></label><figDesc>a) Mei believes the cake mold is clean and ready for use. b) Mei believes the cake mold is severely dented and unsuitable for use. Correct Answer: a) Unintervened: b) Mei believes the cake mold is severely dented and unsuitable for use. Intervened: a) Mei believes the cake mold is clean and ready for use. Changed to Incorrect Answer: 5/100 Story: Aniket is a marine biologist studying coral reefs off the coast of India. Aniket needs to collect samples of coral to analyze the effects of climate change on the reef. Aniket spots a healthy-looking coral formation in a specific area of the reef. A sudden wave surge stirs up sediment, covering the once healthy coral formation and causing it to become damaged. Aniket does not notice the wave surge or the sediment covering the coral. Question: Does Aniket believe the coral formation is healthy or damaged? Choose one of the following: a) Aniket believes the coral formation is damaged. b) Aniket believes the coral formation is healthy. Correct Answer: b) Unintervened: b) Aniket believes the coral formation is healthy. Intervened: a) Aniket believes the coral formation is damaged. Story: Fatima is an archaeologist working on a dig site in Egypt. Fatima hopes to find an ancient artifact that could shed light on an important historical event. During her excavation, Fatima discovers a clay tablet with faded inscriptions that she believes might be valuable. As a sandstorm approaches, the strong winds blow sand onto the tablet, erasing the remaining inscriptions and making the tablet indistinguishable from any other piece of clay. Fatima does not notice the sandstorm or the damage to the clay tablet. Question: Does Fatima believe the clay tablet has important historical inscriptions or has become indistinguishable from any other piece of clay? Choose one of the following: a) Fatima believes the clay tablet has become indistinguishable from any other piece of clay. b) Fatima believes the clay tablet has important historical inscriptions. Correct Answer: b) Unintervened: b) Fatima believes the clay tablet has important historical inscriptions. Intervened: a) Fatima believes the clay tablet has become indistinguishable from any other piece of clay.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_24"><head></head><label></label><figDesc>a) Mei believes the rug is damp and soaked. b) Mei believes the rug is in good condition. Correct Answer: b) Unintervened: b) Mei believes the rug is in good condition. Intervened: a) Mei believes the rug is damp and soaked.Story: Olabisi is a beekeeper in a small town in Nigeria. Olabisi wants to collect honey from the beehives to sell at the local market. The bees appear to be calm and undisturbed as they go about their daily activities. Out of nowhere, a group of children playing nearby accidentally throw a ball into the beehives, agitating the bees and making them aggressive. Olabisi does not notice the children's ball hitting the beehives. Question: Does Olabisi believe the bees are calm or agitated and aggressive? Choose one of the following: a) Olabisi believes the bees are agitated and aggressive. b) Olabisi believes the bees are calm. Correct Answer: b) Unintervened: b) Olabisi believes the bees are calm. Intervened: a) Olabisi believes the bees are agitated and aggressive.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_25"><head></head><label></label><figDesc>a) Lila believes the violin case contains a beginner's violin. b) Lila believes the violin case contains her valuable violin. Correct Answer: b) Unintervened: b) Lila believes the violin case contains her valuable violin. Intervened: a) Lila believes the violin case contains a beginner's violin.E.4. DeepSeek-7B on Forward Belief, True BeliefChanged to Correct Answer: 6/100 Story: Noor is working as a barista at a busy coffee shop. Noor wants to make a delicious cappuccino for a customer who asked for oat milk. Noor grabs a milk pitcher and fills it with oat milk. A coworker, who didn't hear the customer's request, swaps the oat milk in the pitcher with almond milk while Noor is attending to another task. Noor sees her coworker swapping the milk. Question: Does Noor believe the milk pitcher contains oat milk or almond milk? Choose one of the following: a) Noor believes the milk pitcher contains almond milk. b) Noor believes the milk pitcher contains oat milk. Correct Answer: a) Unintervened: b) Noor believes the milk pitcher contains oat milk. Intervened: a) Noor believes the milk pitcher contains almond milk.Story: Zara is attending an art exhibition at a local gallery in her town. Zara wants to learn more about a particular abstract painting she admires. The label next to the artwork states that the painting is the work of a famous artist, and Zara reads the label carefully. A gallery staff member, realizing there was a mix-up, changes the label with the correct information attributing the painting to an emerging artist instead. Zara reads the updated label carefully. Question: Does Zara believe the painting is the work of a famous artist or an emerging artist? Choose one of the following: a) Zara believes the painting is the work of an emerging artist. b) Zara believes the painting is the work of a famous artist. Correct Answer: a) Unintervened: b) Zara believes the painting is the work of a famous artist. Intervened: a) Zara believes the painting is the work of an emerging artist.Story: Farhan is a street food vendor in a bustling market in Istanbul. Farhan wants to prepare a delicious chicken shawarma wrap for a customer who asked for extra garlic sauce. Farhan takes a bottle of garlic sauce from the shelf and pours it onto the shawarma wrap. His assistant, who is busy preparing a different wrap, accidentally swaps the garlic sauce with a bottle of hot sauce, and Farhan unknowingly pours the hot sauce onto the shawarma wrap. Farhan notices the sauce swap. Question: Does Farhan believe the sauce he poured is garlic sauce or hot sauce? Choose one of the following: a) Farhan believes the sauce he poured is hot sauce. b) Farhan believes the sauce he poured is garlic sauce. Correct Answer: a) Unintervened: b) Farhan believes the sauce he poured is garlic sauce. Intervened: a) Farhan believes the sauce he poured is hot sauce.Story: Isabela is a baker in a small Argentinian town known for its delicious pastries. Isabela wants to make a batch of alfajores, a traditional Argentinian dessert, for her bakery's customers. Isabela gets a bag of powdered sugar from her pantry to dust the alfajores. Her assistant, who was organizing the pantry earlier, accidentally placed a bag of flour in the powdered sugar's spot, and Isabela unknowingly grabs the bag of flour instead. Isabela notices the flour and puts it back. Question: Does Isabela believe the bag she took from the pantry contains powdered sugar or flour? Choose one of the following: a) Isabela believes the bag she took from the pantry contains flour. b) Isabela believes the bag she took from the pantry contains powdered sugar. Correct Answer: a) Unintervened: b) Isabela believes the bag she took from the pantry contains powdered sugar. Intervened: a) Isabela believes the bag she took from the pantry contains flour.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_26"><head></head><label></label><figDesc>a) Abhay believes the pot is full of water. b) Abhay believes the pot is empty. Correct Answer: b) Unintervened: b) Abhay believes the pot is empty. Intervened: a) Abhay believes the pot is full of water.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 .</head><label>1</label><figDesc>Model performance comparison on the BigToM benchmark. TB = True Belief. FB = False Belief.</figDesc><table><row><cell>Model</cell><cell></cell><cell>Forward Belief</cell><cell></cell><cell></cell><cell>Forward Action</cell><cell></cell><cell></cell><cell>Backward Belief</cell><cell></cell></row><row><cell></cell><cell>TB</cell><cell>FB</cell><cell>Both</cell><cell>TB</cell><cell>FB</cell><cell>Both</cell><cell>TB</cell><cell>FB</cell><cell>Both</cell></row><row><cell>LLaMA-65b</cell><cell>0.68</cell><cell>0.62</cell><cell>0.51</cell><cell>0.82</cell><cell>0.47</cell><cell>0.45</cell><cell>0.56</cell><cell>0.53</cell><cell>0.40</cell></row><row><cell>text-davinci-003</cell><cell>0.82</cell><cell>0.82</cell><cell>0.65</cell><cell>0.96</cell><cell>0.27</cell><cell>0.25</cell><cell>0.54</cell><cell>0.59</cell><cell>0.24</cell></row><row><cell>Claude</cell><cell>0.97</cell><cell>0.82</cell><cell>0.81</cell><cell>0.98</cell><cell>0.28</cell><cell>0.27</cell><cell>0.79</cell><cell>0.48</cell><cell>0.33</cell></row><row><cell>Claude-2</cell><cell>0.88</cell><cell>0.75</cell><cell>0.68</cell><cell>0.95</cell><cell>0.36</cell><cell>0.34</cell><cell>0.75</cell><cell>0.50</cell><cell>0.39</cell></row><row><cell>GPT-3.5</cell><cell>0.81</cell><cell>0.69</cell><cell>0.53</cell><cell>0.97</cell><cell>0.19</cell><cell>0.17</cell><cell>0.55</cell><cell>0.45</cell><cell>0.18</cell></row><row><cell>GPT-4</cell><cell>0.99</cell><cell>0.98</cell><cell>0.97</cell><cell>0.98</cell><cell>0.81</cell><cell>0.79</cell><cell>0.86</cell><cell>0.53</cell><cell>0.40</cell></row><row><cell>Mistral-7B (baseline)</cell><cell>0.95</cell><cell>0.33</cell><cell>0.31</cell><cell>0.92</cell><cell>0.30</cell><cell>0.26</cell><cell>0.91</cell><cell>0.22</cell><cell>0.16</cell></row><row><cell>Mistral-7B (+ random)</cell><cell>0.97</cell><cell>0.33</cell><cell>0.32</cell><cell>0.92</cell><cell>0.29</cell><cell>0.25</cell><cell>0.91</cell><cell>0.19</cell><cell>0.14</cell></row><row><cell>Mistral-7B (+ protagonist)</cell><cell>0.96</cell><cell>0.30</cell><cell>0.29</cell><cell>0.91</cell><cell>0.30</cell><cell>0.25</cell><cell>0.90</cell><cell>0.22</cell><cell>0.15</cell></row><row><cell>Mistral-7B (-oracle)</cell><cell>0.84</cell><cell>0.49</cell><cell>0.41</cell><cell>0.93</cell><cell>0.29</cell><cell>0.25</cell><cell>0.50</cell><cell>0.37</cell><cell>0.26</cell></row><row><cell>Mistral-7B (+ TpFo)</cell><cell>0.85</cell><cell>0.66</cell><cell>0.58</cell><cell>0.88</cell><cell>0.41</cell><cell>0.31</cell><cell>0.61</cell><cell>0.44</cell><cell>0.41</cell></row><row><cell>DeepSeek-7B (baseline)</cell><cell>0.73</cell><cell>0.47</cell><cell>0.37</cell><cell>0.77</cell><cell>0.48</cell><cell>0.31</cell><cell>0.64</cell><cell>0.50</cell><cell>0.29</cell></row><row><cell>DeepSeek-7B (+ random)</cell><cell>0.72</cell><cell>0.49</cell><cell>0.40</cell><cell>0.76</cell><cell>0.47</cell><cell>0.30</cell><cell>0.65</cell><cell>0.49</cell><cell>0.26</cell></row><row><cell>DeepSeek-7B (+ protagonist)</cell><cell>0.73</cell><cell>0.50</cell><cell>0.42</cell><cell>0.76</cell><cell>0.49</cell><cell>0.31</cell><cell>0.65</cell><cell>0.52</cell><cell>0.27</cell></row><row><cell>DeepSeek-7B (-oracle)</cell><cell>0.65</cell><cell>0.46</cell><cell>0.44</cell><cell>0.73</cell><cell>0.57</cell><cell>0.34</cell><cell>0.65</cell><cell>0.48</cell><cell>0.28</cell></row><row><cell>DeepSeek-7B (+ TpFo)</cell><cell>0.63</cell><cell>0.74</cell><cell>0.38</cell><cell>0.75</cell><cell>0.60</cell><cell>0.39</cell><cell>0.54</cell><cell>0.66</cell><cell>0.31</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table 2 .</head><label>2</label><figDesc>Cross-task intervention results on Mistral-7B. We perform activation intervention towards the joint belief directions identified in the Forward Belief task and evaluate the other two tasks.</figDesc><table><row><cell>Model</cell><cell cols="3">Forward Action</cell><cell cols="3">Backward Belief</cell></row><row><cell></cell><cell>TB</cell><cell>FB</cell><cell>Both</cell><cell>TB</cell><cell>FB</cell><cell>Both</cell></row><row><cell>Mistral-7B</cell><cell>0.92</cell><cell>0.30</cell><cell>0.26</cell><cell>0.91</cell><cell>0.22</cell><cell>0.16</cell></row><row><cell>+ random</cell><cell>0.93</cell><cell>0.31</cell><cell>0.26</cell><cell>0.90</cell><cell>0.22</cell><cell>0.16</cell></row><row><cell>+ transferred</cell><cell>0.90</cell><cell>0.40</cell><cell>0.33</cell><cell>0.73</cell><cell>0.38</cell><cell>0.22</cell></row><row><cell>DeepSeek-7B</cell><cell>0.77</cell><cell>0.48</cell><cell>0.31</cell><cell>0.64</cell><cell>0.50</cell><cell>0.29</cell></row><row><cell>+ random</cell><cell>0.76</cell><cell>0.42</cell><cell>0.29</cell><cell>0.65</cell><cell>0.47</cell><cell>0.32</cell></row><row><cell>+ transferred</cell><cell>0.75</cell><cell>0.57</cell><cell>0.37</cell><cell>0.57</cell><cell>0.57</cell><cell>0.28</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head></head><label></label><figDesc>Wang, B., Chen, W., Pei, H., Xie, C., Kang, M., Zhang, C., Xu, C., Xiong, Z., Dutta, R., Schaeffer, R., et al. Decodingtrust: A comprehensive assessment of trustworthiness in gpt models. 2023.</figDesc><table /><note>Wang, Y., fangwei zhong, Xu, J., and Wang, Y. Tom2c:Target-oriented multi-agent communication and cooperation with theory of mind. In International Conference on Learning Representations, 2022. Wellman, H. M., Cross, D., and Watson, J. Meta-analysis of theory-of-mind development: The truth about false belief. Child development, 72(3):655-684, 2001. Wilf, A., Lee, S. S., Liang, P. P., and Morency, L.-P. Think twice: Perspective-taking improves large language models' theory-of-mind capabilities. arXiv preprint arXiv:2311.10227, 2023. Zhou, P., Madaan, A., Potharaju, S. P., Gupta, A., McKee, K. R., Holtzman, A., Pujara, J., Ren, X., Mishra, S., Nematzadeh, A., et al. How far are large language models from agents with theory-of-mind? arXiv preprint arXiv:2310.03051, 2023.</note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head></head><label></label><figDesc>b) Mei believes the cake mold is severely dented and unsuitable for use. : Noor is working as a barista at a busy coffee shop. Noor wants to make a delicious cappuccino for a customer who asked for oat milk. Noor grabs a milk pitcher and fills it with oat milk. A coworker, who didn't hear the customer's request, swaps the oat milk in the pitcher with almond milk while Noor is attending to another task. Noor sees her coworker swapping the milk. Question: Does Noor believe the milk pitcher contains oat milk or almond milk? Choose one of the following: a) Noor believes the milk pitcher contains almond milk. b) Noor believes the milk pitcher contains oat milk. This question is based on the context provided, and the context states that Noor Story: Azola is a teacher at a small school in rural China. She wants to surprise her students with a new book for the school library. Azola got a notification from Amazon stating that the package containing the book was left at her doorstep. A gust of wind blows the package off her doorstep, and a neighbor replaces it with a different package containing a hand-knit scarf. Azola witnesses the package swap. Question: Does Azola believe the package contains the book she ordered or a hand-knit scarf? Choose one of the following:</figDesc><table><row><cell>Correct Answer: a)</cell></row><row><cell>Unintervened: a) Noor believes the milk pitcher contains almond milk.</cell></row><row><cell>Intervened: a</cell></row><row><cell>(</cell></row><row><cell>Correct Answer: a)</cell></row><row><cell>Unintervened: b) Mei believes the cake mold is severely dented and unsuitable for use. (</cell></row><row><cell>Intervened: a) Mei believes the cake mold is clean and ready for use. (at the start of</cell></row><row><cell>Changed to Incorrect Answer: 0/100</cell></row><row><cell>E.2. Mistral-7B on Forward Belief, True Belief</cell></row><row><cell>Changed to Correct Answer: 0/100</cell></row><row><cell>Changed to Incorrect Answer: 10/100</cell></row></table><note>Story</note></figure>
+		</body>
+		<back>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title level="m" type="main">Understanding intermediate layers using linear classifier probes</title>
+		<author>
+			<persName><forename type="first">Alain</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Bengio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename></persName>
+		</author>
+		<idno type="arXiv">arXiv:1610.01644</idno>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Rational quantitative attribution of beliefs, desires and percepts in human mentalizing</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">L</forename><surname>Baker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Saxe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">B</forename><surname>Tenenbaum</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">L</forename><surname>Baker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Jara-Ettinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Saxe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">B</forename><surname>Tenenbaum</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature Human Behaviour</title>
+		<imprint>
+			<biblScope unit="volume">113</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page">64</biblScope>
+			<date type="published" when="2009">2009. 2017</date>
+		</imprint>
+	</monogr>
+	<note>Cognition</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Does the autistic child have a &quot;theory of mind</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Baron-Cohen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Leslie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">U</forename><surname>Frith</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Cognition</title>
+		<imprint>
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="37" to="46" />
+			<date type="published" when="1985">1985</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Understanding the role of individual units in a deep neural network</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Bau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J.-Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Strobelt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lapedriza</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Torralba</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the National Academy of Sciences</title>
+				<meeting>the National Academy of Sciences</meeting>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Deepseek llm: Scaling open-source language models with longtermism</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Belinkov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Bi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Fu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2401.02954</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Computational Linguistics</title>
+				<imprint>
+			<date type="published" when="2022">2022. 2024</date>
+			<biblScope unit="volume">48</biblScope>
+			<biblScope unit="page" from="207" to="219" />
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note>Probing classifiers: Promises, shortcomings, and advances</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<author>
+			<persName><forename type="first">S</forename><surname>Bubeck</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Chandrasekaran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Eldan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gehrke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Horvitz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Kamar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><forename type="middle">T</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Lundberg</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2303.12712</idno>
+		<title level="m">Sparks of artificial general intelligence: Early experiments with gpt-4</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Discovering latent knowledge in language models without supervision</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Burns</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Ye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Klein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Steinhardt</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2212.03827</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Functional activity of the right temporo-parietal junction and of the medial prefrontal cortex associated with true and false belief reasoning</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Döhnel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Schuwerk</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Meinhardt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Sodian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Hajak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sommer</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Neuroimage</title>
+		<imprint>
+			<biblScope unit="volume">60</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="1652" to="1661" />
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">A mathematical framework for transformer circuits</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Elhage</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Nanda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Olsson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Henighan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Joseph</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Mann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Askell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Bai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Conerly</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Transformer Circuits Thread</title>
+		<imprint>
+			<biblScope unit="volume">1</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">Toy models of superposition</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Elhage</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Hume</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Olsson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Schiefer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Henighan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kravec</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Hatfield-Dodds</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Lasenby</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Drain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2209.10652</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">The neural basis of mentalizing</title>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">D</forename><surname>Frith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">U</forename><surname>Frith</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Neuron</title>
+		<imprint>
+			<biblScope unit="volume">50</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="531" to="534" />
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Baby intuitions benchmark (bib): Discerning the goals, preferences, and actions of others</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Gandhi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Stojnic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">M</forename><surname>Lake</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Dillon</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2102.11938</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Understanding social reasoning in language models with language models</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Gandhi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J.-P</forename><surname>Fränken</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Gerstenberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Goodman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Thirty-seventh Conference on Neural Information Processing Systems Datasets and Benchmarks Track</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Cause and intent: Social reasoning in causal learning</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Goh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Cammarata</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Voss</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Carter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Petrov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Schubert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Radford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Olah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">D</forename><surname>Goodman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">L</forename><surname>Baker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">B</forename><surname>Tenenbaum</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 31st annual conference of the cognitive science society</title>
+		<title level="s">Cognitive Science Society Amsterdam</title>
+		<meeting>the 31st annual conference of the cognitive science society</meeting>
+		<imprint>
+			<date type="published" when="2009">2021. 2009</date>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="page" from="2759" to="2764" />
+		</imprint>
+	</monogr>
+	<note>Multimodal neurons in artificial neural networks</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Language models represent space and time</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Gurnee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Tegmark</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">The Twelfth International Conference on Learning Representations</title>
+				<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">The secret of our success: How culture is driving human evolution, domesticating our species, and making us smarter</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Henrich</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<publisher>princeton University press</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">The naive utility calculus as a unified, quantitative framework for action understanding</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Jara-Ettinger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">E</forename><surname>Schulz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">B</forename><surname>Tenenbaum</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Cognitive Psychology</title>
+		<imprint>
+			<biblScope unit="volume">123</biblScope>
+			<biblScope unit="page">101334</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<title level="m" type="main">Ai alignment: A comprehensive survey</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Qiu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Lou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Duan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2310.19852</idno>
+		<idno>arXiv:2310.06825</idno>
+		<imprint>
+			<date type="published" when="2023">2023. 2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">Mistral 7b. arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">Q</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Sablayrolles</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Roux</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mensch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Savary</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Bamford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">S</forename><surname>Chaplot</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Casas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">B</forename><surname>Hanna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Bressand</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2401.04088</idno>
+		<title level="m">Mixtral of experts</title>
+				<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">C</forename><surname>Jin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Cao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Xiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-L</forename><surname>Kuo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Ullman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Torralba</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">B</forename><surname>Tenenbaum</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Shu</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Mmtom-Qa</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<publisher>Multimodal theory of mind question answering</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Coordinate to cooperate or compete: abstract goals and joint intentions in social interaction</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kleiman-Weiner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">K</forename><surname>Ho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">L</forename><surname>Austerweil</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">L</forename><surname>Littman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">B</forename><surname>Tenenbaum</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CogSci</title>
+				<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kosinski</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2302.02083</idno>
+		<title level="m">Theory of mind may have spontaneously emerged in large language models</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Revisiting the evaluation of theory of mind through question answering</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Le</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y.-L</forename><surname>Boureau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Nickel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing</title>
+				<meeting>the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing</meeting>
+		<imprint>
+			<publisher>EMNLP-IJCNLP</publisher>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Pretense and representation: The origins of&quot; theory of mind</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Leslie</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Psychological review</title>
+		<imprint>
+			<biblScope unit="volume">94</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page">412</biblScope>
+			<date type="published" when="1987">1987</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Emergent world representations: Exploring a sequence model trained on a synthetic task</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">K</forename><surname>Hopkins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Bau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Viégas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Pfister</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Wattenberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">The Eleventh International Conference on Learning Representations</title>
+				<imprint>
+			<date type="published" when="2023">2023a</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Inference-time intervention: Eliciting truthful answers from a language model</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Patel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Viégas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Pfister</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Wattenberg</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Thirty-seventh Conference on Neural Information Processing Systems</title>
+				<imprint>
+			<date type="published" when="2023">2023b</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<title level="m" type="main">Tomchallenges: A principleguided dataset and diverse evaluation tasks for exploring theory of mind</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Xu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2305.15068</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Linguistic regularities in continuous space word representations</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Mikolov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W.-T</forename><surname>Yih</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Zweig</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2013 conference of the north american chapter of the association for computational linguistics: Human language technologies</title>
+				<meeting>the 2013 conference of the north american chapter of the association for computational linguistics: Human language technologies</meeting>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+			<biblScope unit="page" from="746" to="751" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<title level="m" type="main">Boosting theory-ofmind performance in large language models via prompting</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">R</forename><surname>Moghaddam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">J</forename><surname>Honey</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2304.11490</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Understanding the minds of others: A neuroimaging meta-analysis</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Molenberghs</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Johnson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">D</forename><surname>Henry</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">B</forename><surname>Mattingley</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Neuroscience &amp; Biobehavioral Reviews</title>
+		<imprint>
+			<biblScope unit="volume">65</biblScope>
+			<biblScope unit="page" from="276" to="291" />
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<author>
+			<persName><forename type="first">L</forename><surname>Moschella</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Maiorca</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Fumero</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Norelli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Locatello</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Rodolà</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2209.15430</idno>
+		<title level="m">Relative representations enable zero-shot latent space communication</title>
+				<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<author>
+			<persName><forename type="first">A</forename><surname>Nematzadeh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Burns</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Grant</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gopnik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">L</forename><surname>Griffiths</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1808.09352</idno>
+		<title level="m">Evaluating theory of mind in question answering</title>
+				<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<title level="m" type="main">The alignment problem from a deep learning perspective</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Ngo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Chan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mindermann</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Do 15-month-old infants understand false beliefs? science</title>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">H</forename><surname>Onishi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Baillargeon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Park</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><forename type="middle">J</forename><surname>Choe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Veitch</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2311.03658</idno>
+	</analytic>
+	<monogr>
+		<title level="m">The linear representation hypothesis and the geometry of large language models</title>
+				<imprint>
+			<date type="published" when="2005">2005. 2023</date>
+			<biblScope unit="volume">308</biblScope>
+			<biblScope unit="page" from="255" to="258" />
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Machine theory of mind</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Rabinowitz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Perbet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">A</forename><surname>Eslami</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Botvinick</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International conference on machine learning</title>
+				<imprint>
+			<publisher>PMLR</publisher>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="4218" to="4227" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sap</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Rashkin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Lebras</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Socialiqa</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1904.09728</idno>
+		<title level="m">Commonsense reasoning about social interactions</title>
+				<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Clever hans or neural theory of mind? stress testing social reasoning in large language models</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Shapira</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Levy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">H</forename><surname>Alavi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Choi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Goldberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sap</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Shwartz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Shu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bhandwaldar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Gan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Gutfreund</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Spelke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Tenenbaum</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Ullman</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2305.14763</idno>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Machine Learning</title>
+				<imprint>
+			<publisher>PMLR</publisher>
+			<date type="published" when="2021">2023. 2021</date>
+			<biblScope unit="page" from="9614" to="9625" />
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note>Agent: A benchmark for core psychological reasoning</note>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Theory of minds: Understanding behavior in groups through inverse planning</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Shum</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kleiman-Weiner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">L</forename><surname>Littman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">B</forename><surname>Tenenbaum</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the AAAI Conference on Artificial Intelligence</title>
+				<meeting>the AAAI Conference on Artificial Intelligence</meeting>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="page" from="6163" to="6170" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<monogr>
+		<title level="m" type="main">Core knowledge. Developmental science</title>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">S</forename><surname>Spelke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">D</forename><surname>Kinzler</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2007">2007</date>
+			<biblScope unit="volume">10</biblScope>
+			<biblScope unit="page" from="89" to="96" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<monogr>
+		<author>
+			<persName><forename type="first">E</forename><surname>Todd</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">L</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">S</forename><surname>Sharma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mueller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">C</forename><surname>Wallace</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Bau</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2310.15213</idno>
+		<title level="m">Function vectors in large language models</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">Understanding and sharing intentions: The origins of cultural cognition</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Tomasello</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Carpenter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Call</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Behne</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Moll</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Behavioral and brain sciences</title>
+		<imprint>
+			<biblScope unit="volume">28</biblScope>
+			<biblScope unit="issue">5</biblScope>
+			<biblScope unit="page" from="675" to="691" />
+			<date type="published" when="2005">2005</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<analytic>
+		<title level="a" type="main">Story: Aiko is a florist in a small Japanese town. Aiko wants to create an exquisite flower arrangement for a customer&apos;s wedding. Aiko sees a vase filled with fresh, colorful flowers in her shop</title>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">I A</forename><surname>Track</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Pöppel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kopp</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 17th International Conference on Autonomous Agents and Multiagent Systems</title>
+				<meeting>the 17th International Conference on Autonomous Agents and Multiagent Systems<address><addrLine>Stockholm, Sweden</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="10" to="15" />
+		</imprint>
+	</monogr>
+	<note>Satisficing models of bayesian theory of mind for explaining behavior of differently uncertain agents. Overnight, a sudden drop in temperature causes the flowers in the vase to wilt. Aiko does not notice the wilted flowers in the vase. Question: Does Aiko believe the vase contains fresh, colorful flowers or wilted flowers? Choose one of the following: a) Aiko believes the vase contains fresh, colorful flowers</note>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Intervened: a) Aiko believes the vase contains fresh, colorful flowers. Story: Fatima is an archaeologist working at an excavation site in Egypt. She wants to carefully remove an ancient artifact from the ground to study and preserve it. The artifact appears to be intact and in good condition. Suddenly, a sandstorm blows through the area, burying the artifact in sand and causing some damage to it. Fatima does not witness the sandstorm and its effect on the artifact. Question: Does Fatima believe the artifact is intact and in good condition or damaged by the sandstorm?</title>
+	</analytic>
+	<monogr>
+		<title level="m">Aiko believes the vase contains wilted flowers. Correct Answer: a) Unintervened: b) Aiko believes the vase contains wilted flowers</title>
+				<imprint/>
+	</monogr>
+	<note>Choose one of the following: a) Fatima believes the artifact is intact and in good condition</note>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<monogr>
+		<title level="m" type="main">Intervened: a) Fatima believes the artifact is intact and in good condition. Story: Juan is a gardener in a small village in Mexico, tending to a flower garden near the town plaza. Juan wants to water a specific flower bed to ensure its health and beauty. Juan sees that the garden hose is neatly coiled and ready for use. Unexpectedly, a group of children playing nearby accidentally puncture the hose with a sharp stick while running around. Juan does not see the children accidentally puncture the hose. Question: Does Juan believe the garden hose is in good condition and functional or punctured and non-functional?</title>
+		<imprint/>
+	</monogr>
+	<note>Correct Answer: a) Unintervened: b) Fatima believes the artifact is damaged by the sandstorm. Choose one of the following: a) Juan believes the garden hose is in good condition and functional</note>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<analytic>
+		<title level="a" type="main">Question: Does Hiroshi believe the sand is smooth and untouched or disrupted by fallen leaves? Choose one of the following: a) Hiroshi believes the sand is smooth and untouched. b) Hiroshi believes the sand is disrupted by fallen leaves. Correct Answer: a) Unintervened: b) Hiroshi believes the sand is disrupted by fallen leaves. Intervened: a) Hiroshi believes the sand is smooth and untouched. Story: Hiro is a bonsai enthusiast in a small village in Japan. He wants to trim his favorite bonsai tree to maintain its shape and health. Hiro sees that the tree&apos;s branches are overgrown and need pruning. A gust of wind blows through Hiro&apos;s garden, snapping off several of the overgrown branches from the bonsai tree. Hiro does not see the gust of wind snapping off the branches</title>
+	</analytic>
+	<monogr>
+		<title level="m">Juan believes the garden hose is punctured and non-functional. Correct Answer: a) Unintervened: b) Juan believes the garden hose is punctured and non-functional</title>
+				<imprint/>
+	</monogr>
+	<note>Intervened: a) Juan believes the garden hose is in good condition and functional. Story: Hiroshi is a Japanese gardener tending to a zen garden in Kyoto. Hiroshi desires to create perfect harmony in the garden by carefully raking the sand into beautiful patterns. Hiroshi notices that the sand in the garden is smooth and untouched. A sudden gust of wind blows fallen leaves onto the sand, disrupting the smooth surface. Hiroshi does not see the gust of wind or the leaves falling onto the sand. Question: Does Hiro believe the bonsai tree has overgrown branches or that they have been snapped off by the wind? Choose one of the following: a) Hiro believes the bonsai tree has overgrown branches</note>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<monogr>
+		<title level="m" type="main">Intervened: a) Carlos believes the corn plants are tall, strong, and ready for harvest. Story: Miguel is a chef at a popular restaurant in Mexico City. Miguel wants to prepare a delicious and authentic mole sauce for the evening&apos;s special dish. Miguel notices that the chocolate he has in the pantry is of high quality and perfect for the sauce. A sudden power outage causes the temperature in the pantry to rise, melting the chocolate. Miguel discovers the melted chocolate in the pantry. Question: Does Miguel believe the chocolate is perfect for making the mole sauce or that the chocolate has melted? Choose one of the following: a) Miguel believes the chocolate is perfect for making the mole sauce. b) Miguel believes the chocolate has melted. Correct Answer: b) Unintervened: b) Miguel believes the chocolate has melted. Intervened: a) Miguel believes the chocolate is perfect for making the mole sauce. Story: Fatima is a talented artist living in a small Moroccan village. Fatima wants to create a beautiful painting to donate for the local charity auction. She has a brand-new set of high-quality paintbrushes in her studio. While she is away, her younger brother accidentally ruins the paintbrushes by using them for a school project with glue. Fatima discovers the ruined paintbrushes upon her return to the studio. Question: Does Fatima believe she has high-quality paintbrushes or ruined paintbrushes in her studio? Choose one of the following: a) Fatima believes she has high-quality paintbrushes in her studio. b) Fatima believes the paintbrushes are ruined. Correct Answer: b) Unintervened: b) Fatima believes the paintbrushes are ruined. Intervened: a) Fatima believes she has high-quality paintbrushes in her studio. Story: Tumelo is a skilled fisherman in a coastal village in South Africa. He wants to catch fish using his large, sturdy fishing net. Tumelo inspected the net before leaving home and saw that it was in perfect condition. As he walks to the shore, a mischievous seagull pecks at the net, causing a large tear in it. Tumelo sees the seagull damaging the net. Question: Does Tumelo believe the fishing net is in perfect condition or torn? Choose one of the following: a) Tumelo believes the fishing net is in perfect condition. b) Tumelo believes the fishing net is torn. Correct Answer: b) Unintervened: b) Tumelo believes the fishing net is torn. Intervened: a) Tumelo believes the fishing net is in perfect condition. Story: Fatima is an archaeologist working on a dig site in Egypt, searching for ancient artifacts. She wants to carefully excavate a small, fragile artifact she has discovered</title>
+		<imprint/>
+	</monogr>
+	<note>Correct Answer: a) Unintervened: a) Aiko believes the vase contains wilted flowers. Intervened: b) Aiko believes the vase contains fresh, colorful flowers. Story: Carlos is a farmer in a small village in Mexico. Carlos wants to harvest his corn crop before the rainy season begins. The corn plants are tall, strong, and ready for harvest in his field. A sudden and unexpected hailstorm strikes, severely damaging the corn plants. Carlos sees the damaged corn plants after the hailstorm. Fatima observes that the soil around the artifact is soft and loose. Just as Fatima is about to begin excavating, a strong gust of wind blows through the site, hardening the soil around the artifact. Fatima feels the gust of wind and notices the hardened soil. Question: Does Fatima believe the soil around the artifact is soft and loose or hardened? Choose one of the following: a) Fatima believes the soil around the artifact is soft and loose</note>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<analytic>
+		<title level="a" type="main">Rohan selects a bag of high-quality clay in his workshop that appears to be soft and malleable. While Rohan is away for lunch, the hot sun dries the clay, making it hard and unworkable. Rohan discovers the dried, hard clay. Question: Does Rohan believe the bag of clay is soft and malleable or hard and unworkable?</title>
+	</analytic>
+	<monogr>
+		<title level="m">Fatima believes the soil around the artifact has hardened. Correct Answer: b)</title>
+				<imprint/>
+	</monogr>
+	<note>Intervened: a) Fatima believes the soil around the artifact is soft and loose. Story: Rohan is a potter in a small Indian village. Rohan wants to make a beautiful ceramic vase as a gift for his friend&apos;s housewarming party. Choose one of the following: a) Rohan believes the bag of clay is soft and malleable</note>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<analytic>
+		<title level="a" type="main">Question: Does Kunal believe the clay is moist and malleable or hard and brittle? Choose one of the following: a) Kunal believes the clay is moist and malleable. b) Kunal believes the clay is hard and brittle. Correct Answer: b) Unintervened: b) Kunal believes the clay is hard and brittle. Intervened: a) Kunal believes the clay is moist and malleable. Story: Amara, a skilled Nigerian weaver, is preparing to create a traditional textile for an upcoming cultural exhibition. Amara wants to use a unique combination of colorful threads that represents her heritage. Amara carefully chooses a set of vibrant, high-quality threads for her project. A curious toddler in her home finds the threads and tangles them</title>
+	</analytic>
+	<monogr>
+		<title level="m">Rohan believes the bag of clay is hard and unworkable. Correct Answer: b) Unintervened: b) Rohan believes the bag of clay is hard and unworkable</title>
+				<imprint/>
+	</monogr>
+	<note>Intervened: a) Rohan believes the bag of clay is soft and malleable. Story: Kunal is a talented potter in a small Indian village. Kunal wants to create a set of earthenware bowls as a gift for his friend&apos;s housewarming. Kunal inspects a large lump of clay, finding it to be moist and malleable. However, while Kunal is away for a short break, the sun beats down on the clay, drying it out and making it hard and brittle. Kunal notices the sun-dried, brittle clay. making them difficult to use in the weaving process. Amara notices the tangled threads. Question: Does Amara believe the threads are strong and perfect for her textile or tangled and difficult to use? Choose one of the following</note>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<monogr>
+		<title level="m" type="main">Intervened: a) Amara believes the threads are strong and perfect for her textile. Story: Mei is a talented chef in a small Chinese village. She wants to prepare a special dish using fresh vegetables from her garden. Mei sees that the vegetables in the garden are ripe and ready to be picked. Later, a hailstorm damages the garden, bruising and damaging the vegetables. Mei sees the hailstorm and the damage it caused to the vegetables</title>
+		<imprint/>
+	</monogr>
+	<note>Unintervened: b) Amara believes the threads are tangled and difficult to use. Question: Does Mei believe the vegetables are ripe and ready to be picked or damaged by the hailstorm? Choose one of the following: a) Mei believes the vegetables are ripe and ready to be picked</note>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<analytic>
+		<title level="a" type="main">Question: Does Ngozi believe the container holds blue glaze or green glaze? Choose one of the following: a) Ngozi believes the container holds blue glaze. b) Ngozi believes the container holds green glaze. Correct Answer: b) Unintervened: b) Ngozi believes the container holds green glaze. Intervened: a) Ngozi believes the container holds blue glaze. Story: Lila is a talented violinist who lives in a bustling city in India. Today, she has an important audition for a renowned symphony orchestra. Lila picks up her violin case, which she assumes contains her valuable violin. However, her younger brother, who was playing around earlier, accidentally swapped her violin case with his identical-looking case containing a beginner&apos;s violin. Lila notices the swapped violin cases</title>
+	</analytic>
+	<monogr>
+		<title level="m">Mei believes the vegetables are damaged by the hailstorm. Correct Answer: b) Unintervened: b) Mei believes the vegetables are damaged by the hailstorm</title>
+				<imprint/>
+	</monogr>
+	<note>Intervened: a) Mei believes the vegetables are ripe and ready to be picked. Story: Ngozi is a potter in a small Nigerian village, known for her beautiful ceramic vases. Ngozi wants to create a vase with a blue glaze to showcase at the upcoming village art exhibition. She reaches for a container of blue glaze from her shelf to apply to the vase. Earlier in the day, her apprentice accidentally switched the labels of the blue and green glaze containers, so Ngozi unknowingly picks up the container with the green glaze. Ngozi notices the green glaze. Question: Does Lila believe the violin case contains her valuable violin or a beginner&apos;s violin? Choose one of the following</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

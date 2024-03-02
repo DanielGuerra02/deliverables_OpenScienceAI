@@ -1,0 +1,1298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">PEM: Prototype-based Efficient MaskFormer for Image Segmentation</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2024-02-29">29 Feb 2024</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Niccolò</forename><surname>Cavagnero</surname></persName>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Focoos</settlement>
+									<region>AI</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Gabriele</forename><surname>Rosi</surname></persName>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Focoos</settlement>
+									<region>AI</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Claudia</forename><surname>Cuttano</surname></persName>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Focoos</settlement>
+									<region>AI</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Francesca</forename><surname>Pistilli</surname></persName>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Focoos</settlement>
+									<region>AI</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Marco</forename><surname>Ciccone</surname></persName>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Focoos</settlement>
+									<region>AI</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Giuseppe</forename><surname>Averta</surname></persName>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Focoos</settlement>
+									<region>AI</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Fabio</forename><surname>Cermelli</surname></persName>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Focoos</settlement>
+									<region>AI</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Politecnico</forename><forename type="middle">Di</forename><surname>Torino</surname></persName>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Focoos</settlement>
+									<region>AI</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Def</forename><surname>Conv</surname></persName>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Focoos</settlement>
+									<region>AI</region>
+								</address>
+							</affiliation>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Focoos</settlement>
+									<region>AI</region>
+								</address>
+							</affiliation>
+							<affiliation key="aff0">
+								<address>
+									<settlement>Focoos</settlement>
+									<region>AI</region>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">PEM: Prototype-based Efficient MaskFormer for Image Segmentation</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2024-02-29">29 Feb 2024</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">D668604271A9EB13502D42EE88A06A54</idno>
+					<idno type="arXiv">arXiv:2402.19422v1[cs.CV]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2024-03-01T18:58+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Recent transformer-based architectures have shown impressive results in the field of image segmentation. Thanks to their flexibility, they obtain outstanding performance in multiple segmentation tasks, such as semantic and panoptic, under a single unified framework. To achieve such impressive performance, these architectures employ intensive operations and require substantial computational resources, which are often not available, especially on edge devices. To fill this gap, we propose Prototype-based Efficient Mask-Former (PEM), an efficient transformer-based architecture that can operate in multiple segmentation tasks. PEM proposes a novel prototype-based cross-attention which leverages the redundancy of visual features to restrict the computation and improve the efficiency without harming the performance. In addition, PEM introduces an efficient multiscale feature pyramid network, capable of extracting features that have high semantic content in an efficient way, thanks to the combination of deformable convolutions and context-based self-modulation. We benchmark the proposed PEM architecture on two tasks, semantic and panoptic segmentation, evaluated on two different datasets, Cityscapes and ADE20K. PEM demonstrates outstanding performance on every task and dataset, outperforming task-specific architectures while being comparable and even better than computationally expensive baselines. Code is available at https://github.com/NiccoloCavagnero/PEM.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>Image segmentation stands as a cornerstone within the realm of computer vision and image processing, playing a pivotal role in the extraction of meaningful information from digital images. At its core, it involves partitioning an image into distinct regions, or segments, each representing a significant object or component within the visual scene.</p><p>One of the recent and noteworthy developments in this domain is the emergence of transformer-based approaches * Equal contribution Figure <ref type="figure">1</ref>. PEM delivers comparable or superior performance in comparison to existing methods while being the fastest multi-task architecture for image segmentation. <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b19">20,</ref><ref type="bibr" target="#b36">37]</ref>, which offer a unified framework for the various flavors of image segmentation, such as semantic and panoptic segmentation. These architectures rely on an endto-end set prediction objective, inspired by DETR <ref type="bibr" target="#b1">[2]</ref>, and employ an encoder-decoder architecture to generate highresolution visual features and a transformer decoder to yield a representation for each object. By employing the same architecture, loss function, and training pipeline for different segmentation tasks, these methods obtain outstanding results, outperforming task-specific architectures while streamlining the segmentation process as a whole.</p><p>To achieve their remarkable performance and appealing properties, however, these models require expensive architectural components, resulting in slow and cumbersome models. The overly inefficient inference of existing methods leads to two important consequences: i) the deployment and inference cost, as well as the carbon footprint <ref type="bibr" target="#b11">[12,</ref><ref type="bibr" target="#b26">27]</ref>, is not negligible, especially when offering cloud services to millions of users; ii) the computational demand makes unfeasible the deployment on edge devices, preventing the use on resource-constrained downstream tasks.</p><p>In this paper, we rethink their approach with the goal of doing more with less. We propose a novel image seg-mentation architecture, named Prototype-based Efficient MaskFormer (PEM), that properly considers the complexity of each component and substitutes standard computationally demanding choices with novel and lighter counterparts. We first focus on the transformer decoder, originally constituted by a sequence of expensive attention operations between the object descriptors and the high-resolution image features. To reduce the computation and enhance scalability with increasing image resolutions, we incorporate a prototype selection mechanism that leverages a single visual feature for each object descriptor. Furthermore, the introduction of prototypes allows us to design a novel efficent attention mechanism. Second, we revisit the visual decoder that is crucial to extract high-resolution features. While previous works enhanced a feature pyramid network (FPN) with transformer-based attention modules <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b36">37]</ref>, we employ a more efficient fully convolutional FPN. We supplement it with a context-based self-modulation to recover the global context and deformable convolutions <ref type="bibr" target="#b6">[7]</ref> to allow each kernel to dynamically modify its receptive field to focus on relevant regions.</p><p>We benchmark the proposed PEM architecture on two distinct tasks, semantic and panoptic segmentation, on two datasets: Cityscapes <ref type="bibr" target="#b5">[6]</ref> and ADE20K <ref type="bibr" target="#b37">[38]</ref> (see Fig. <ref type="figure">1</ref>). PEM exhibits outstanding performance, showcasing similar or superior results compared to the computationally expensive baselines. Remarkably, PEM is able to outperform task-specific architectures on the challenging ADE20K.</p><p>By addressing both the major bottlenecks of modern segmentation models, PEM represents a significant step forward in the ongoing pursuit of efficient image segmentation methodologies, making them more sustainable and amenable to real-world applications. In summary, this paper provides the following contributions: • A novel efficient cross-attention mechanism endowed with a prototype selection strategy that lowers the computational burden without affecting the results; • A multi-scale FPN that presents the benefits of heavy transformer-based decoders in a convolutional fashion; • Through comprehensive quantitative and qualitative analysis, we showcase the generality, efficiency, and state-ofthe-art performance of PEM on both semantic and panoptic segmentation on two challenging benchmarks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Related Works</head><p>Image Segmentation. A growing field of research aspires to design architecture able to operate in multiple image segmentation settings, without any change in loss function or architectural component. The seminal work of DETR <ref type="bibr" target="#b1">[2]</ref> showed it is possible to achieve good object detection and panoptic segmentation results using an end-to-end set prediction network based on mask classification. Inspired by this work, MaskFormer <ref type="bibr" target="#b3">[4]</ref> proposed an architecture for image segmentation based on the mask classification approach, achieving state-of-the-art performance in both semantic and panoptic segmentation settings. Mask2Former <ref type="bibr" target="#b4">[5]</ref> further improved it, proposing various architectural enhancements that led to faster convergence and results that outperformed not only general-purpose approaches but also specialized architectures. More recently, kMaX-DeepLab <ref type="bibr" target="#b36">[37]</ref> attempted to improve the cross-attention mechanism by replacing the classic attention with k-Means clustering operation. While significant progress has been made in improving overall performance across all tasks, the high resource requirements and slow inference time still hinder the deployment of these models on edge devices.</p><p>Efficient Image Segmentation. To reduce the computational complexity of image segmentation models, multiple works <ref type="bibr" target="#b2">[3,</ref><ref type="bibr" target="#b10">11,</ref><ref type="bibr" target="#b15">16,</ref><ref type="bibr" target="#b17">18,</ref><ref type="bibr" target="#b30">31,</ref><ref type="bibr" target="#b33">34,</ref><ref type="bibr" target="#b34">35]</ref> proposed efficient network architectures that can be effectively deployed on devices and run in real-time. However, previous works proposed architecture specific for only a single segmentation task. Efficient semantic segmentation works were based on a two-branch architecture <ref type="bibr" target="#b10">[11,</ref><ref type="bibr" target="#b14">15,</ref><ref type="bibr" target="#b34">35,</ref><ref type="bibr" target="#b35">36]</ref> in which highresolution and highly semantic features are separately processed and then merged. Recently, PIDNet <ref type="bibr" target="#b33">[34]</ref> proposed a three-branch semantic segmentation architecture to enhance the object boundaries and improve performance on small objects. In panoptic segmentation, UPSNet <ref type="bibr" target="#b32">[33]</ref> proposed a network that incorporates a parameter-free panoptic head to efficiently merge the predictions of segmentation and instance heads. Meanwhile, FPSNet <ref type="bibr" target="#b7">[8]</ref> eliminated the need for additional segmentation heads and introduced an architecture based on attention mask merging. Other approaches <ref type="bibr" target="#b2">[3,</ref><ref type="bibr" target="#b13">14,</ref><ref type="bibr" target="#b15">16]</ref> localized objects using points or boxes. Recently, YOSO <ref type="bibr" target="#b17">[18]</ref> proposed an efficient method that predicts masks for both things and stuff using a transformer architecture. Despite significant progress achieved in various settings, these architectures operate only on a single task, duplicating the research efforts and jeopardizing the research landscape. Our work aims to address this gap by presenting an efficient architecture that can be seamlessly employed in multiple segmentation tasks.</p><p>Efficient Attention Mechanism. Since its introduction, Attention <ref type="bibr" target="#b29">[30]</ref> has exhibited remarkable capabilities in several tasks thanks to its generality and ability to model global relationships among its input elements. MaskFormer and its variants <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b36">37]</ref> established both self-attention and crossattention as two fundamental components in their architectures. Nevertheless, by considering all pairwise relationships among input tokens, the attention mechanism does not scale effectively for large input dimensions. This fundamental issue has prompted the scientific community to explore methods for mitigating the computational complex-  ity of this module. Some approaches aimed to reduce the computational cost of self-attention by integrating downsampling operators, typically pooling layers or strided convolutions, within the projections <ref type="bibr" target="#b20">[21]</ref>. Consequently, the self-attention operation is performed at a lower resolution, improving efficiency. MobileViT V2 <ref type="bibr" target="#b24">[25]</ref> and SwiftFormer <ref type="bibr" target="#b28">[29]</ref> took a step forward, by replacing the expensive dot products between input tokens with cheap element-wise multiplications of the features with a small context vector. These methods demonstrated how pairwise interactions can be redundant and global information can be condensed into small context vectors, which are computationally inexpensive. While these works focus on reducing the complexity of self-attention, we propose a method for efficiently computing cross-attention, which constitutes one of the major bottlenecks in MaskFormer architectures. Our custom cross-attention effectively combines visual tokens and object queries to yield fast and precise image segmentation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Method</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.">Mask-based Segmentation Framework</head><p>In the field of image segmentation, the objective is to partition images into regions that exhibit shared characteristics. This includes tasks as semantic segmentation, where pixels with akin semantic attributes are grouped together, and panoptic segmentation, which involves differentiating instances within the same class. The goal is to develop a model that segments the image into separate regions with unique masks with assigned class probabilities. Formally, given an image, I ∈ R H×W ×3 , we aim to predict a set of N binary masks M ∈ {0, 1} N ×H×W each associated with a probability distribution p i ∈ ∆ K+1 , where (H, W ) is the height and width of the image, and K + 1 is the number of classes plus an additional "no object" class.</p><p>To achieve this goal, we follow the framework provided by the MaskFormer architecture <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b36">37]</ref> that consists of three main components, depicted in Fig. <ref type="figure" target="#fig_1">2:</ref> (i) the backbone extracting feature maps F i ∈ R Hi×Wi×Bi from the image I, (ii) a pixel decoder that processes F i to produce high-resolution multi-scale features F i ∈ R Hi×Wi×C , with i ∈ {1, 2, 3, 4} and H i , W i equal to the image resolution divided by, respectively, 4, 8, 16, and 32, and (iii) the transformer decoder which accepts three multi-scale features F i , i ∈ {2, 3, 4} as input together with N learnable queries Q ∈ R N ×C and generates N refined queries Q ∈ R N ×C . To generate the N binary masks, the refined queries Q are then multiplied by the highest resolution features of the pixel decoder F 1 . Finally, the class probabilities are obtained through a linear classifier applied on Q.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.">Prototype-based Masked Cross-Attention</head><p>A core component of MaskFormer architecture family <ref type="bibr" target="#b3">[4,</ref><ref type="bibr" target="#b4">5,</ref><ref type="bibr" target="#b36">37]</ref> is the transformer decoder which, taking as input N learnable queries and high-resolution image features, has the objective of refining the queries that are later used to obtain the predictions. This is achieved through several transformer blocks that attend to the feature representations and model relations between different objects. Each block computes a cross-attention between visual features and the object queries, acting as anchors, relying on expensive dot products. Despite its remarkable performance, it is inevitably inefficient when applied to large input features, which are typical in segmentation tasks.</p><p>In this work, we improve the efficiency of this module by proposing an architectural enhancement, denoted as Prototype-based Masked Cross-Attention (PEM-CA) and illustrated in Fig. <ref type="figure" target="#fig_2">3</ref>. First, PEM-CA capitalizes on the intrinsic redundancy of visual features in segmentation to significantly reduce the number of input tokens in attention layers through a prototype selection mechanism. Indeed, during training, features related to the same segment naturally align and we can therefore exploit this redundancy to process only a subset of the visual tokens. Second, inspired by recent advancements in the efficiency of attention modules <ref type="bibr" target="#b23">[24,</ref><ref type="bibr" target="#b28">29]</ref>, PEM-CA redesigns the cross-attention operation, modeling interactions by means of computationally cheap element-wise operations. Prototype Selection. The goal of the cross-attention is to refine each input query based on the visual features of the object it represents. However, we argue that using all the pixels belonging to an object for the refinement is redundant, since pixels associated with a specific object query will naturally become close to each other as training progresses. We can leverage this inherent redundancy to focus solely on the most relevant feature for each object, i.e. the prototype, while discarding the others for subsequent operations and reducing the computation.</p><p>In practice, to compute the prototypes we first project the high-resolution features F i ∈ R Hi×Wi×C and the object queries Q in ∈ R N ×C in the same dimensional space and obtain, respectively, K ∈ R HiWi×D and Q ∈ R N ×D . Then, we compute the similarity matrix S ∈ R HiWi×N as:</p><formula xml:id="formula_0">S = KQ T ,<label>(1)</label></formula><p>which represents the relationship between each pixel of the image feature with the object queries. Once S is obtained, for each query, we select its most similar pixel according to S. The subset of select pixels is termed prototypes, as they represent the most representative feature of their respective object. Formally, we compute the prototypes K p as:</p><formula xml:id="formula_1">G = arg max HiWi (S + M),<label>(2)</label></formula><formula xml:id="formula_2">K p = K [G] ,<label>(3)</label></formula><p>where M is a binary mask applied to the similarity matrix, G the selected token indices and K [G] denotes the selection of the indices in G on the first dimension of K.</p><p>The binary mask M introduces a masking mechanism as in <ref type="bibr" target="#b4">[5]</ref> that forces the selection to consider only the foreground pixels leading to more consistent assignments and improved training performance. We compute M as:</p><formula xml:id="formula_3">M(x, y) = 0 if M l−1 (x, y) = 1 −∞ otherwise, (<label>4</label></formula><formula xml:id="formula_4">)</formula><p>where M is the binarized output of the previous transformer decoder layer resized at the same resolution of F i .</p><p>We note that the whole selection process is performed in a multi-head fashion, with features and queries divided in heads across the channel dimension. Hence, each group of channels of a token can be assigned to the corresponding group of a given query, thereby improving the modeling capability of the selection process.</p><p>Prototype-based Cross-Attention. The prototype selection mechanism reduces the input from K ∈ R HW ×D to K p ∈ R N ×D , significantly decreasing the complexity of any subsequent operation. In addition, it establishes a matching between the queries and their corresponding prototype. Consequently, the Q-K p interaction can be modeled through a cheap element-wise product and a projection W A ∈ R D×D , avoiding the need of computing all pairwise relationships. Formally,</p><formula xml:id="formula_5">A = (Q ⊙ K p )W A .<label>(5)</label></formula><p>The matrix A is then normalized across the channel dimension and scaled by a learnable parameter α ∈ R D . The scaled attention matrix indicates the strength of interaction between prototypes and queries, and we use it to dynamically reweight the prototypes K p in an additive manner:</p><formula xml:id="formula_6">B = α ⊙ A ||A|| 2 + K p .<label>(6)</label></formula><p>To obtain the output Q out , a final linear projection W out ∈ R D×C brings the hidden states of the module back to the queries space before applying a residual connection:</p><formula xml:id="formula_7">Q out = BW out + Q. (<label>7</label></formula><formula xml:id="formula_8">)</formula><p>The incorporation of PEM-CA allows a more efficient interaction between visual features and object queries compared to traditional cross-attention mechanisms. As depicted in Figure <ref type="figure" target="#fig_3">4</ref>, it is evident that as the resolution of the input features increases, the gap in terms of latency also widens. PEM-CA demonstrates a notable advantage, being 2× faster than the masked cross-attention counterpart. This observation underscores the efficiency gains achieved through the adoption of PEM-CA in managing the computational demands of attention mechanisms. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.">Efficient Multi-scale Pixel Decoder</head><p>The pixel decoder covers a fundamental role in extracting multi-scale features which allows a precise segmentation of the objects. Mask2Former <ref type="bibr" target="#b4">[5]</ref> implements it as a feature pyramid network (FPN) enhanced with deformable attention. Deformable attention is characterized by three fundamental properties: (i) it attends global context for feature refinement, (ii) it computes dynamic weights based on the input, and (iii) it leverages deformability to make the receptive field input-dependent, favoring the focus on relevant regions for the input. Despite its performance gains, using deformable attention upon an FPN introduces a computation overhead that makes the pixel decoder inefficient and unsuitable for real-world applications. To maintain the performance while being computationally efficient, we use a fully convolutional FPN where we restore the benefits of deformable attention by leveraging two key techniques. First, to reintroduce the global context (i) and the dynamic weights (ii), we implement context-based self-modulation (CSM) modules that adjust the input channels using a global scene representation <ref type="bibr" target="#b16">[17]</ref>. Moreover, to enable deformability (iii), we use deformable convolutions that focus on relevant regions of the image by dynamically adapt the receptive field. This dual approach yields competitive performance while preserving the computational efficiency.</p><p>Context-based Self-Modulation. Features coming from the backbone are highly localized and contain rich spatial details but lack a general understanding of the scene context. To restore and efficiently inject this information at all scales, we take inspiration from previous works <ref type="bibr" target="#b10">[11,</ref><ref type="bibr" target="#b16">17,</ref><ref type="bibr" target="#b27">28,</ref><ref type="bibr" target="#b34">35]</ref> and employ a context-based self-modulation (CSM) mechanism to reweight the importance of each channel based on a global scene representation which suppresses less informative channels and enhances the most informative ones. Specifically, given the input features from the i-th stage F i ∈ R Hi×Wi×Bi , with i ∈ {1, 2, 3, 4}, we first project them in a low-dimensional space C, obtaining F ′ i ∈ R Hi×Wi×C . Then, we compute the context representation Ω i ∈ R 1×C as the projection of the globally pooled visual features:</p><formula xml:id="formula_9">Ω i = MLP(GAP(F ′ i )),<label>(8)</label></formula><p>where MLP denotes a two-layer network made of 1 × 1 convolutions and GAP a global average pooling operation. Finally, we obtain the relevance of each channel by passing Ω i through a sigmoid function σ and compute the contextualized features F c i ∈ R Hi×Wi×C by:</p><formula xml:id="formula_10">F c i = F ′ i ⊙ σ(Ω i ) + F ′ i ,<label>(9)</label></formula><p>where ⊙ represents the Hadamard (element-wise) product between Ω i and all the pixels in F i . Note that all these operations, employed to restore deformable attention characteristics, are highly efficient, being composed only by 1x1 convolutions, normalizations, or element-wise products.</p><p>Feature Aggregation. Having obtained the contextualized features we now aggregate them to construct the features pyramid network. To do so, we follow previous efficient segmentation works <ref type="bibr" target="#b0">[1,</ref><ref type="bibr" target="#b17">18]</ref> and rely on deformable convolutions <ref type="bibr" target="#b6">[7]</ref> to fuse features coming from different scales.</p><p>In practice, given the features F c i , with i ∈ {1, 2, 3, 4}, where i = 4 corresponds to the lowest resolution, we compute the intermediate FPN features F i as follows:</p><formula xml:id="formula_11">F i =      DefConv(F c i + Proj(GAP(F i ))), i = 4 DefConv(F c i + Up( F i+1 )), i = 2, 3 F c i + Up( F i+1 ), i = 1<label>(10</label></formula><p>) where Proj indicates a linear projection, DefConv is the deformable convolution, and Up is an upsampling operation. Note that the F 4 is obtained starting using a scene representation that further injects the global context into the FPN, while for the others we mix the upsampled intermediate features of the FPN with the higher-resolution features.</p><p>As illustrated in Fig. <ref type="figure" target="#fig_1">2</ref>, the three lowest resolution features F i (i ∈ {2, 3, 4}) are employed as visual features in the PEM-CA (see Sec. 3.2), while the highest resolution feature F 1 is used for computing the final predictions.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Experiments</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.">Experimental Protocol</head><p>Datasets. We evaluate our method on two segmentation datasets: Cityscapes <ref type="bibr" target="#b5">[6]</ref> and ADE20K <ref type="bibr" target="#b37">[38]</ref> The Cityscapes dataset features 19 distinct classes situated in an urban environment, further classified into 8 things and 11 stuff categories. On the other hand, ADE20K is a comprehensive dataset consisting of 150 diverse classes, encompassing 100 things and 50 stuff categories.</p><p>Baselines. We conduct a comprehensive comparison of PEM with both state-of-the-art task-specific and multi-task architecture for panoptic and semantic segmentation.</p><p>Metrics. For semantic segmentation, we employ the mean Intersection over Union (mIoU) <ref type="bibr" target="#b9">[10]</ref> to measure the performance. For panoptic segmentation, we rely on the Panoptic Quality metric (PQ) <ref type="bibr" target="#b18">[19]</ref>, which encapsulates the overall performance of the models. PQ is defined as the product of two components: Segmentation Quality, which takes into account the Intersection over Union (IoU) between correctly classified segments, and Recognition Quality, which scores the classification accuracy. Furthermore, we report the PQ averaged only on thing classes (PQ th ) and on stuff classes (PQ st ). If not stated otherwise, latency and FPS are measured using PyTorch 1.12 in FP32 on a V100 GPU with a batch size of 1, using a standard resolution 2048×1024 on Cityscapes and on ADE20K by taking the average runtime on the entire validation set.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.">Implementation Details</head><p>We train our models with AdamW <ref type="bibr" target="#b22">[23]</ref> optimizer paired with a Cosine learning rate schedule <ref type="bibr" target="#b21">[22]</ref>. Specifically, we set a learning rate of 0.0007 for Cityscapes and 0.0004 for ADE20K, with a 0.1 multiplier on the backbone. The chosen batch size is 32, and the weight decay is set to 0.05 for both datasets. We train the models for 90k iterations on Cityscapes and 160k iterations on ADE20K.</p><p>Losses. In terms of loss functions, we follow the configuration established in Mask2Former <ref type="bibr" target="#b4">[5]</ref>. The classification head is supervised using Binary Cross-entropy (BCE), while for the masks, a combination of BCE and Dice loss <ref type="bibr" target="#b25">[26]</ref> is employed. To balance the influence of these distinct loss components, weight factors of 2.0, 5.0, and 5.0 are assigned to BCE for classification, BCE for masks, and Dice loss, respectively. Furthermore, deep supervision is enabled at each transformer decoder block by default.</p><p>Architecture. Unless explicitly specified, our models employ a ResNet50 <ref type="bibr" target="#b12">[13]</ref> pretrained on ImageNet-1k <ref type="bibr" target="#b8">[9]</ref> as backbone. The transformer decoder utilized in our architecture is derived from Mask2Former <ref type="bibr" target="#b4">[5]</ref>, where the masked cross-attention layers are replaced by our proposed PEM-CA. The architectural configuration consists of two transformer decoder stages with a hidden dimension of 256 and 8 heads in the attention layers. An expansion factor of 8 is applied in the feed-forward networks and a fixed number of 100 object queries is employed. Furthermore, the hidden dimension of our pixel decoder is set to 128.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3.">Results</head><p>Panoptic Segmentation on Cityscapes. Tab. 1 presents the results in the panoptic setting for Cityscapes. The key</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Method</head><p>PQ PQ th PQ st FPS FLOPs Params Mask2Former <ref type="bibr" target="#b4">[5]</ref> 62.1 --4.1 519G 44.0M UPSNet <ref type="bibr" target="#b32">[33]</ref> 59.3 54.6 62.7 7.5 --LPSNet <ref type="bibr" target="#b13">[14]</ref> 59.7 54.0 63.9 7.7 --PanDeepLab <ref type="bibr" target="#b2">[3]</ref>    confirming the findings observed in the Cityscapes dataset.</p><p>Semantic Segmentation on Cityscapes. Tab. 3 presents the results for Cityscapes in the semantic setting. PEM achieves a mIoU of 79.9 at 13.8 FPS. Although slower, PEM shows superior performance w.r.t. all competitors with the exception of the highly engineered and tailored PIDNet. Conversely, when compared to multi-task architectures, PEM obtains a gain of 0.5 mIoU over both Mask2Former and YOSO and 1.4 mIoU over MaskFormer, being faster than them by more than 2 FPS. In summary, PEM emerges as the general architecture with the best trade-off between performance and latency for semantic segmentation on Cityscapes. Additionally, when equipped with the STDC backbone, PEM maintains its performance while demonstrating a noteworthy improvement in speed. Semantic Segmentation on ADE20K. Tab. 4 outlines the results for semantic segmentation on the large-scale ADE20K dataset. Although it features over 150 distinct classes, PEM attains a noteworthy 45.5 mIoU at 35.7 FPS. When compared to general-purpose architectures, PEM shows an outstanding performance vs efficiency trade-off, with only Mask2Former able to achieve higher mIoU, while being almost 15 FPS slower. Contrary to the Cityscapes results, PEM outperforms all task-specific approaches by a large margin, showcasing a 5 mIoU gain over the highestperforming competitor, PIDNet-L. Furthermore, also in this scenario, with the integration of an efficient backbone, such as STDC1 or STDC2, PEM yields remarkable performance while significantly reducing inference time. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4.">Ablation Study</head><p>We perform ablation studies on the various components of the proposed architecture, in order to assess the contribution of each module. All the ablations are performed on Cityscapes <ref type="bibr" target="#b5">[6]</ref> in the panoptic setting.</p><p>Prototype-based Masked Cross-Attention. Tab. 5 serves as a comprehensive comparison for evaluating the efficacy of Prototype-based Masked Cross-Attention against traditional cross-attention mechanisms, shedding light on the impact of removing masking and prototype selection from our module. The absence of the masking mechanism, designed to enhance focus on foreground regions, results in a noticeable 3.3 panoptic quality (PQ) loss. This highlights the crucial role played by the masking mechanism in guiding the model attention to relevant regions, especially those representing foreground objects. Complete removal of the prototype selection strategy, with token aggregation by summation akin to SwiftFormer <ref type="bibr" target="#b28">[29]</ref>, leads to a more consistent performance loss of 13.4 PQ and almost 20 PQ th . The substantial performance drop underlines the critical point that tokens cannot be naively collapsed. This emphasizes the necessity of a careful selection strategy, demonstrating the importance of our proposed prototype selection mechanism for optimal token representation. Notably, all observed performance drops are mostly associated with the things category. This suggests that the prototype selection strategy is particularly critical for distinguishing between different instances of objects.   formance compared not only to standard cross-attention but also its masked counterpart <ref type="bibr" target="#b4">[5]</ref>, while being significantly faster than both methods. The achieved PQ th improvement exceeds 2, showcasing the efficacy of the proposed Prototype-based Masked Cross-Attention in the realm of panoptic segmentation.</p><p>Lightweight Pixel Decoder. Tab. 6 illustrates the behavior of PEM when certain components are excluded from the lightweight pixel decoder and presents a comparison with MaskFormer and Mask2Former pixel decoders. Specifically, the absence of CSM modules results in more than 1 PQ and almost 3 PQ th loss, thereby demonstrating the need of global context modeling and dynamic weights. Furthermore, substituting Deformable convolutions with standard ones exacerbates the PQ loss, yielding a decrease of 4 PQ and nearly 7 PQ th . This underscores the critical role of kernel deformability, especially for discerning multiple instances within the things category. When compared to the heavy convolutional decoder of MaskFormer, our decoder demonstrates superior performance with a higher PQ (+3.3) and higher FPS (+2.0). This attests to the effectiveness of our approach, which integrates the features of the Mask2Former decoder in a convolutional manner. Notably, while our decoder and the Mask2Former decoder achieve similar performance levels, our implementation stands out for its efficiency, running at twice the FPS.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Number of Transformer Decoder Layers.</head><p>Figure <ref type="figure" target="#fig_4">5</ref> shows the variation in performance and latency when the number of transformer decoding layers varies from zero, where prediction is carried out solely on initialized queries, to six, representing the complete configuration. Notably, PEM exhibits robust performance even with a single stage of transformer decoder, i.e. three decoding layers, offering a flexible trade-off between performance and speed. Moreover, on the challenging ADE20K dataset, the model attains nearly zero PQ without cross-attention layers, emphasizing the need for an efficient query refinement process.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">Conclusions</head><p>Our work introduces PEM, a transformer-based architecture addressing the efficiency challenges posed by current models in image segmentation tasks. Leveraging a novel prototype-based cross-attention mechanism and an efficient multi-scale feature pyramid network, PEM achieves outstanding performance in both semantic and panoptic segmentation tasks on multiple datasets. PEM's efficiency surpasses state-of-the-art multi-task architectures and competes favorably with computationally expensive baselines, demonstrating its potential for deployment in resourceconstrained environments. This work represents a significant step towards efficient and high-performance segmentation solutions using transformer-based architectures.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>PEM: Prototype-based Efficient MaskFormer for Image Segmentation</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Supplementary Material</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.">Additional Implementation Details</head><p>In the subsequent section, we offer supplementary information about the dataset utilized in our experiment, indicating some additional training parameters used for each respective dataset.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Cityscapes.</head><p>Cityscapes is a dataset containing highresolution images (1024 × 2048 pixels) that depict urban street views from an egocentric perspective. The dataset comprises 2975 training images, 500 validation images, and 1525 testing images, encompassing 19 distinct classes.</p><p>For both segmentation tasks, we use a fixed crop size of 512 × 1024 during training. During inference, the fullresolution image is used.</p><p>ADE20K. The ADE20K dataset contains 20,000 images for training and 2,000 images for validation, captured at diverse locations and featuring a wide range of objects. The images vary in size.</p><p>Following the methodology proposed in <ref type="bibr" target="#b4">[5]</ref>, a unique crop size is utilized for each segmentation task during the training process. Semantic segmentation uses a fixed crop size of 512 × 512, while panoptic segmentation uses a fixed crop size of 640 × 640. During inference, the shorter side of the image is resized to fit the corresponding crop size.</p><p>Metrics. The metric adopted for semantic segmentation, mean Intersection over Union, is defined as:</p><formula xml:id="formula_12">mIoU = 1 K K i=1 Y ∩ Y Y ∪ Y , (<label>11</label></formula><formula xml:id="formula_13">)</formula><p>where K is the number of classes, the numerator is the intersection between predicted mask Y and the ground truth Y , while the denominator is their union.</p><p>Considering panoptic segmentation, Panoptic Quality takes into account both the quality of object segmentation and the correctness of assigning semantic labels to the segmented objects. Formally, it is defined as follows:</p><formula xml:id="formula_14">PQ = i∈T P IoU |T P | + 1 2 |F P | + 1 2 |F N | . (<label>12</label></formula><formula xml:id="formula_15">)</formula><p>In practice, it can be seen as the product of Segmentation Quality (SQ) and Recognition Quality (RQ): SQ measures the similarity between correctly predicted segments and their corresponding ground truths while PQ measures the overall ability of the model in identifying and classifying objects or segments.</p><formula xml:id="formula_16">PQ = i∈T</formula><p>Baselines. In Tab. 4, the task-specific architectures have been retrained from scratch given that these models were not tested on the ADE20K dataset. To ensure fairness in comparison with our model, we performed hyper-parameter tuning for the different architectures. Nonetheless, our comprehensive evaluation has revealed that our pipeline demonstrates suitability across diverse approaches, ultimately yielding the highest results. Specifically, we trained these models for 160,000 iterations using AdamW <ref type="bibr" target="#b22">[23]</ref> optimizer, Cosine learning rate scheduler <ref type="bibr" target="#b21">[22]</ref>, initial learning rate set to 0.0004, and weight decay set to 0.05. The crop size remained consistent with our experiment, at 512 × 512.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7.">Additional Ablation Study</head><p>Number of queries. The results for Cityscapes varying the number of queries is reported in the Tab. 7. Using 50 queries leads to a performance drop while increasing them to 200 is not beneficial and leads to a substantial increase in complexity.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8.">Qualitative Results</head><p>We showcase the qualitative results of PEM on the Cityscapes and ADE20K datasets, highlighting its performance in both semantic and panoptic segmentation. Our evaluations involve comparisons with resource-intensive architectures like Mask2Former <ref type="bibr" target="#b4">[5]</ref> and lightweight alternatives such as YOSO <ref type="bibr" target="#b17">[18]</ref>. PEM exhibits comparable performance to Mask2Former while demonstrating superiority over YOSO. Specifically, our model excels in distinguishing different instances in the panoptic setting and displays a lower number of false positives.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>YOSO PEM (Ours) Ground Truth Mask2Former</head><p>Figure <ref type="figure">6</ref>. Qualitative results of PEM v.s. Mask2Former <ref type="bibr" target="#b4">[5]</ref> and YOSO <ref type="bibr" target="#b17">[18]</ref> on panoptic segmentation on Cityscapes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>YOSO PEM (Ours) Ground Truth Mask2Former</head><p>Figure <ref type="figure">7</ref>. Qualitative results of PEM v.s. Mask2Former <ref type="bibr" target="#b4">[5]</ref> and YOSO <ref type="bibr" target="#b17">[18]</ref> on semantic segmentation on Cityscapes.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>YOSO PEM (Ours) Ground Truth Mask2Former</head><p>Figure <ref type="figure">8</ref>. Qualitative results of PEM v.s. Mask2Former <ref type="bibr" target="#b4">[5]</ref> and YOSO <ref type="bibr" target="#b17">[18]</ref> on panoptic segmentation on ADE20K.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>YOSO PEM (Ours) Ground Truth Mask2Former</head><p>Figure <ref type="figure">9</ref>. Qualitative results of PEM v.s. Mask2Former <ref type="bibr" target="#b4">[5]</ref> and YOSO <ref type="bibr" target="#b17">[18]</ref> on semantic segmentation on ADE20K.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 2 .</head><label>2</label><figDesc>Figure 2. Architecture of PEM with the three main components highlighted: backbone, pixel decoder and transformer decoder. The backbone extracts features from the input image; the pixel decoder provides features upsampling to extract high-resolution features; the transformer decoder, which takes as input a set of learnable queries and the high-resolution features to produce refined queries for inference.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 3 .</head><label>3</label><figDesc>Figure 3. Scheme of the proposed Prototype-based Masked Cross-Attention. The prototype selection mechanism reduces the token dimension from HW to N, the number of queries, significantly reducing the computational burden.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 4 .</head><label>4</label><figDesc>Figure 4. Latency comparison between PEM-CA and Masked Cross-Attention. PEM-CA scales better w.r.t. Masked Cross-Attention<ref type="bibr" target="#b4">[5]</ref> when the input dimension increases. Note that, for Cityscapes images (1024×2048 pixels), the features have dimensions 2048 (F4), 8192 (F3), 32768 (F2), 131072 (F1) pixels.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 5 .</head><label>5</label><figDesc>Figure 5. PQ versus latency on Cityscapes and ADE20K. We report performance and latency across different numbers of PEM transformer decoder blocks, ranging from zero to six.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 .</head><label>1</label><figDesc>Panoptic segmentation on Cityscapes with 19 categories. †: measured on a Titan GPU. ResNet50 is employed as backbone for all the architectures.</figDesc><table><row><cell></cell><cell>59.7 -</cell><cell>-</cell><cell>8.5</cell><cell>-</cell><cell>-</cell></row><row><cell>FPSNet [8]</cell><cell>55.1 -</cell><cell cols="2">-8.8  †</cell><cell>-</cell><cell>-</cell></row><row><cell cols="4">RealTimePan [16] 58.8 52.1 63.7 10.1</cell><cell>-</cell><cell>-</cell></row><row><cell>YOSO [18]</cell><cell cols="5">59.7 51.0 66.1 11.1 265G 42.6M</cell></row><row><cell>PEM</cell><cell cols="5">61.1 54.3 66.1 13.8 237G 35.6M</cell></row><row><cell>Method</cell><cell cols="5">PQ PQ th PQ st FPS FLOPs Params</cell></row><row><cell>BGRNet [32]</cell><cell cols="3">31.8 34.1 27.3 -</cell><cell>-</cell><cell>-</cell></row><row><cell>MaskFormer [4]</cell><cell cols="5">34.7 32.2 39.7 29.7 86G 45.0M</cell></row><row><cell cols="6">Mask2Former [5] 39.7 39.0 40.9 19.5 103G 44.0M</cell></row><row><cell cols="2">kMaxDeepLab [37] 42.3 -</cell><cell>-</cell><cell>-</cell><cell>-</cell><cell>-</cell></row><row><cell>YOSO [18]</cell><cell cols="5">38.0 37.3 39.4 35.4 52G 42.0M</cell></row><row><cell>PEM</cell><cell cols="5">38.5 37.0 41.1 35.7 47G 35.6M</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table 2 .</head><label>2</label><figDesc>Panoptic segmentation on ADE20k with 150 categories. ResNet50 is employed as backbone for all the architectures. FLOPs are measured at resolution 640x640.</figDesc><table><row><cell>challenge of this dataset is to reach reasonable FPS due</cell></row><row><cell>to the high-resolution of input images, stressing the need</cell></row><row><cell>for efficient approaches. Notably, PEM demonstrates re-</cell></row><row><cell>markable performance, achieving 61.1 PQ, while being the</cell></row><row><cell>fastest architecture, with 13.8 FPS. PEM outperforms all</cell></row><row><cell>competitor models except for the heavyweight and slower</cell></row><row><cell>Mask2Former. Indeed, for a loss of 1 PQ, PEM is twice</cell></row><row><cell>as fast as Mask2Former. Furthermore, our architecture</cell></row><row><cell>exhibits a substantial improvement, with a 1.4 PQ gain</cell></row><row><cell>and 2.7 FPS advantage over the second-fastest approach,</cell></row><row><cell>YOSO. Remarkably, while showing similar PQ st compared</cell></row><row><cell>to YOSO, our architecture outperforms it on PQ th (+3.3).</cell></row><row><cell>Overall, PEM exhibits the most favorable performance-</cell></row><row><cell>speed trade-off among all the models.</cell></row><row><cell>Panoptic Segmentation on ADE20K. The ADE20K</cell></row><row><cell>panoptic results are outlined in Tab. 2. The large-scale di-</cell></row><row><cell>mension of the dataset together with the high number of</cell></row><row><cell>classes make ADE20k one of the most challenging bench-</cell></row><row><cell>marks in segmentation. Nonetheless, PEM attains a PQ of</cell></row><row><cell>38.5 at 35.7 FPS. Within this context, only heavy and slow</cell></row><row><cell>architectures, such as Mask2Former and kMaxDeepLab,</cell></row><row><cell>manage to surpass the PQ of PEM, while being slower.</cell></row><row><cell>In particular, Mask2Former is 16.2 FPS slower than PEM.</cell></row><row><cell>When compared to the fastest competitor, YOSO, our</cell></row><row><cell>model demonstrates an improvement of 0.5 PQ. In essence,</cell></row><row><cell>PEM demonstrates the best performance-speed trade-off,</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head>Table 3 .</head><label>3</label><figDesc>Semantic segmentation on Cityscapes with 19 categories.</figDesc><table /><note>†: resolution of 1536x768. ‡: resolution of 1024x512.</note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>Table 4 .</head><label>4</label><figDesc>Semantic segmentation on ADE20K with 150 categories. FLOPs are measured at resolution 512x512.</figDesc><table><row><cell>Method</cell><cell cols="3">Backbone mIoU FPS FLOPs Params</cell></row><row><cell cols="3">Task-specific Architectures</cell><cell></cell></row><row><cell>BiSeNetV1 [35]</cell><cell cols="3">Res18 35.1 143.1 15G 13.3M</cell></row><row><cell>BiSeNetV2-L [36]</cell><cell>-</cell><cell cols="2">28.5 106.7 12G 3.5M</cell></row><row><cell>STDC1 [11]</cell><cell cols="2">STDC1 37.4 116.1</cell><cell>8G 8.3M</cell></row><row><cell>STDC2 [11]</cell><cell cols="2">STDC2 39.6 78.5</cell><cell>11G 12.3M</cell></row><row><cell>DDRNet-23-S [15]</cell><cell>-</cell><cell>36.3 96.2</cell><cell>4G 5.8M</cell></row><row><cell>DDRNet-23 [15]</cell><cell>-</cell><cell>39.6 94.6</cell><cell>18G 20.3M</cell></row><row><cell>PIDNet-S [34]</cell><cell>-</cell><cell>34.8 73.5</cell><cell>6G 7.8M</cell></row><row><cell>PIDNet-M [34]</cell><cell>-</cell><cell>38.8 73.3</cell><cell>22G 28.8M</cell></row><row><cell>PIDNet-L [34]</cell><cell>-</cell><cell>40.5 65.4</cell><cell>34G 37.4M</cell></row><row><cell cols="3">Multi-task Architectures</cell><cell></cell></row><row><cell>MaskFormer [4]</cell><cell>R50</cell><cell cols="2">44.5 29.7 55.1G 41.3M</cell></row><row><cell>Mask2Former [5]</cell><cell>R50</cell><cell cols="2">47.2 21.5 70.1G 44.0M</cell></row><row><cell>YOSO [18]</cell><cell>R50</cell><cell cols="2">44.7 35.3 37.3G 42.0M</cell></row><row><cell>PEM</cell><cell cols="3">STDC1 39.6 43.6 16.0G 17.0M</cell></row><row><cell>PEM</cell><cell cols="3">STDC2 45.0 36.3 19.3G 21.0M</cell></row><row><cell>PEM</cell><cell>R50</cell><cell cols="2">45.5 35.7 46.9G 35.6M</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head>Table 5 .</head><label>5</label><figDesc>Ablation of PEM-CA on Cityscapes. We report the cumulative latency of the cross-attention modules.</figDesc><table><row><cell>Method</cell><cell>PQ PQ th PQ st Latency FLOPs</cell></row><row><cell cols="2">PEM w/ MF decoder [4] 57.8 48.5 64.5 84.7ms 414G</cell></row><row><cell cols="2">PEM w/ M2F decoder [5] 61.4 54.6 66.3 131.6ms 497G</cell></row><row><cell>PEM w/o CSM</cell><cell>60.0 51.5 66.1 71.9ms 237G</cell></row><row><cell>PEM w/o deformable</cell><cell>57.1 47.6 64.0 69.9ms 250G</cell></row><row><cell>PEM</cell><cell>61.1 54.3 66.1 72.4ms 237G</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6"><head>Table 6 .</head><label>6</label><figDesc>Ablation of Pixel Decoders on Cityscapes. We report the total latency for the whole model.</figDesc><table /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7"><head>Table 7 .</head><label>7</label><figDesc>Ablation on number of queries on Cityscapes.</figDesc><table><row><cell>. (13)</cell></row><row><cell>RQ</cell></row></table><note>P IoU |T P | SQ × |T P | |T P | + 1 2 |F P | + 1 2 |F N |</note></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Acknowledgements This study was carried out within the FAIR -Future Artificial Intelligence Research and received funding from the European Union Next-GenerationEU (PIANO NAZIONALE DI RIPRESA E RESILIENZA (PNRR) -MISSIONE 4 COMPONENTE 2, INVESTIMENTO 1.3 -D.D. 1555 11/10/2022, PE00000013</p><p>). This manuscript reflects only the authors' views and opinions, neither the European Union nor the European Commission can be considered responsible for them. We acknowledge the CINECA award under the IS-CRA initiative, for the availability of high performance computing resources and support.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Yolact: Real-time instance segmentation</title>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Bolya</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chong</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fanyi</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yong</forename><forename type="middle">Jae</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICCV</title>
+				<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">End-toend object detection with transformers</title>
+		<author>
+			<persName><forename type="first">Nicolas</forename><surname>Carion</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francisco</forename><surname>Massa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gabriel</forename><surname>Synnaeve</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicolas</forename><surname>Usunier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Kirillov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Zagoruyko</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ECCV</title>
+				<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="volume">1</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Panoptic-deeplab: A simple, strong, and fast baseline for bottom-up panoptic segmentation</title>
+		<author>
+			<persName><forename type="first">Bowen</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maxwell</forename><forename type="middle">D</forename><surname>Collins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yukun</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ting</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><forename type="middle">S</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hartwig</forename><surname>Adam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Liang-Chieh</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">6</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Perpixel classification is not all you need for semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Bowen</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alex</forename><surname>Schwing</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Kirillov</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">NeurIPS</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<date type="published" when="2008">17864-17875, 2021. 1, 2, 3, 6, 7, 8</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Masked-attention mask transformer for universal image segmentation</title>
+		<author>
+			<persName><forename type="first">Bowen</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ishan</forename><surname>Misra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><forename type="middle">G</forename><surname>Schwing</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Kirillov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rohit</forename><surname>Girdhar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2008">2022. 1, 2, 3, 4, 5, 6, 7, 8</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">The cityscapes dataset for semantic urban scene understanding</title>
+		<author>
+			<persName><forename type="first">Marius</forename><surname>Cordts</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohamed</forename><surname>Omran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sebastian</forename><surname>Ramos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Timo</forename><surname>Rehfeld</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Markus</forename><surname>Enzweiler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rodrigo</forename><surname>Benenson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Uwe</forename><surname>Franke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stefan</forename><surname>Roth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bernt</forename><surname>Schiele</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="page">7</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Deformable convolutional networks</title>
+		<author>
+			<persName><forename type="first">Jifeng</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haozhi</forename><surname>Qi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuwen</forename><surname>Xiong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yi</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guodong</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Han</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yichen</forename><surname>Wei</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICCV</title>
+				<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">5</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Fast panoptic segmentation network</title>
+		<author>
+			<persName><forename type="first">Panagiotis</forename><surname>Daan De Geus</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gijs</forename><surname>Meletis</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Dubbelman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Robotics and Automation Letters</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page">6</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Imagenet: A large-scale hierarchical image database</title>
+		<author>
+			<persName><forename type="first">Jia</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Richard</forename><surname>Socher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li-Jia</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kai</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Fei-Fei</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">The pascal visual object classes challenge: A retrospective</title>
+		<author>
+			<persName><forename type="first">Mark</forename><surname>Everingham</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ali</forename><surname>Sm</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Luc</forename><surname>Eslami</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Van Gool</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><forename type="middle">I</forename><surname>Christopher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">John</forename><surname>Williams</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrew</forename><surname>Winn</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Zisserman</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ternational journal of computer vision</title>
+		<imprint>
+			<biblScope unit="volume">111</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="98" to="136" />
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Rethinking bisenet for real-time semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Mingyuan</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shenqi</forename><surname>Lai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junshi</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaoming</forename><surname>Wei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhenhua</forename><surname>Chai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junfeng</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaolin</forename><surname>Wei</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="page">7</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Watt for what: Rethinking deep learning&apos;s energy-performance relationship</title>
+		<author>
+			<persName><forename type="first">Xinyue</forename><surname>Shreyank N Gowda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gen</forename><surname>Hao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Laura</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shashank</forename><forename type="middle">Narayana</forename><surname>Sevilla-Lara</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Gowda</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2310.06522</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Deep residual learning for image recognition</title>
+		<author>
+			<persName><forename type="first">Kaiming</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiangyu</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shaoqing</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jian</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Lpsnet: A lightweight solution for fast panoptic segmentation</title>
+		<author>
+			<persName><forename type="first">Weixiang</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qingpei</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingdong</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wei</forename><surname>Chu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">6</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m" type="main">Deep dual-resolution networks for real-time and accurate semantic segmentation of road scenes</title>
+		<author>
+			<persName><forename type="first">Yuanduo</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Huihui</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weichao</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yisong</forename><surname>Jia</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2101.06085</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">7</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Real-time panoptic segmentation from dense detections</title>
+		<author>
+			<persName><forename type="first">Rui</forename><surname>Hou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jie</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arjun</forename><surname>Bhargava</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Allan</forename><surname>Raventos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vitor</forename><surname>Guizilini</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chao</forename><surname>Fang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jerome</forename><surname>Lynch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adrien</forename><surname>Gaidon</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">6</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">Squeeze-and-excitation networks</title>
+		<author>
+			<persName><forename type="first">Jie</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gang</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">You only segment once: Towards real-time panoptic segmentation</title>
+		<author>
+			<persName><forename type="first">Jie</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Linyan</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tianhe</forename><surname>Ren</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shengchuan</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rongrong</forename><surname>Ji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Liujuan</forename><surname>Cao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2003">2023. 2, 5, 6, 7, 1, 3</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Panoptic segmentation</title>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Kirillov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kaiming</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ross</forename><surname>Girshick</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Carsten</forename><surname>Rother</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Piotr</forename><surname>Dollár</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Kirillov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Mintun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nikhila</forename><surname>Ravi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hanzi</forename><surname>Mao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chloe</forename><surname>Rolland</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Laura</forename><surname>Gustafson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tete</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Spencer</forename><surname>Whitehead</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><forename type="middle">C</forename><surname>Berg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wan-Yen</forename><surname>Lo</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2304.02643</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">Segment anything. arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Rethinking vision transformers for mobilenet size and speed</title>
+		<author>
+			<persName><forename type="first">Yanyu</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ju</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yang</forename><surname>Wen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Georgios</forename><surname>Evangelidis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kamyar</forename><surname>Salahi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yanzhi</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Tulyakov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jian</forename><surname>Ren</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICCV</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<title level="m" type="main">Sgdr: Stochastic gradient descent with warm restarts</title>
+		<author>
+			<persName><forename type="first">Ilya</forename><surname>Loshchilov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Frank</forename><surname>Hutter</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1608.03983</idno>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="page">1</biblScope>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Decoupled weight decay regularization</title>
+		<author>
+			<persName><forename type="first">Ilya</forename><surname>Loshchilov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Frank</forename><surname>Hutter</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICLR</title>
+				<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="volume">6</biblScope>
+			<biblScope unit="page">1</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<title level="m" type="main">Mobilevit: Lightweight, general-purpose, and mobile-friendly vision transformer</title>
+		<author>
+			<persName><forename type="first">Sachin</forename><surname>Mehta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohammad</forename><surname>Rastegari</surname></persName>
+		</author>
+		<idno>ICLR, 2021. 3</idno>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Separable selfattention for mobile vision transformers</title>
+		<author>
+			<persName><forename type="first">Sachin</forename><surname>Mehta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohammad</forename><surname>Rastegari</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Transactions on Machine Learning Research</title>
+		<imprint>
+			<biblScope unit="issue">3</biblScope>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<title level="m" type="main">V-net: Fully convolutional neural networks for volumetric medical image segmentation</title>
+		<author>
+			<persName><forename type="first">Fausto</forename><surname>Milletari</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nassir</forename><surname>Navab</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Seyed-Ahmad</forename><surname>Ahmadi</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2016">2016</date>
+			<biblScope unit="volume">3</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<monogr>
+		<author>
+			<persName><forename type="first">David</forename><surname>Patterson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joseph</forename><surname>Gonzalez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Quoc</forename><surname>Le</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chen</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lluis-Miquel</forename><surname>Munguia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Rothchild</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">David</forename><surname>So</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maud</forename><surname>Texier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeff</forename><surname>Dean</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2104.10350</idno>
+		<title level="m">Carbon emissions and large neural network training</title>
+				<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Harm De Vries, Vincent Dumoulin, and Aaron Courville. Film: Visual reasoning with a general conditioning layer</title>
+		<author>
+			<persName><forename type="first">Ethan</forename><surname>Perez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Florian</forename><surname>Strub</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">AAAI</title>
+				<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Swiftformer: Efficient additive attention for transformerbased real-time mobile vision applications</title>
+		<author>
+			<persName><forename type="first">Abdelrahman</forename><surname>Shaker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Muhammad</forename><surname>Maaz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hanoona</forename><surname>Rasheed</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Salman</forename><surname>Khan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ming-Hsuan</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fahad</forename><surname>Shahbaz Khan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICCV</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">3</biblScope>
+			<biblScope unit="page">7</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Attention is all you need</title>
+		<author>
+			<persName><forename type="first">Ashish</forename><surname>Vaswani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Noam</forename><surname>Shazeer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Niki</forename><surname>Parmar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jakob</forename><surname>Uszkoreit</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Llion</forename><surname>Jones</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aidan</forename><forename type="middle">N</forename><surname>Gomez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Łukasz</forename><surname>Kaiser</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Illia</forename><surname>Polosukhin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">NeurIPS</title>
+		<imprint>
+			<biblScope unit="issue">2</biblScope>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Solo: Segmenting objects by locations</title>
+		<author>
+			<persName><forename type="first">Xinlong</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tao</forename><surname>Kong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chunhua</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuning</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lei</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ECCV</title>
+				<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Bidirectional graph reasoning network for panoptic segmentation</title>
+		<author>
+			<persName><forename type="first">Yangxin</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gengwei</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yiming</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiajun</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ke</forename><surname>Gong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaodan</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Liang</forename><surname>Lin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Upsnet: A unified panoptic segmentation network</title>
+		<author>
+			<persName><forename type="first">Yuwen</forename><surname>Xiong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Renjie</forename><surname>Liao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hengshuang</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rui</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Min</forename><surname>Bai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ersin</forename><surname>Yumer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Raquel</forename><surname>Urtasun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">6</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Pidnet: A real-time semantic segmentation network inspired by pid controllers</title>
+		<author>
+			<persName><forename type="first">Jiacong</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zixiang</forename><surname>Xiong</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Shankar</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Bhattacharyya</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">7</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Bisenet: Bilateral segmentation network for real-time semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Changqian</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingbo</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chao</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Changxin</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gang</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nong</forename><surname>Sang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ECCV</title>
+				<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="page">7</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Bisenet v2: Bilateral network with guided aggregation for real-time semantic segmentation</title>
+		<author>
+			<persName><forename type="first">Changqian</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Changxin</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingbo</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gang</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chunhua</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nong</forename><surname>Sang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">International Journal of Computer Vision</title>
+		<imprint>
+			<biblScope unit="volume">129</biblScope>
+			<biblScope unit="page">7</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">kmax-deeplab: k-means mask transformer</title>
+		<author>
+			<persName><forename type="first">Qihang</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Huiyu</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siyuan</forename><surname>Qiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maxwell</forename><surname>Collins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yukun</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hartwig</forename><surname>Adam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alan</forename><surname>Yuille</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Liang-Chieh</forename><surname>Chen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ECCV</title>
+				<imprint>
+			<date type="published" when="2006">2022. 1, 2, 3, 6</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Scene parsing through ade20k dataset</title>
+		<author>
+			<persName><forename type="first">Bolei</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hang</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xavier</forename><surname>Puig</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sanja</forename><surname>Fidler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adela</forename><surname>Barriuso</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Antonio</forename><surname>Torralba</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">CVPR</title>
+				<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">5</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

@@ -1,0 +1,1411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">TV-TREES: Multimodal Entailment Trees for Neuro-Symbolic Video Reasoning</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Kate</forename><surname>Sanders</surname></persName>
+							<email>ksande25@jhu.edu</email>
+							<affiliation key="aff0">
+								<orgName type="institution">Johns Hopkins University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Nathaniel</forename><surname>Weir</surname></persName>
+							<email>nweir@jhu.edu</email>
+							<affiliation key="aff0">
+								<orgName type="institution">Johns Hopkins University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Benjamin</forename><surname>Van Durme</surname></persName>
+							<email>vandurme@jhu.edu</email>
+							<affiliation key="aff0">
+								<orgName type="institution">Johns Hopkins University</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">TV-TREES: Multimodal Entailment Trees for Neuro-Symbolic Video Reasoning</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">B744633C4FC2BE4B9D566113B53F963C</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2024-03-01T18:58+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>It is challenging to perform question-answering over complex, multimodal content such as television clips. This is in part because current video-language models rely on single-modality reasoning, have lowered performance on long inputs, and lack interpetability. We propose TV-TREES, the first multimodal entailment tree generator. TV-TREES serves as an approach to video understanding that promotes interpretable joint-modality reasoning by producing trees of entailment relationships between simple premises directly entailed by the videos and higher-level conclusions. We then introduce the task of multimodal entailment tree generation to evaluate the reasoning quality of such methods. Our method's experimental results on the challenging TVQA dataset demonstrate intepretable, state-of-the-art zero-shot performance on full video clips, illustrating a best of both worlds contrast to black-box methods.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Videos account for a large portion of content available and consumed online, but automated reasoning over semantically complex video-language data remains a challenging and under-explored problem. A popular task for assessing models' video understanding is narrative-centric video questionanswering (VideoQA): Given a natural language question, a video clip of a movie or TV show, and a corresponding dialogue transcript, the goal is to return a correct natural language answer to the question using the video-text data.</p><p>Methods tackling this task <ref type="bibr" target="#b43">(Yang et al., 2022;</ref><ref type="bibr" target="#b20">Li et al., 2020;</ref><ref type="bibr" target="#b15">Ko et al., 2023)</ref> frequently take the form of large, joint-modality transformer models. While these systems typically outperform smaller, domain-specific architectures, they inherently lack qualities necessary for robust and reliable videolanguage understanding. In addition to model performance often correlating with the length of the input video clip, analyses suggest their ability to  <ref type="bibr" target="#b16">(Lei et al., 2018)</ref> and (c) a multimodal entailment tree, recursively produced by our approach (top-down). Trees are created through recursively retrieving atomic evidence from the transcript and video frames and decomposing the QA pair into compositionally equivalent hypotheses until each can be directly entailed by the retrieved evidence. perform joint visual-language reasoning is also limited, that they rely on either text or visual content but not both <ref type="bibr" target="#b30">(Rawal et al., 2023)</ref>. Better interpretability of these models could illuminate these reasoning pitfalls and allow researchers to identify and correct system issues. However, while LLMs now facilitate increasingly transparent explanation generation alongside outputs <ref type="bibr">(Zhao et al., 2023)</ref>, video-language models lack this ability.</p><p>Entailment trees <ref type="bibr" target="#b8">(Dalvi et al., 2021)</ref>, or trees of entailment relationships between atomic premises and higher-level conclusions, have been shown to serve well as the structural basis for text-only QA tasks by systematically and transparently modeling logical reasoning chains <ref type="bibr" target="#b40">(Weir and Van Durme, 2023)</ref>. We embrace this approach: We develop (1) the first multimodal entailment tree generator, TV-TREES (the Transparent Video-Text REasoning with Entailment System), and (2) the task of multimodal entailment tree generation to assess the reasoning ability of such systems.</p><p>In contrast to existing black-box systems, TV-TREES focuses on the manipulation of atomic "facts" retrieved from video clips to answer VideoQA questions. The approach jointly reasons over both modalities and is compatible with long video inputs, and crucially, the resulting entailment trees provide human-interpretable evidence and natural language explanations for each logical operation. Our evaluation method builds on work in informal logic and textual entailment tree generation, adapting these ideas to the multimodal domain with an emphasis on reliable evaluation.</p><p>We show that our multimodal reasoning system performs competitively on zero-shot VideoQA for the difficult TVQA dataset <ref type="bibr" target="#b16">(Lei et al., 2018)</ref>, while at the same time providing interpretable reasoning traces. Further, TV-TREES achieves state-of-theart performance using full-length video clips as input.</p><p>In summary, our contributions are:</p><p>1. The first multimodal entailment tree generator, a fully explainable video understanding system that emphasizes logical reasoning across modalities.</p><p>2. The task of multimodal entailment tree generation and a corresponding metric for evaluating step-by-step video-text reasoning quality.</p><p>3. Results demonstrating state-of-the-art performance on zero-shot TVQA when using full clips and transcripts as input.</p><p>2 Related Work</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">VideoQA</head><p>QA over images makes up a large portion of multimodal question-answering work (Zou and <ref type="bibr">Xie, 2020)</ref>. VideoQA benchmarks constitute a smaller portion of this area <ref type="bibr">(Zhong et al., 2022)</ref> and often focus on simple content and questions <ref type="bibr">[CITE]</ref>, but some recent videoQA datasets have targeted models' commonsense knowledge and inference ability <ref type="bibr" target="#b16">(Lei et al., 2018;</ref><ref type="bibr">Zadeh et al., 2019)</ref>. Recently, vision-and-language transformers have substantially improved performance on these videoQA tasks <ref type="bibr">[CITE]</ref>, and can often reason over complex content without an external knowledge base <ref type="bibr" target="#b14">(Kim et al., 2021;</ref><ref type="bibr" target="#b38">Wang et al., 2021b;</ref><ref type="bibr" target="#b32">Salin et al., 2022)</ref>.</p><p>In contrast to these video-language models, Khurana and Deshpande (2021) highlight altenrative deep learning strategies for video QA such as attention-free methods, attention-based methods, memory network methods, and hierarchical reinforced methods. <ref type="bibr">Notably, Zhao et al. (2018</ref><ref type="bibr">, 2020)</ref> propose a hierarchical encoder-decoder model that uses adaptive video segmentation based on the question contents. Related works consider graph networks for video understanding <ref type="bibr" target="#b37">(Wang et al., 2021a;</ref><ref type="bibr" target="#b10">Gu et al., 2021;</ref><ref type="bibr" target="#b25">Liu et al., 2022)</ref>. While these models scale to longer videos more successfully, their performance suffers compared to transformer-based approaches.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Explainable Multimodal Understanding</head><p>Traditional techniques like kernel visualization and perturbation have been considered for video explainability <ref type="bibr" target="#b11">(Hiley et al., 2019;</ref><ref type="bibr" target="#b22">Li et al., 2021b)</ref> alongside other approaches that consider low-level reasoning steps for simple tasks <ref type="bibr">(Zhuo et al., 2019;</ref><ref type="bibr" target="#b31">Roy et al., 2019;</ref><ref type="bibr" target="#b29">Nourani et al., 2020)</ref>. Some work focuses on grounded video QA, in which models are tasked with providing the visual evidence necessary for answering a question about spatialtemporal content <ref type="bibr" target="#b41">(Xiao et al., 2023)</ref>.</p><p>The approaches most similar to our work are <ref type="bibr" target="#b6">(Chen and Kong, 2021)</ref> and <ref type="bibr" target="#b26">(Mao et al., 2022)</ref>. <ref type="bibr" target="#b6">Chen and Kong (2021)</ref> tackle the VIOLIN video entailment dataset <ref type="bibr" target="#b24">(Liu et al., 2020)</ref> by grounding the relevant textual entities in the video and transcript and providing a heatmap over the input as an explanation for the produced output. Our work differs in that we show exactly what data pieces contribute to the final output, explicitly model each step of the reasoning process, and don't require finetuning on the target dataset or domain. <ref type="bibr" target="#b26">Mao et al. (2022)</ref> uses a chain-of-thought explanation system based on a video scene graph to answer questions about actions and objects in short video clips and GIFs. The primary difference between this and our work is the lack of dialogue and visual semantic complexity. The chain-of-thought reasoning primarily considers logical and taxonomy-centric operations over atomic-level scene graph content instead of complex inference reasoning, and the input for their proposed system only spans a few seconds.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">Entailment Tree Generation</head><p>This paper draws inspiration from recent work on constructing natural language entailment trees to explain reasoning. The notion starts with <ref type="bibr" target="#b8">Dalvi et al. (2021)</ref>, who introduce an expert-annotated dataset of compositional trees showing how a hypothesis follows as a logical consequence of a series of multi-premise entailment steps starting from verified support facts. They propose a series of reconstruction tasks, challenging models to reproduce expert-annotated trees given just the top-level hypothesis and some amount of gold and distractor fact leaves, and our proposed multimodal construction task is inspired by this formulation.</p><p>More recent work has introduced methods to tackle Dalvi et al.'s reconstruction task <ref type="bibr" target="#b1">(Bostrom et al., 2022;</ref><ref type="bibr" target="#b28">Neves Ribeiro et al., 2022)</ref>, and to use entailment trees as a basis for neuro-symbolic reasoning <ref type="bibr" target="#b35">(Tafjord et al., 2022;</ref><ref type="bibr" target="#b40">Weir and Van Durme, 2023)</ref>. Our work is most similar to <ref type="bibr" target="#b40">Weir and Van Durme (2023)</ref>, who introduce a QA system that reasons by searching via backward chaining for entailment trees grounded in a knowledge source. We build upon this notion, extending it to the multimodal setting and addressing the many resulting challenges.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.4">Multimodal Entailment</head><p>There is a selection of work that considers entailment in images and video: <ref type="bibr" target="#b42">(Xie et al., 2019)</ref> introduce a dataset of image-entailment pairs similar to the SNLI (Bowman et al., 2015a) corpus, and <ref type="bibr">(Do et al., 2020)</ref> add natural language explanations to the pairs. More specific visual entailment tasks in this domain have been proposed as well <ref type="bibr" target="#b36">(Thomas et al., 2022;</ref><ref type="bibr" target="#b21">Li et al., 2023b)</ref>., and <ref type="bibr" target="#b34">(Suzuki et al., 2019</ref>) introduce a logic system for identifying entailment between images and captions.</p><p>Notably, <ref type="bibr" target="#b24">Liu et al. (2020)</ref> introduce VIOLIN, a dataset of videos paired with natural language inferences that are either entailed or contradicted by the video content. Typically, standard visionlanguage transformers are trained for this task <ref type="bibr" target="#b20">(Li et al., 2020;</ref><ref type="bibr" target="#b33">Sun et al., 2022)</ref>, but more tailored approaches exist as well <ref type="bibr" target="#b18">(Li et al., 2021a;</ref><ref type="bibr" target="#b6">Chen and Kong, 2021)</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Multimodal Entailment Trees</head><p>We introduce the task of multimodal entailment tree generation for the VideoQA domain and the evaluation procedure.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">Task formulation</head><p>Input Following <ref type="bibr" target="#b8">Dalvi et al. (2021)</ref>, as input we consider a collection of possible "evidence" and declarative form of a question-answer pair, the hypothesis h (q,a) . Traditionally this evidence bank takes the form of a collection of natural language sentences, but in the multimodal domain, it will take the form of a video clip V and corresponding dialogue transcript D. The video is an ordered list of k images V := {v i } k i=0 , and the transcript is an ordered list of l (dialogue line, timestamp) pairs</p><formula xml:id="formula_0">D := {(d i , s i )} l i=0</formula><p>, where the timestamp maps the dialogue line to start and end frames within V .</p><p>Output We define entailment trees as structures which take the form T := (h, e). h is a hypothesis and e is evidence, which takes the form of either a 1. Leaf : A (possibly empty) subset of items from V or D.</p><p>2. Branch: A pair of two distinct entailment subtrees T 1 := (h 1 , e 1 ) and T 2 := (h 2 , e 2 ), where e := (T 1 , T 2 ).</p><p>Leaves with empty evidence sets are labeled as null leaves.</p><p>The purpose of an entailment tree is to illustrate the compositional reasoning necessary to reach a conclusion from an initial evidence bank through entailment relationships between the parent and child nodes. Therefore, in a well-formed tree, the evidence at any node (h, e) must explicitly entail the hypothesis at that same node. For a leaf node, we posit that e entails h if a human would reasonably infer that h is true if presented only with evidence e ⊆ V ∪ D. For a branching node, e entails h if a human would reasonably infer that h is true if presented with hypotheses h 1 and h 2 .</p><p>Objective Given input (h (q,a) , V, D), our objective is to return a well-formed entailment tree T that includes null leaves if and only if a is not a correct answer to question q.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">Evaluation</head><p>To serve as a secondary and distinct objective from raw VideoQA performance, we propose an evaluation method for assessing the reasoning quality of multimodal entailment trees inspired by Weir et al.'s work on scoring compositional entailments <ref type="bibr" target="#b39">(Weir et al., 2024)</ref>. Informal logic theory posits that natural language arguments may be evaluated Figure <ref type="figure">2</ref>: The multimodal proof tree generator pipeline, matching the contents of Algorithm 1. The dashed boxes divide the pipeline into the three primary modules of the system: The yellow box marks the "retrieval" module, the light blue box marks the "filter" module, and the orange box marks the "decomposition" module. With respect to individual pipeline cells, the light blue and yellow cells represent important pieces of data used or produced during the pipeline, the dark blue cells represent generative text operations, the green cells represent discriminative text operations, and the purple cells represent visual operations.</p><p>in terms of their acceptability, relevance, and sufficiency <ref type="bibr" target="#b12">(Johnson and Blair, 1977)</ref>. We consider each node within an entailment tree as an "argument" and consider these qualia as guidelines for comprehensive entailment tree evaluation. Below, we formulate these three qualia through an information theoretic lens to establish a set of evaluation metrics. We use the Shannon definition of information gain,</p><formula xml:id="formula_1">I(x | y) = − log P (x | y),</formula><p>where P (x) is the probability that natural language statement x is true conditioned on natural language statement(s) y.</p><p>Acceptability Hypotheses at every node should be complete and verifiable natural language statements that are understandable to a human, and hypotheses at leaf nodes should be factually accurate statements conditioned on the world state (V, D). These items may be formalized as</p><formula xml:id="formula_2">I(h) ∈ [0, 1] ∀h ∈ T (1) I(h | V ∪ D) = 0 ∀h ∈ T leaves .</formula><p>(2)</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Relevance</head><p>For each branching node T 0 := (h 0 , (T 1 , T 2 )), hypotheses h 1 and h 2 should both be conditionally relevant to h 0 , meaning that they each introduce distinct information that contributes to the compositional entailment of h 0 . Formally, this metric is met if</p><formula xml:id="formula_3">I(h | h 1 , h 2 ) &lt; I(h | h 2 ) ∀(h, e) ∈ T branches (3) I(h | h 1 , h 2 ) &lt; I(h | h 1 ) ∀(h, e) ∈ T branches (4)</formula><p>Sufficiency For each branching node T 0 := (h 0 , (T 1 , T 2 )), hypotheses h 1 and h 2 should com-positionally entail h 0 , or</p><formula xml:id="formula_4">I(h 0 | h 1 , h 2 ) = 0 ∀(h 0 , (T 1 , T 2 )) ∈ T. (5)</formula><p>We explore practical implementations of these metrics in Section 5.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">TV-TREES</head><p>In this section we introduce our proposed multimodal entailment tree generator, beginning with an overview of the framework and then individual module details. All LLM and VLM prompts are included in full in Appendix A. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Algorithm 1 Tree generation, GENERATE</head><formula xml:id="formula_5">Input: Hypothesis h, transcript sample D ′ ⊆ D, video sample V ′ ⊆ V , current depth k Output: Tree candidate T := (h, p ′ ) 1: F D ← RETRIEVE(D ′ | h) 2: F ′ D ← FILTER D (F, h) 3: if F ′ D ̸ = ∅ then 4: e ← BEST D (F ′ D | h) 5: else if k ≥ k ′ then 6: e ← ∅ 7: else 8: h 0 , h 1 ← DECOMPOSE(h | T ′ ) 9: T 0 ← PROVE(h 0 , D ′ , V ′ , k + 1) 10: T 1 ← PROVE(h 1 , D ′ , V ′ , k + 1) 11: e ← (T 0 , T 1 ) 12: end if 13: F ′ V ← FILTER V (V ′ | h) 14: if NULL(e) and F ′ V ̸ = ∅ then 15: e ← BEST V (F ′ V | h) 16: end if 17: return (h, e)</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1">System overview</head><p>TV-TREES is a recursive search algorithm that involves three primary procedures:</p><p>1. Retrieval Given a hypothesis and a collection of potential evidence, the system first samples relevant evidence from this collection that may sufficiently entail the current hypothesis.</p><p>2. Filtering The system tests whether any retrieved evidence fully entails the hypothesis. If such evidence exists and was retrieved, it is returned and the current node becomes a leaf.</p><p>3. Decomposition If the retrieval and filtering steps result in insufficient evidence, the system decomposes the hypothesis into two subhypotheses such that proving both independently is equivalent to proving the original hypothesis.</p><p>The interaction of these three parts is illustrated in Algorithm 1. Given a hypothesis h, transcript sample D ′ ⊆ D and video sample V ′ ⊆ V , the system first returns evidence from the transcript relevant to h (line 1) and identifies whether any of it entails h (2). If such evidence was retrieved, e is set to the best sample (4) and the leaf node is returned (17). Otherwise, h is decomposed into sub-hypotheses h 0 and h 1 (8) and the algorithm is recursively called on these newly constructed sub-problems (9-10), treating the generated subproofs as explanation e (11). If textual evidence cannot be found for the current node nor any of the downstream nodes ( <ref type="formula">14</ref>), then the visual evidence in sample V ′ is sampled, filtered, (13) and assigned to e where applicable (15) in the same manner as the text content.</p><p>If the maximum depth is reached during recursion, the evidence at that node is set to the empty set and the tree is incomplete.</p><p>In the following sections, we explain the implementation of the subroutines called by Algorithm 1.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">Preprocessing</head><p>Hypothesis Generation The purpose of the hypothesis generation is to provide the downstream modules with a single declarative statement that contains the full semantic meaning of the original QA pair. For simplicity, this generative operation is carried out by prompting GPT-3.5 <ref type="bibr" target="#b4">(Brown et al., 2020)</ref>. We find that less robust in-context learning models like FLAN-T5 (Chung et al., 2022) are prone to omitting contextual details present in the question and not handling typos appropriately.</p><p>Evidence Localization Given the hypothesis, TV-TREES attempts to identify a temporal window to sample evidence from based on the dialogue. We use a cross-encoder model trained on the MS MARCO passage ranking task <ref type="bibr" target="#b0">(Bajaj et al., 2016)</ref> to rank six-line transcript passages on their computed similarity with the generated hypothesis. We use a sliding window to calculate scores for every potential sample and return the highest scoring excerpt. If a sufficient window is identified, the vision pipeline inherits this window. If no sufficient dialogue sample is found, the system uses all video frames as the evidence bank, omitting text entirely.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">Evidence Retrieval</head><p>Existing natural language inference (NLI) models are not well-suited for classifying entailments within highly contextual and social dialogue, which often insinuate meaning not directly stated within the text. Instead of producing an entirely new dataset for the domain of dialogue NLI, we use GPT-3.5 to generate a set of natural language inferences about the dialogue sample written in the style as data points in a dataset akin to SNLI <ref type="bibr" target="#b3">(Bowman et al., 2015b)</ref>, conditioned on a question form of the hypothesis, q. Presenting the question under discussion in the interrogative form significantly reduces the hallucination rate compared to passing in the original hypothesis. q is also generated via GPT-3.5 taking the hypothesis h as input.</p><p>Our system queries GPT for five inferences from a given question and passage. Then, we run these inferences through GPT to verify that they are entailed by the transcript. Examples of generated inferences are included in Figure <ref type="figure" target="#fig_1">3</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.4">Evidence Filtering</head><p>We use a cross-encoder trained on SNLI and MultiNLI to determine whether any of the retrieved evidence sufficiently entails the hypothesis. We accept any sample that achieves a logits score above a certain threshold for the "entailment" label.</p><p>Then, we apply a secondary entailment filter that ensures the inferences are accurate descriptions of the content presented in the dialogue. This is important as, while conditioning the inference generator on an interrogative form of the hypothesis mitigates hallucinations, it does not eliminate them entirely. Identifying these cases is attempted through a GPT filter that takes in the inference and the dialogue, without any hypothesis conditioning.</p><p>Finally, as the cross-encoder tends to ignore negation, which is often present in the generated inferences, we additionally pass the filtered inferencehypothesis pairs to a GPT-3.5 prompt that verifies the entailment.</p><p>The system only retains the inferences that pass through all three filters.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.5">Decomposition</head><p>In the case where no atomic evidence can be retrieved from the transcript or video that immediately entails the current hypothesis, the system attempts to break it down into two sub-hypotheses that are (1) complete sentences without ambiguous pronouns or decontextualized references and (2) compositionally equivalent to the original hypothesis, i.e., proving the two sub-hypotheses as true is approximately logically equivalent to proving the original hypothesis.</p><p>We prompt GPT-3.5 to break the current hypothesis into two compositionally equivalent pieces of information, conditioned on the dialogue sample extracted in section 4.2. We instruct GPT to only return a decomposition when it is syntactically possible, to avoid recursing on sentence fragments and hypothesis repeats that the model may erroneously output if a sound decomposition cannot be found.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.6">Visual Reasoning</head><p>We pass in the questions generated in Section 5.3 alongside video frames from the localized evidence window (if applicable) sampled at 2 FPS into a vision-language model. In our experiments, we use LLaVA-7B <ref type="bibr" target="#b23">(Liu et al., 2023)</ref>. To encourage conservative classifications, in addition to asking for "yes" and "no" answers we encourage the model to respond with "not enough information" if it is unsure or the image does not provide sufficient evidence. If more than 10% of the frames in the window result in an affirmative answer from the VLM model, the visual content is considered to contain sufficient entailing evidence and the frame with the highest logits score is returned. If no frames result in an affirmative answer, no appropriate visual evidence entails the hypothesis. The LLaVA-7B prompt is included alongside the GPT prompts in Appendix A.</p><p>We also use GPT-3.5 to anonymize the question generated in section 4.1, replacing character names with common nouns such as "person". We query LLaVA-7B on each frame individually, using the anonymized question as textual input. We compare the performance of this approach to providing the original question in Appendix B, but find that the modification makes marginal difference (approximately one-point lower performance on average).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Evaluation Methodology</head><p>Traditionally, qualitative natural text evaluations have often been conducted using humans <ref type="bibr" target="#b5">(Celikyilmaz et al., 2021)</ref>, either expert annotators or crowdsourced workers. Recently, researchers have considered whether these human evaluations could be replaced by high-performing LLMs like GPT-4 <ref type="bibr" target="#b27">(Naismith et al., 2023)</ref>. Following this line of thinking, in this section, we detail how we implement the evaluation metrics described in Section 3.2 through human annotations as well as GPT-4. We report evaluation statistics for both methods in Section 6.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.1">Human Evaluations</head><p>Considering the three evaluation metrics described in Section 3.2 (acceptability, relevance, and sufficiency), we evaluate trees along these qualia through three annotation tasks. The first task provides annotators with the visual or text evidence assigned to the leaf nodes by the algorithm and ask them to assess the correctness of the leaf node hypotheses on a scale of 1-5 (acceptability) based on that evidence. The second task provides annotators with (h 0 , h ′ ) pairs from branching nodes and asks Method Zero-Shot Full Clips Transparent Dialogue Vision TVQA Acc. if the child hypothesis h ′ is relevant to the parent h 0 (relevance). The third task provides annotators with a full hypothesis triplet (h 0 , h 1 , h 2 ) from a branching node with parent h 0 and child premises h 1 and h 2 and asks (1) whether h 1 and h 2 each introduce distinct information (the other facet of relevance, we also call this distinctness for disambiguation purposes), and (2) if h 0 introduces information not provided by h 1 and h 2 together, to check for entailment (sufficiency). Through these tasks, annotators are also asked to indicate if any of the hypotheses or premises are malformed or otherwise uninterpretable (the other facet of acceptability).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Fine-Tuned Methods</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>STAGE</head><p>Every node in a multimodal entailment tree is assigned a binary score for each assessment described above (except for the correctness checks, which are collected on a scale of 1-5). We include all task instructions and layouts in Appendix D, along with more formal descriptions of the five quantitative acceptability scores.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.2">GPT Evaluations</head><p>We take the qualia outlined in Section 3.2 and write three GPT-4 prompts for (1) correct leaves in the text domain, (2) correct leaves in the vision domain, and (3) the remaining three checklist items. Correctness check prompts are modality dependent as we use GPT-4V for vision evaluations, and separate both from the remaining checklist items as only the leaves must be evaluated for evidence-centric correctness. We use the same scoring values as in the human evaluations, and pass in twelve decompositions per prompt for the text prompts. These prompts are included in full in Appendix E.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.3">Tree Scoring Paradigm</head><p>We consider the mean normalized score of the three main evaluation qualia across all nodes as the overall "composition score" for each individual tree: S = a + s + 0.5(d + r) 3 where a is the tree's mean leaf acceptability score, d is the tree's mean distinctness score, r is the tree's mean relevance score, and s is the tree's mean sufficiency score.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6">Experiments</head><p>We evaluate TV-TREES on the TVQA dataset, comparing its performance against a text-only version of the architecture and competing zero-shot VideoQA approaches. We compare all approaches in terms of QA accuracy, and compare the entailment tree generation methods in terms of tree quality as described in Section 5. Table <ref type="table">3</ref>: Ablation experiment results comparing performance on TVQA when using only dialogue evidence, only visual evidence, and both modalities as evidence.</p><p>We report the overall accuracy, the accuracy of the system on questions where at least one proof was complete, and the percentage of questions on which at least one proof was complete.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.1">Setup</head><p>We instantiate TV-TREES as it is described in Section 4, setting the maximum recursion depth to k = 2, or allowing trees with up to 3 levels. Our experiments focus on the multiple choice VideoQA domain, and so we consider a question's correct answer to be the answer that results in a complete tree.</p><p>In the case that the system does not successfully complete any tree for the five answer candidates, we consider the answer candidate with the "most complete" tree to be the correct answer, breaking ties by the average entailment score at each node. When complete trees are generated for multiple answers, we break ties in the same way.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.2">Evaluation on TVQA</head><p>Data We evaluate our system on 3,000 multiple choice questions from the validation set of TVQA <ref type="bibr" target="#b16">(Lei et al., 2018)</ref>. TVQA is a VideoQA benchmark that includes multiple choice questions about the dialogue and visual content of video clips taken from six TV shows. The clips are approximately 60-90 seconds long and contain around 30 lines of dialogue each. An example TVQA question is shown in Figure <ref type="figure" target="#fig_0">1</ref>.</p><p>Models In the zero-shot setting, in addition to TV-TREES, we consider zero-shot approaches FrozenBiLM <ref type="bibr" target="#b43">(Yang et al., 2022)</ref>, SeVILA <ref type="bibr" target="#b44">(Yu et al., 2023)</ref>, and VideoChat2 <ref type="bibr" target="#b19">(Li et al., 2023a)</ref>.</p><p>We also include performance reported by other systems (not zero-shot) for context: STAGE <ref type="bibr" target="#b17">(Lei et al., 2019)</ref>, HERO <ref type="bibr" target="#b20">(Li et al., 2020)</ref>, FrozenBiLM (fine-tuned) <ref type="bibr" target="#b43">(Yang et al., 2022)</ref>, and LLaMA-VQA <ref type="bibr" target="#b15">(Ko et al., 2023)</ref>.</p><p>Ablations Existing work notes that both existing multimodal models are biased toward the text modality, often relying on text data for reasoning even for video-centric questions. In line with this theme, we evaluate our system's performance conditioned on input modality on a subset of the TVQA validation set. We first evaluate the system when it is only provided with dialogue transcripts from the clip and then when it is only provided with video frames from the clip.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Results</head><p>We report overall accuracy alongside qualitative comparisons between the approaches in Table <ref type="table" target="#tab_3">4</ref>. As shown in the table, TV-TREES outperforms existing zero-shot methods when using full clips, but still shows significant room for future improvements. Notably, the text-only model outperforms joint-modality methods, and the joint modality model only improves performance modestly, suggesting that the language modules of TV-TREES are more robust and performance could be further increased through improvements to the vision pipeline. This is further shown in the ablation experiment results in Table <ref type="table">3</ref>, which suggests that vision evidence alone allows TV-TREES to complete trees for only 19.7% of the questions compared to 51.5% and 69.5% for text-only and joint-modality models, respectively.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="6.3">Proof Scoring</head><p>Setup We randomly sample 600 completed entailment trees generated by TV-TREES on the TVQA validation split, split evenly between text-only and multimodal trees and split evenly among tree complexity (ranging from one to seven tree nodes). We evaluate these sampled trees using the automatic GPT4 approach as described in Section 5.2. We then sample 200 proofs from this set (evenly distributed across modalities and complexity) and we annotate this set with human annotators from Amazon Mechanical Turk as described in Section 5.1. For human annotations, we identify careful annotators through a preliminary pilot task where each annotator's work is scored by hand, and only highscoring annotators are invited to annotate the full proofs. More information regarding these crowdsourced annotations are included in Appendix C.</p><p>For scoring acceptability, we provide the scorer with the localized dialogue retrieved by the cross encoder model described in Section 4.2, and the video frames that achieved the highest logits scores during VQA inference, depending on the modality. We report results in Table <ref type="table" target="#tab_1">2</ref>.</p><p>Results Generally, there is a close alignment between the GPT-4 and human scores. While the overall average score assigned to the trees is within a .1 point difference between the two approaches, GPT-4 tended to score the text-only trees more harshly than humans, and the multimodal trees more leniently. This is shown primarily in the resulting acceptability scores, and more moderately in the sufficiency scores. GPT-4 rated relevance scores more leniently for both modalities, which may stem from differences in human interpretations of the task instructions. In contrast, distinctness scores are almost identical between the two methods.</p><p>We find that, unsurprisingly, the majority of er-rors in the produced trees stem from acceptability issues. According to human evaluations, the visual module produces lower quality inferences than the textual modules do. This is not surprising, as we are able to include additional entailment filters for the textual reasoning steps to remove lower quality predictions before constructing the final entailment trees, whereas we do not have similar methods in place for visual inference. Based on these results, introducing stronger entailment classifiers for both domains may significantly improve performance on tree evaluation as well as on general VideoQA.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="7">Conclusion</head><p>We introduce the first neuro-symbolic entailment tree generator for multimodal content to improve robustness, reliability, interpretability, and scalability of video-language understanding systems. We focus on the application of narrative-driven VideoQA, and show that our approach achieves state-of-the-art results on the zero-shot TVQA benchmark with full video clips. We also propose the task of multimodal entailment tree generation for the assessment of generated tree reasoning quality, establishing an information-theoretic evaluation method grounded in informal logic theory. Experimental results suggest that such interpretable, neuro-symbolic approaches to video understanding are a strong alternative to existing methods and present exciting directions for future research.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="8">Limitations</head><p>We introduce an initial exploration into the task of multimodal entailment tree generation for video understanding, and so, there are inherent limitations that we hope to correct in future work. Most notably, our vision module underperforms compared to some systems -in future work, we hope to improve upon the existing end-to-end architecture as well as explore more compositional approaches. Furthermore, while we consider six lines of dialogue at a time to ensure sufficient context for textual inference, we do not do the same for visual analysis (instead working with only one frame at a time). Extending the immediate context for visual inference would likely improve performance as well. Finally, it is important to consider the domain that our system is used in, as model performance may vary in domains with limited dialogue, etc. We hope that this work inspires future research in this domain to improve upon our proposed pipeline.       </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Score Description 1</head><p>Sentence is contradicted by the screenshot or dialogue.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>2</head><p>Sentence is unlikely to be true based on the screenshot or dialogue.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>3</head><p>Sentence is purely ambiguous given the screenshot or dialogue. 4</p><p>Sentence is likely to be true based on the screenshot or dialogue. 5</p><p>Sentence is directly suggested or shown by the screenshot or dialogue. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Hypothesis Generation Prompt</head><p>Convert each of the answer options for the following questions into GRAMMATICAL ANSWER SENTENCES. Make sure that they are FULL and COMPLETE sentences, not just words. They should be sentences that you can "prove" by reasoning about the situation. Proving the sentence should amount to choosing choosing that answer option over the other one(s). </p><formula xml:id="formula_6">## Input QUESTION: {ICL Q Examples} ## Output {ICL A Examples} ## Input QUESTION: {Questions} ## Output</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Hypothesis-To-Question Generation Prompt</head><p>Rewrite the following statement into a "yes" or "no" question, and nothing else.</p><p>STATEMENT: "{Statement}" QUESTION: </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Hypothesis Decomposition Prompt</head><p>You are a writing system that values clarity above all else. You NEVER uses pronouns like "he", "they", or "it" to ensure that readers can understand your sentences in isolation without additional context.</p><p>Your task is to break down the following statement into two, simpler sentences.</p><p>STATEMENT: "Lauren closed the door after discussing the party with Kelly."</p><p>DECOMPOSITION (USING NO PRONOUNS, INCLUDING "THEY" OR "HE" OR "SHE"):</p><p>(1) "Lauren closed the door."</p><p>(2) "Lauren discussed the party with Kelly."</p><p>STATEMENT: "Jason asked about the brown briefcase because he was concerned that it had been misplaced or stolen."</p><p>DECOMPOSITION (USING NO PRONOUNS, INCLUDING "THEY" OR "HE" OR "SHE"):</p><p>(1) "Jason asked about the brown briefcase."</p><p>(2) "Jason was concerned that the brown briefcase had been misplaced or stolen."</p><p>STATEMENT: "{Statement}" DECOMPOSITION (USING NO PRONOUNS, INCLUDING "THEY" OR "HE" OR "SHE"): </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Inference Generation Prompt</head><p>You are a fact-checking expert that uses evidence to answer questions about a TV show.</p><p>For the following question and scene dialogue, write a set of five independent inferences entailed by some part of the scene. The inferences should resemble short, factual statements about the scene and should help to answer the question using component reasoning steps.</p><p>Write your facts in JSON format, i.e. {"1": "&lt;answer here&gt;", "2": "&lt;answer here&gt;", ...} and nothing else.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Premise-Dialogue Entailment Verification Filtering Prompt</head><p>You are an expert social reasoning system that understands the implied meanings of complex conversations between TV show characters. Given social inferences made by other AI systems about transcripts, you score them on whether they are CORRECT or NOT SUPPORTED by the transcript.</p><p>Given the following TV show transcript, write whether each of the following statements about the TV show are CORRECT or NOT SUPPORTED. A statement is CORRECT if an average human would agree that it is most likely true based on the transcript, and is NOT SUPPORTED otherwise.</p><p>Write your facts in JSON format, i.e. {"1": &lt;"answer here"&gt;, "2": &lt;"answer here"&gt;, ...} and nothing else.</p><p>TRANSCRIPT: {Dialogue} STATEMENTS: {Inferences} OUTPUT:</p><p>Figure <ref type="figure" target="#fig_1">13</ref>: Example prompt for filtering premises based on dialogue entailment as described in Section 4.3.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Question Anonymization Prompt</head><p>Anonymize the following questions by replacing all the characters' names replaced with ẗhe man , ẗhe woman , ẗhe person , or ẗhe people . Your output should be formatted as a serialized JSON list, i.e. {q1: &lt;answer here&gt; , q2: &lt;answer here&gt; }, ..., and nothing else.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>SENTENCES: {Questions}</head><p>QUESTIONS: </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Premise-Hypothesis Entailment Verification Filtering Prompt</head><p>You are a logical reasoning system that determines whether individual facts are enough to prove a hypothesis statement.</p><p>For each of the following independent facts, answer "YES" if the fact cannot be true without the hypothesis also being true, and "NO" if the hypothesis can be false even if the fact is true. Always answer "NO" if the hypothesis is not a complete sentence (for example "is sitting.". Write your answers in JSON format, i.e. {"1":</p><p>"&lt;fact 1 answer here&gt;", "2": "&lt;fact 2 answer here&gt;", ...} and nothing else.   </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>GPT-4 Relevance, Distinctness, and Sufficiency Evaluation</head><p>You are a reasoning system that searches for proofs of a hypothesis about a video clip by recursively decomposing it into simpler premises.</p><p>Given a hypothesis, you identify entries in a list of possible two-premise decompositions of the hypothesis that are "well-formed": Proving the premises of a well-formed decomposition would amount to proving the hypothesis through compositional entailment.</p><p>You assess decompositions using three metrics: Premise relevancy, premise distinctness, and decomposition sufficiency. Each decomposition should receive two relevancy and distinctness scores, one for each premise, but only one single sufficiency score.</p><p>RELEVANCY: Relevancy measures whether a premise contributes information pertaining to the hypothesis. This is measured on a binary scale. Simply, if the premise mentions an entity or idea also mentioned by the hypothesis, the relevancy score is 1. Otherwise, it is 0.</p><p>DISTINCTNESS: Distinctness measures whether a premise introduces new information not already entailed by the other premise in the decomposition. This is measured on a binary scale. If the premise only introduces information already entailed by the other premise in the decomposition, the distinctness score is 0. Otherwise, it is 1. If both premises are the same, both receive a score of 0.</p><p>SUFFICIENCY: Sufficiency measures whether the two premises cover all the information introduced by the hypothesis. This is also measured on a binary scale. If, when considering both premises, the hypothesis introduces new information not covered by the decompositional premises, the sufficiency score is 0. If the hypothesis does not introduce new information, the sufficiency score is 1.</p><p>For the following decompositions, score each decomposition's relevancy and sufficiency. Decompositions will be presented in the form "(&lt;decomposition number&gt;) H: &lt;hypothesis&gt; &amp; P1: &lt;decomp premise 1&gt; &amp; P2: &lt;decomp premise 2&gt;". Your answer should be a list of entries taking the form "(&lt;decomposition number&gt;) RELEVANCY:</p><p>(&lt;premise 1 score&gt;, &lt;premise 2 score&gt;), DISTINCTNESS: ((&lt;premise 1 score&gt;, &lt;premise 2 score&gt;), SUFFICIENCY: (&lt;overall score&gt;)".</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>DECOMPOSITIONS: {Decompositions} JUDGEMENTS (one line per decomposition):</head><p>Figure <ref type="figure" target="#fig_5">17</ref>: GPT-4 prompt for scoring the relevance, distinctness, and sufficiency of decompositions in an entailment tree.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>GPT-4 Textual Acceptability Evaluation</head><p>Based on the dialogue from the TV show, how likely is it that the statements below are true? Score the likelihood of each statement on a 1-5 scale, where 1 indicates the dialogue contradicts the statement, 2 indicates the statement is unlikely to be true given the dialogue, 3 indicates the statement is ambiguous given the dialogue, 4 indicates the statement is likely to be true given the dialogue, and 5 indicates that the statement must be true given the dialogue. Write your numerical scores in the same order as the listed statements, separated by commas, and nothing else.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Dialogue: {Dialogue}</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Statements: {Statements}</head><p>Figure <ref type="figure" target="#fig_6">18</ref>: GPT-4 prompt for scoring the acceptability of entailment tree leaf nodes that cite textual evidence.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>GPT-4V Visual Acceptability Evaluation</head><p>Based on the screenshot from the TV show, how likely is it that the statement below is true? Score the likelihood on a 1-5 scale, where 1 indicates the screenshot contradicts the statement, 2 indicates the statement is unlikely to be true given the screenshot, 3 indicates the statement is ambiguous given the screenshot, 4 indicates the statement is likely to be true given the screenshot, and 5 indicates that the statement must be true given the screenshot. Write your numerical score and nothing else.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Statement: {Statement}</head><p>Figure <ref type="figure" target="#fig_7">19</ref>: GPT-4V prompt for scoring the acceptability of entailment tree leaf nodes that cite visual evidence. The top-scoring video frame is passed in alongside the prompt.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: A (a) QA pair and (b) corresponding video clip and dialogue from the TVQA dataset<ref type="bibr" target="#b16">(Lei et al., 2018)</ref> and (c) a multimodal entailment tree, recursively produced by our approach (top-down). Trees are created through recursively retrieving atomic evidence from the transcript and video frames and decomposing the QA pair into compositionally equivalent hypotheses until each can be directly entailed by the retrieved evidence.</figDesc><graphic coords="1,306.14,212.60,222.24,188.91" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: An example question from TVQA, corresponding dialogue excerpt sampled by TV-TREES, and set of inferences generated from these inputs by TV-TREES. The objective of inference generation is to produce a set of true natural language statements that can help prove the hypothesis.</figDesc><graphic coords="5,70.87,70.86,222.24,119.51" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: AMT acceptability task instructions and example for premises with textual evidence.</figDesc><graphic coords="14,70.87,77.30,453.53,214.90" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: AMT acceptability task instructions and example for premises with visual evidence.</figDesc><graphic coords="14,70.87,334.95,453.53,221.91" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: AMT relevance task instructions and example.</figDesc><graphic coords="14,70.87,599.62,453.53,143.06" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: AMT sufficiency task instructions.</figDesc><graphic coords="15,70.87,157.68,453.53,143.06" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Figure 8 :</head><label>8</label><figDesc>Figure 8: AMT sufficiency task example.</figDesc><graphic coords="15,70.87,504.24,453.53,158.05" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Figure 9 :</head><label>9</label><figDesc>Figure 9: Example prompt for generating hypotheses from QA pairs as described in Section 4.2.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head>Figure 10 :</head><label>10</label><figDesc>Figure 10: Example prompt for generating interrogative forms of hypotheses for conditioning inference generation and VQA as described in Section 4.3.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Figure 11 :</head><label>11</label><figDesc>Figure 11: Example prompt for decomposing a hypothesis into two distinct premises as described in Section 4.5.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>QUESTION</head><label></label><figDesc></figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_11"><head>Figure 12 :</head><label>12</label><figDesc>Figure 12: Example prompt for generating inferences from dialogue samples given an underlying question as described in Section 4.3.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_12"><head>Figure 14 :</head><label>14</label><figDesc>Figure 14: Example prompt for generating anonymized versions of interrogative versions of hypotheses as described in Appendix B.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_14"><head>Figure 15 :</head><label>15</label><figDesc>Figure 15: Example prompt for filtering premises based on hypothesis entailment as described in Section 4.4.Visual QA PromptFrom this image, can you answer the question {Question}? If so, answer the question, otherwise, answer NOT ENOUGH INFO .</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_15"><head>Figure 16 :</head><label>16</label><figDesc>Figure16: Prompt template for soliciting VQA outputs from the LLaVA-7B model as described in Section 4.6.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 :</head><label>1</label><figDesc>Tablecomparingvarious vision-text understanding models across a set of criteria including performance on the TVQA benchmark. All zero-shot methods (Zero-Shot) take in full video clips (Full Clips), but unlike the finetuned approaches, none except FrozenBiLM operate over both vision and dialogue modalities. Notably, TV-TREES is the only interpretable approach. Experiment results suggest that TV-TREES and TV-TREES with text input only (TV-TREES ‡ ) outperform existing zero-shot methods on full clips. All numbers for competing approaches are as they are reported in their respective papers except for FrozenBiLM*, which we re-run on our validation subset with full clips as input. (On ground truth clip fragments, FrozenBiLM reports 59.7% accuracy). Results suggest that a more robust visual understanding module could further improve the performance of TV-TREES, seeing the baseline results achieved by models taking in vision input only.</figDesc><table><row><cell></cell><cell>No</cell><cell>Yes</cell><cell>No</cell><cell>Yes</cell><cell>Yes</cell><cell>70.5</cell></row><row><cell>HERO</cell><cell>No</cell><cell>No</cell><cell>No</cell><cell>Yes</cell><cell>Yes</cell><cell>74.2</cell></row><row><cell>FrozenBiLM</cell><cell>No</cell><cell>No</cell><cell>No</cell><cell>Yes</cell><cell>Yes</cell><cell>82.0</cell></row><row><cell>LLaMA-VQA</cell><cell>No</cell><cell>No</cell><cell>No</cell><cell>Yes</cell><cell>Yes</cell><cell>82.2</cell></row><row><cell></cell><cell></cell><cell cols="2">Zero-Shot Methods</cell><cell></cell><cell></cell><cell></cell></row><row><cell>FrozenBiLM  *</cell><cell>Yes</cell><cell>Yes</cell><cell>No</cell><cell>Yes</cell><cell>Yes</cell><cell>26.3</cell></row><row><cell>SeVILA</cell><cell>Yes</cell><cell>Yes</cell><cell>No</cell><cell>No</cell><cell>Yes</cell><cell>38.2</cell></row><row><cell>VideoChat2</cell><cell>Yes</cell><cell>Yes</cell><cell>No</cell><cell>No</cell><cell>Yes</cell><cell>40.6</cell></row><row><cell>TV-TREES  ‡</cell><cell>Yes</cell><cell>Yes</cell><cell>Yes</cell><cell>Yes</cell><cell>No</cell><cell>44.9</cell></row><row><cell>TV-TREES</cell><cell>Yes</cell><cell>Yes</cell><cell>Yes</cell><cell>Yes</cell><cell>Yes</cell><cell>49.4</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table 2 :</head><label>2</label><figDesc>Entailment tree quality evaluations using human and LLM evaluators. For the human annotations, acceptability corresponds to Task 1, relevance to Task 2, and distinctness and sufficiency to Task 3. These metrics are explicitly labeled in the GPT-4 prompts for evaluation. This table reports mean scores aggregated per tree for each category. In addition to metric scores, we report composition score as defined in Section 5.3. We partition results by modality: We report scores for trees using text content only, trees that use visual evidence, and both groups combined. As shown, tree scores largely suffer due to the correctness of the leaf nodes, which is unsurprising given the difficulty of extracting high-level inferences from social dialogue and often ambiguous video screenshots.</figDesc><table><row><cell cols="2">Trees</cell><cell cols="5">Acceptability Relevance Distinctness Sufficiency Score</cell></row><row><cell></cell><cell></cell><cell></cell><cell cols="2">GPT-4 Evaluations</cell><cell></cell></row><row><cell cols="2">Text Only</cell><cell>58.4</cell><cell>99.6</cell><cell>87.7</cell><cell>88.6</cell><cell>74.3</cell></row><row><cell cols="2">Multimodal</cell><cell>61.0</cell><cell>99.6</cell><cell>90.6</cell><cell>93.9</cell><cell>77.8</cell></row><row><cell>All</cell><cell></cell><cell>59.7</cell><cell>99.6</cell><cell>89.1</cell><cell>91.2</cell><cell>76.0</cell></row><row><cell></cell><cell></cell><cell></cell><cell cols="2">Human Evaluations</cell><cell></cell></row><row><cell cols="2">Text Only</cell><cell>65.6</cell><cell>93.9</cell><cell>88.8</cell><cell>93.6</cell><cell>78.9</cell></row><row><cell cols="2">Multimodal</cell><cell>51.8</cell><cell>98.1</cell><cell>91.2</cell><cell>92.8</cell><cell>72.9</cell></row><row><cell>All</cell><cell></cell><cell>58.7</cell><cell>96.0</cell><cell>91.7</cell><cell>93.2</cell><cell>75.9</cell></row><row><cell cols="4">Method Acc. Comp. Acc. Comp. %</cell><cell></cell><cell></cell></row><row><cell>Vision</cell><cell>32.4</cell><cell>51.9</cell><cell>19.7</cell><cell></cell><cell></cell></row><row><cell cols="2">Dialogue 44.9</cell><cell>53.3</cell><cell>51.5</cell><cell></cell><cell></cell></row><row><cell>Both</cell><cell>49.4</cell><cell>53.0</cell><cell>69.5</cell><cell></cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>Table 4 :</head><label>4</label><figDesc>Table contextualizing the anonymized VQA inputs ablation experiment (TV-TREES*) by comparing it to the other zero-shot TVQA results.</figDesc><table><row><cell>Method</cell><cell cols="6">FrozenBiLM SeVILA VideoChat2 TV-TREES  ‡ TV-TREES TV-TREES*</cell></row><row><cell>TVQA Acc.</cell><cell>26.3</cell><cell>38.2</cell><cell>40.6</cell><cell>44.9</cell><cell>49.4</cell><cell>48.1</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head>Table 5 :</head><label>5</label><figDesc>Descriptions for each acceptability score provided to annotators as part of the sliding bar functionality in the task.</figDesc><table /></figure>
+		</body>
+		<back>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A TV-TREES LLM Prompts</head><p>We provide the LLM and VLM prompts used in the TV-TREES pipeline in Figures <ref type="figure">9-16</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B Visual Prompt Anonymization Experiments</head><p>We consider an additional component to the TV-TREES system outlined in Section 4 that anonymizes any references to characters passed in to the visual entailment module. We pass any questions that will be used for visual QA prompts through a GPT filter that replaces any character names with common nouns and pronouns like "the man", "they", and "the doctor". We report results below, comparing this alternate system to the competing methods and the standard TV-TREES method. We find that the anonymization paradigm results in a TVQA accuracy score of 48.1% compared to the standard system's 49.4%. We provide the anonymization GPT prompt in Figure <ref type="figure">13</ref> and a results table for comparison (Table <ref type="table">4</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C Amazon Mechanical Turk Details</head><p>We evaluate generated tree quality through crowdsourced workers on Amazon Mechanical Turk with three main annotation tasks. We identify a separate group of quality annotators for each task by (1) setting the qualifications for the task to workers located within the United States with a HIT acceptance rate of 98% and over 1000 completed HITS, and (2) running a pilot task with carefully selected questions to identify annotators who answer the preselected questions with high accuracy.</p><p>We estimate time completion for each version of the task uploaded to Mechanical Turk and set the payment values to an estimated $15 per hour. No identifiable information of any annotators is present in this paper or in any artifacts we will release.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D Human Tree Evaluation Tasks</head><p>Below, we include screenshots depicting the instructions and format of each task provided to annotators. We also include a table detailing the descriptions provided to annotators for each of the five acceptability scores (Table <ref type="table">5</ref>).</p><p>Acceptability: See Figures <ref type="figure">4 and 5</ref>.</p><p>Relevance: See Figure <ref type="figure">6</ref>.</p><p>Sufficiency: See Figures <ref type="figure">7 and 8</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E GPT-4 Evaluation Prompts</head><p>Prompts for GPT-4 evaluations are shown in Figures <ref type="figure">17 -19</ref>. Figure <ref type="figure">17</ref> shows the primary decomposition evaluation prompt, which accounts for relevancy, distinctness, and sufficiency. Figure <ref type="figure">18</ref> shows the textual acceptability for dialogue prompt, and Figure <ref type="figure">19</ref> shows the visual acceptability for screenshots prompt, which was passed to GPT-4V.</p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<author>
+			<persName><forename type="first">Payal</forename><surname>Bajaj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Campos</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nick</forename><surname>Craswell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianfeng</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaodong</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rangan</forename><surname>Majumder</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrew</forename><surname>Mcnamara</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bhaskar</forename><surname>Mitra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tri</forename><surname>Nguyen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1611.09268</idno>
+		<title level="m">Ms marco: A human generated machine reading comprehension dataset</title>
+				<imprint>
+			<date type="published" when="2016">2016</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Natural language deduction through search over statement compositions</title>
+		<author>
+			<persName><forename type="first">Kaj</forename><surname>Bostrom</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zayne</forename><surname>Sprague</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Swarat</forename><surname>Chaudhuri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Greg</forename><surname>Durrett</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Findings of the Association for Computational Linguistics: EMNLP 2022</title>
+				<meeting><address><addrLine>Abu Dhabi, United Arab Emirates</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="4871" to="4883" />
+		</imprint>
+	</monogr>
+	<note>Association for Computational Linguistics</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<author>
+			<persName><forename type="first">Gabor</forename><surname>Samuel R Bowman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christopher</forename><surname>Angeli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christopher</forename><forename type="middle">D</forename><surname>Potts</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Manning</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1508.05326</idno>
+		<title level="m">A large annotated corpus for learning natural language inference</title>
+				<imprint>
+			<date type="published" when="2015">2015a</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<monogr>
+		<title level="m" type="main">A large annotated corpus for learning natural language inference</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Samuel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gabor</forename><surname>Bowman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christopher</forename><surname>Angeli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christopher</forename><forename type="middle">D</forename><surname>Potts</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Manning</surname></persName>
+		</author>
+		<idno>CoRR, abs/1508.05326</idno>
+		<imprint>
+			<date type="published" when="2015">2015b</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Language models are few-shot learners</title>
+		<author>
+			<persName><forename type="first">Tom</forename><surname>Brown</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Mann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nick</forename><surname>Ryder</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Melanie</forename><surname>Subbiah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jared</forename><forename type="middle">D</forename><surname>Kaplan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Prafulla</forename><surname>Dhariwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arvind</forename><surname>Neelakantan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pranav</forename><surname>Shyam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Girish</forename><surname>Sastry</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Amanda</forename><surname>Askell</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in neural information processing systems</title>
+				<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="page" from="1877" to="1901" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Evaluation of text generation: A survey</title>
+		<author>
+			<persName><forename type="first">Asli</forename><surname>Celikyilmaz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Elizabeth</forename><surname>Clark</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianfeng</forename><surname>Gao</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Explainable video entailment with grounded visual evidence</title>
+		<author>
+			<persName><forename type="first">Junwen</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu</forename><surname>Kong</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+				<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<author>
+			<persName><forename type="first">Chung</forename><surname>Hyung Won</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Le</forename><surname>Hou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shayne</forename><surname>Longpre</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Barret</forename><surname>Zoph</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yi</forename><surname>Tay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">William</forename><surname>Fedus</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yunxuan</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xuezhi</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mostafa</forename><surname>Dehghani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siddhartha</forename><surname>Brahma</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2210.11416</idno>
+		<title level="m">Scaling instruction-finetuned language models</title>
+				<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Explaining answers with entailment trees</title>
+		<author>
+			<persName><forename type="first">Bhavana</forename><surname>Dalvi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Jansen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Oyvind</forename><surname>Tafjord</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhengnan</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hannah</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Leighanna</forename><surname>Pipatanangkura</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Clark</surname></persName>
+		</author>
+		<idno type="DOI">10.18653/v1/2021.emnlp-main.585</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing</title>
+				<meeting>the 2021 Conference on Empirical Methods in Natural Language Processing</meeting>
+		<imprint>
+			<publisher>Dominican Republic. Association for Computational Linguistics</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="7358" to="7370" />
+		</imprint>
+		<respStmt>
+			<orgName>Online and Punta Cana</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<author>
+			<persName><forename type="first">Virginie</forename><surname>Do</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Oana-Maria</forename><surname>Camburu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2004.03744</idno>
+		<title level="m">Zeynep Akata, and Thomas Lukasiewicz. 2020. e-snli-ve: Corrected visual-textual entailment with natural language explanations</title>
+				<imprint/>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Graph-based multi-interaction network for video question answering</title>
+		<author>
+			<persName><forename type="first">Mao</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhou</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weike</forename><surname>Jin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Richang</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fei</forename><surname>Wu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Image Processing</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="page" from="2758" to="2770" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Explainable deep learning for video recognition tasks: A framework &amp; recommendations</title>
+		<author>
+			<persName><forename type="first">Liam</forename><surname>Hiley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alun</forename><surname>Preece</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yulia</forename><surname>Hicks</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1909.05667</idno>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<title level="m" type="main">Logical self-defense</title>
+		<author>
+			<persName><forename type="first">Ralph</forename><forename type="middle">H</forename><surname>Johnson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">Anthony</forename><surname>Blair</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1977">1977</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Video question-answering techniques, benchmark datasets and evaluation metrics leveraging video captioning: a comprehensive survey</title>
+		<author>
+			<persName><forename type="first">Khushboo</forename><surname>Khurana</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Umesh</forename><surname>Deshpande</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Access</title>
+		<imprint>
+			<biblScope unit="volume">9</biblScope>
+			<biblScope unit="page" from="43799" to="43823" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Vilt: Vision-and-language transformer without convolution or region supervision</title>
+		<author>
+			<persName><forename type="first">Wonjae</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bokyung</forename><surname>Son</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ildoo</forename><surname>Kim</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Machine Learning</title>
+				<imprint>
+			<publisher>PMLR</publisher>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="5583" to="5594" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<title level="m" type="main">Large language models are temporal and causal reasoners for video question answering</title>
+		<author>
+			<persName><forename type="first">Dohwan</forename><surname>Ko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ji</forename><surname>Soo Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wooyoung</forename><surname>Kang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Byungseok</forename><surname>Roh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hyunwoo J</forename><surname>Kim</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2310.15747</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<author>
+			<persName><forename type="first">Jie</forename><surname>Lei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Licheng</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohit</forename><surname>Bansal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tamara</forename><forename type="middle">L</forename><surname>Berg</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1809.01696</idno>
+		<title level="m">Tvqa: Localized, compositional video question answering</title>
+				<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<author>
+			<persName><forename type="first">Jie</forename><surname>Lei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Licheng</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tamara</forename><forename type="middle">L</forename><surname>Berg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohit</forename><surname>Bansal</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1904.11574</idno>
+		<title level="m">Tvqa+: Spatio-temporal grounding for video question answering</title>
+				<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Adaptive hierarchical graph reasoning with semantic coherence for video-and-language inference</title>
+		<author>
+			<persName><forename type="first">Juncheng</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siliang</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Linchao</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haochen</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xuanwen</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fei</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yi</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yueting</forename><surname>Zhuang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+				<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2021">2021a</date>
+			<biblScope unit="page" from="1867" to="1877" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<author>
+			<persName><forename type="first">Kunchang</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yali</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yinan</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yizhuo</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yi</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yi</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zun</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jilan</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guo</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ping</forename><surname>Luo</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2311.17005</idno>
+		<title level="m">Mvbench: A comprehensive multi-modal video understanding benchmark</title>
+				<imprint>
+			<date type="published" when="2023">2023a</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<title level="m" type="main">Hero: Hierarchical encoder for video+ language omni-representation pretraining</title>
+		<author>
+			<persName><forename type="first">Linjie</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yen-Chun</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhe</forename><surname>Gan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Licheng</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingjing</forename><surname>Liu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2005.00200</idno>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Scene-text oriented visual entailment: Task, dataset and solution</title>
+		<author>
+			<persName><forename type="first">Nan</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pijian</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dongsheng</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenye</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yi</forename><surname>Cai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qingbao</forename><surname>Huang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 31st ACM International Conference on Multimedia</title>
+				<meeting>the 31st ACM International Conference on Multimedia</meeting>
+		<imprint>
+			<date type="published" when="2023">2023b</date>
+			<biblScope unit="page" from="5562" to="5571" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Towards visually explaining video understanding networks with perturbation</title>
+		<author>
+			<persName><forename type="first">Zhenqiang</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weimin</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zuoyue</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yifei</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yoichi</forename><surname>Sato</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision</title>
+				<meeting>the IEEE/CVF Winter Conference on Applications of Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2021">2021b</date>
+			<biblScope unit="page" from="1120" to="1129" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<author>
+			<persName><forename type="first">Haotian</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chunyuan</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qingyang</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yong</forename><forename type="middle">Jae</forename><surname>Lee</surname></persName>
+		</author>
+		<title level="m">Visual instruction tuning</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Violin: A large-scale dataset for video-and-language inference</title>
+		<author>
+			<persName><forename type="first">Jingzhou</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenhu</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhe</forename><surname>Gan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Licheng</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yiming</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jingjing</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+				<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="page" from="10900" to="10910" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Cross-attentional spatiotemporal semantic graph networks for video question answering</title>
+		<author>
+			<persName><forename type="first">Yun</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaoming</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Feiran</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bo</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhoujun</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Image Processing</title>
+		<imprint>
+			<biblScope unit="volume">31</biblScope>
+			<biblScope unit="page" from="1684" to="1696" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Dynamic multistep reasoning based on video scene graph for video question answering</title>
+		<author>
+			<persName><forename type="first">Jianguo</forename><surname>Mao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenbin</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiangdong</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhifan</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yajuan</forename><surname>Lyu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hong</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yong</forename><surname>Zhu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</title>
+				<meeting>the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies</meeting>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="3894" to="3904" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<analytic>
+		<title level="a" type="main">Automated evaluation of written discourse coherence using gpt-4</title>
+		<author>
+			<persName><forename type="first">Ben</forename><surname>Naismith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mulcaire</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jill</forename><surname>Burstein</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 18th Workshop on Innovative Use of NLP for Building Educational Applications (BEA 2023)</title>
+				<meeting>the 18th Workshop on Innovative Use of NLP for Building Educational Applications (BEA 2023)</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="394" to="403" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Entailment tree explanations via iterative retrieval-generation reasoner</title>
+		<author>
+			<persName><forename type="first">Danilo</forename><surname>Neves Ribeiro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shen</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaofei</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rui</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaokai</forename><surname>Wei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Henghui</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xinchi</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peng</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhiheng</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrew</forename><surname>Arnold</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dan</forename><surname>Roth</surname></persName>
+		</author>
+		<idno type="DOI">10.18653/v1/2022.findings-naacl.35</idno>
+	</analytic>
+	<monogr>
+		<title level="m">Findings of the Association for Computational Linguistics: NAACL 2022</title>
+				<meeting><address><addrLine>Seattle, United States</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="465" to="475" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<title level="m" type="main">Don&apos;t explain without verifying veracity: an evaluation of explainable ai with video activity recognition</title>
+		<author>
+			<persName><forename type="first">Mahsan</forename><surname>Nourani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chiradeep</forename><surname>Roy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tahrima</forename><surname>Rahman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><forename type="middle">D</forename><surname>Ragan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicholas</forename><surname>Ruozzi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vibhav</forename><surname>Gogate</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2005.02335</idno>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<monogr>
+		<title level="m" type="main">Revealing the illusion of joint multimodal understanding in videoqa models</title>
+		<author>
+			<persName><forename type="first">Ishaan</forename><surname>Singh Rawal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shantanu</forename><surname>Jaiswal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Basura</forename><surname>Fernando</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cheston</forename><surname>Tan</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2306.08889</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Explainable activity recognition in videos</title>
+		<author>
+			<persName><forename type="first">Chiradeep</forename><surname>Roy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mahesh</forename><surname>Shanbhag</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mahsan</forename><surname>Nourani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tahrima</forename><surname>Rahman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Samia</forename><surname>Kabir</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vibhav</forename><surname>Gogate</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicholas</forename><surname>Ruozzi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><forename type="middle">D</forename><surname>Ragan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IUI Workshops</title>
+				<imprint>
+			<date type="published" when="2019">2019</date>
+			<biblScope unit="volume">2</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<analytic>
+		<title level="a" type="main">Are vision-language transformers learning multimodal representations? a probing perspective</title>
+		<author>
+			<persName><forename type="first">Emmanuelle</forename><surname>Salin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Badreddine</forename><surname>Farah</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Stéphane</forename><surname>Ayache</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benoit</forename><surname>Favre</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the AAAI Conference on Artificial Intelligence</title>
+				<meeting>the AAAI Conference on Artificial Intelligence</meeting>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="volume">36</biblScope>
+			<biblScope unit="page" from="11248" to="11257" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Long-form videolanguage pre-training with multimodal temporal contrastive learning</title>
+		<author>
+			<persName><forename type="first">Yuchong</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hongwei</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ruihua</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bei</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Huan</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianlong</forename><surname>Fu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in neural information processing systems</title>
+				<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="volume">35</biblScope>
+			<biblScope unit="page" from="38032" to="38045" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<monogr>
+		<author>
+			<persName><forename type="first">Riko</forename><surname>Suzuki</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hitomi</forename><surname>Yanaka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Masashi</forename><surname>Yoshikawa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Koji</forename><surname>Mineshima</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daisuke</forename><surname>Bekki</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1906.03952</idno>
+		<title level="m">Multimodal logical inference system for visual-textual entailment</title>
+				<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">Entailer: Answering questions with faithful and truthful chains of reasoning</title>
+		<author>
+			<persName><forename type="first">Oyvind</forename><surname>Tafjord</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bhavana</forename><surname>Dalvi Mishra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Clark</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing</title>
+				<meeting>the 2022 Conference on Empirical Methods in Natural Language Processing<address><addrLine>Abu Dhabi, United Arab Emirates</addrLine></address></meeting>
+		<imprint>
+			<publisher>Association for Computational Linguistics</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="2078" to="2093" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Fine-grained visual entailment</title>
+		<author>
+			<persName><forename type="first">Christopher</forename><surname>Thomas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yipeng</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shih-Fu</forename><surname>Chang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">European Conference on Computer Vision</title>
+				<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="398" to="416" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<analytic>
+		<title level="a" type="main">Dualvgr: A dual-visual graph reasoning unit for video question answering</title>
+		<author>
+			<persName><forename type="first">Jianyu</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bing-Kun</forename><surname>Bao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Changsheng</forename><surname>Xu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Multimedia</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<biblScope unit="page" from="3369" to="3380" />
+			<date type="published" when="2021">2021a</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<monogr>
+		<title level="m" type="main">Distilled dualencoder model for vision-language understanding</title>
+		<author>
+			<persName><forename type="first">Zekun</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenhui</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haichao</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ming</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bing</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Furu</forename><surname>Wei</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2112.08723</idno>
+		<imprint>
+			<date type="published" when="2021">2021b</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<monogr>
+		<title level="m" type="main">Enhancing systematic decompositional natural language inference using informal logic</title>
+		<author>
+			<persName><forename type="first">Nathaniel</forename><surname>Weir</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kate</forename><surname>Sanders</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Orion</forename><surname>Weller</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shreya</forename><surname>Sharma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dongwei</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhengping</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bhavana</forename><surname>Dalvi Mishra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Oyvind</forename><surname>Tafjord</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Jansen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Clark</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2402.14798</idno>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<monogr>
+		<title level="m" type="main">Dynamic generation of grounded logical explanations in a neuro-symbolic expert system</title>
+		<author>
+			<persName><forename type="first">Nathaniel</forename><surname>Weir</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Benjamin</forename><surname>Van Durme</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<monogr>
+		<title level="m" type="main">Can i trust your answer? visually grounded video question answering</title>
+		<author>
+			<persName><forename type="first">Junbin</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Angela</forename><surname>Yao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yicong</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tat</forename><surname>Seng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chua</forename></persName>
+		</author>
+		<idno type="arXiv">arXiv:2309.01327</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<monogr>
+		<author>
+			<persName><forename type="first">Ning</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Farley</forename><surname>Lai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Derek</forename><surname>Doran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Asim</forename><surname>Kadav</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1901.06706</idno>
+		<title level="m">Visual entailment: A novel task for fine-grained image understanding</title>
+				<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<analytic>
+		<title level="a" type="main">Zero-shot video question answering via frozen bidirectional language models</title>
+		<author>
+			<persName><forename type="first">Antoine</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Antoine</forename><surname>Miech</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Josef</forename><surname>Sivic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ivan</forename><surname>Laptev</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cordelia</forename><surname>Schmid</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+				<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="volume">35</biblScope>
+			<biblScope unit="page" from="124" to="141" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<monogr>
+		<title level="m" type="main">Self-chained image-language model for video localization and question answering</title>
+		<author>
+			<persName><forename type="first">Shoubin</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jaemin</forename><surname>Cho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Prateek</forename><surname>Yadav</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohit</forename><surname>Bansal</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2305.06988</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

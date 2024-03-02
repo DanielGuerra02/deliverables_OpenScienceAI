@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">LEVERAGING AI PREDICTED AND EXPERT REVISED ANNOTATIONS IN INTERACTIVE SEGMENTATION: CONTINUAL TUNING OR FULL TRAINING?</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Tiezheng</forename><surname>Zhang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Johns Hopkins University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Xiaoxi</forename><surname>Chen</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Shanghai Jiao Tong University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Chongyu</forename><surname>Qu</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Johns Hopkins University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Alan</forename><surname>Yuille</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Johns Hopkins University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Zongwei</forename><surname>Zhou</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Johns Hopkins University</orgName>
+							</affiliation>
+						</author>
+						<title level="a" type="main">LEVERAGING AI PREDICTED AND EXPERT REVISED ANNOTATIONS IN INTERACTIVE SEGMENTATION: CONTINUAL TUNING OR FULL TRAINING?</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date/>
+						</imprint>
+					</monogr>
+					<idno type="MD5">4F9BB96F3D41422EBF2B8052303FCCA8</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2024-03-01T18:58+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>Interactive segmentation, Active learning</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Interactive segmentation, an integration of AI algorithms and human expertise, premises to improve the accuracy and efficiency of curating large-scale, detailed-annotated datasets in healthcare. Human experts revise the annotations predicted by AI, and in turn, AI improves its predictions by learning from these revised annotations. This interactive process continues to enhance the quality of annotations until no major revision is needed from experts. The key challenge is how to leverage AI predicted and expert revised annotations to iteratively improve the AI. Two problems arise: (1) The risk of catastrophic forgetting-the AI tends to forget the previously learned classes if it is only retrained using the expert revised classes. (2) Computational inefficiency when retraining the AI using both AI predicted and expert revised annotations; moreover, given the dominant AI predicted annotations in the dataset, the contribution of newly revised annotationsoften account for a very small fraction-to the AI training remains marginal. This paper proposes Continual Tuning to address the problems from two perspectives: network design and data reuse. Firstly, we design a shared network for all classes followed by class-specific networks dedicated to individual classes. To mitigate forgetting, we freeze the shared network for previously learned classes and only update the class-specific network for revised classes. Secondly, we reuse a small fraction of data with previous annotations to avoid over-computing. The selection of such data relies on the importance estimate of each data. The importance score is computed by combining the uncertainty and consistency of AI predictions. Our experiments demonstrate that Continual Tuning achieves a speed 16× greater than repeatedly training AI from scratch without compromising the performance.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">INTRODUCTION</head><p>Combining AI algorithms with human expertise in interactive segmentation <ref type="bibr" target="#b2">[3,</ref><ref type="bibr" target="#b3">4,</ref><ref type="bibr" target="#b4">5]</ref> holds the promise of enhancing precision and productivity in the curation of large-scale, detailed annotated datasets such as SA-1B <ref type="bibr" target="#b5">[6]</ref>, TotalSegmentator <ref type="bibr" target="#b6">[7]</ref>, and AbdomenAtlas <ref type="bibr" target="#b7">[8,</ref><ref type="bibr" target="#b8">9]</ref>. During this synergy, human ex-perts revise the AI predictions, and in return, AI enhances its predictions by adapting based on expert revised annotations. This iterative refinement continues until experts find that no substantial revisions are necessary <ref type="bibr" target="#b9">[10,</ref><ref type="bibr" target="#b10">11,</ref><ref type="bibr" target="#b11">12,</ref><ref type="bibr" target="#b12">13,</ref><ref type="bibr" target="#b13">14]</ref>.</p><p>However, the methodology to optimally leverage AI predicted annotations and expert revised annotations for the iterative enhancement of the AI remains ambiguous. There are two main issues to be considered. Firstly, there is the issue of catastrophic forgetting, which is shown in Figure <ref type="figure" target="#fig_0">1 (a)</ref>, where the AI often overlooks previously learned classes if it is exclusively retrained on expert revised annotations. Secondly, the process of retraining the AI using both its predictions and expert revised annotations is not only computationally demanding but also less impactful. This is because the AI predictions largely dominate the dataset, making the contribution of expert revised annotations-often a small portionalmost negligible in the training process. In addressing the phenomenon of catastrophic forgetting <ref type="bibr" target="#b14">[15]</ref>, one proposed strategy involves the retention of old class representations. For instance, Liu et al. <ref type="bibr" target="#b15">[16]</ref> advocate for the preservation of prototypical representations across diverse classes. Similarly, Lao et al. <ref type="bibr" target="#b16">[17]</ref> employ a feature replay methodology. Zhang et al. <ref type="bibr" target="#b17">[18]</ref> use pseudo labels in their training process when the model is trained on new classes. However, these methods, which depend on the accuracy of annotations, might encounter practical challenges. For example, inconsistent or incomplete annotations can lead to the creation of misleading classes or the replay of incorrect features. Besides, Kirillov et al. <ref type="bibr" target="#b5">[6]</ref> proposed to retrain the AI from scratch, a method we referred to as Full Training. However, this process could be time-consuming when applied to the medical domain. We seek to answer the following question: Can we utilize the AI predicted and expert revised annotations effectively in interactive segmentation?</p><p>To answer this question, we propose Continual Tuning, which focuses on two aspects: (i) network design and (ii) data reuse. Firstly, we develop a shared network that serves all classes, followed by different networks specifically designed for each class. To address the issue of forgetting, we keep the parameters of the shared network for the previously learned classes frozen while exclusively updating the network associated with the revised classes. As a result, the AI will not arXiv:2402.19423v1 [cs.CV] 29 Feb 2024 Secondly, we reuse a small fraction of data with previous annotations to avoid over-computing. The selection of such data relies on the importance estimate <ref type="bibr" target="#b7">[8,</ref><ref type="bibr" target="#b18">19,</ref><ref type="bibr" target="#b19">20]</ref> based on consistency, uncertainty, and overlapping. In summary, our ultimate goal is to continuously train AI models in interactive segmentation for better performance with the help of experts in the medical domain-this study makes a significant step towards it.</p><formula xml:id="formula_0">(d) (c) c ! !"#$% ! &amp;'!$$( ! ')(*%$)&amp; … " !"#$% " &amp;'!$$( " ')(*%$)&amp; # "+),$</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">METHODOLOGY</head><p>Continual Tuning ideally enables efficient refinement of AI models using revised annotations. For instance, AI models should enhance their aorta segmentation performance when solely fine-tuned on revised aorta annotations. Thus, we have devised a shared network architecture that operates in conjunction with networks tailored for specific classes, as illustrated in Figure <ref type="figure" target="#fig_0">1</ref> (c). When fine-tuning AI models with expert revised annotations only, the shared network will remain unchanged, while the distinct networks associated with those revised annotations will be updated. With the help of text embeddings <ref type="bibr" target="#b20">[21]</ref>, which are encoded from the high-level visual semantics corresponding to each class, the class-specific networks become flexible to be updated. For instance, as depicted in Figure <ref type="figure" target="#fig_0">1</ref> (c), the AI models are fine-tuned exclusively with stomach annotations, and only the networks corresponding to the stomach are updated. In general, given the CT scans with revised annotations (X), the parameters of the corresponding MLP layer could be updated with :</p><formula xml:id="formula_1">θ k = M LP k (E(X), ω k )<label>(1)</label></formula><p>where E(X) is the encoder feature of the image X, ω k denotes the text embedding of each organ k. From the perspective of the data itself, given adequate computational resources, one can train AI models from scratch utilizing both AI predicted and expert-revised annotations, referred to as Full Training <ref type="bibr" target="#b5">[6]</ref>. The improvement of the AI models could be slight due to the dominance of the unchanged annotations in the whole dataset. We propose to use expert-revised annotations in conjunction with AI predicted annotations (Hybrid Data Continual Tuning) to achieve significant improvements in AI models beyond just slight enhancements. Specifically, we express AI predicted annotations for each CT scan as Fig. <ref type="figure">2</ref>.</p><p>Examples of Hybrid Data. In the upper row, the revised annotations for gall bladder, postcava (IVC), and stomach &amp; aorta are presented from left to right. The lower row displays the corresponding hybrid annotations with old classes (liver, pancreas, left kidney, right kidney, and spleen).</p><formula xml:id="formula_2">(C 1 , C 2 , C 3 , ...C n )</formula><p>where n is the total number of organs seen in this CT scan. The expert-revised annotations for each CT scan is</p><formula xml:id="formula_3">(C * 1 , C * 2 , C * 3 , ...C * m )</formula><p>where m is the number of organs revised by experts and m ≤ n. By merging the revised annotations to the AI predicted annotations, the Hybrid Data could be expressed as <ref type="figure">2</ref>. This design enables AI models to efficiently prioritize expert revised annotations without forgetting, due to the use of AI-predicted annotations for previous classes.</p><formula xml:id="formula_4">(C * 1 , C * 2 , C * 3 , ...C * m , C n ) shown in Figure</formula></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">EXPERIMENTS &amp; RESULTS &amp; DISCUSSION</head><p>To prove that our class-specific model and Hybrid Data continual tuning can effectively work in interactive segmentation, we proposed three experiment settings: one is focused on the model trained from one dataset, the other one is using the model trained from 14 publicly available datasets, another one is the comparison between the previous two.</p><p>Implementation Details. The models were trained using the AdamW optimizer <ref type="bibr" target="#b21">[22]</ref>, coupled with a warm-up cosine scheduler lasting for 20 epochs <ref type="bibr" target="#b22">[23]</ref>, and a weight decay of 1e −5 . For the learning rate (lr) and batch size, we opted for values of 1e −4 and 24, respectively. The pre-training phase extended over a total of 250 epochs. The training process was carried out across eight NVIDIA Quadro RTX 8000 cards.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.">Continual Tuning models pre-trained on one dataset</head><p>We used randomly selected 200 CT scans with annotations from the AbdomenCT-1K dataset <ref type="bibr" target="#b23">[24]</ref> to train AI models with Swin UNETR <ref type="bibr" target="#b0">[1]</ref> and U-Net <ref type="bibr" target="#b1">[2]</ref> backbones. Those annotations comprise five classes: the liver, spleen, left kidney, right kidney, and pancreas. We asked an expert (over five years of experience) to annotate (using Pair) four classes: the stom-ach, postcava, aorta, and gall bladder in 12 out of the 200 CT scans, which we refer to as the first round of expert revised annotations. By contrast, we also used the same CT scans with nine classes to train the model from scratch, referred to as Full Training. After fine-tuning these revised annotations, the AI models are used to infer another 200 CT scans from the AbdomenCT-1K dataset. Then, 22 out of the 200 CT scans selected for revision in four classes (stomach, postcava, aorta, and gall bladder) are used for continual fine-tuning, referred to as the second round. The selection for the revision process is based on the uncertainty of the AI predicted annotations. To assess the performance of the models, we computed the DSC score on our proprietary JHH dataset containing high-quality annotations of all nine classes used in this experiment. Results and Analysis. The quantitative results in Figure <ref type="figure" target="#fig_0">1 (b)</ref> demonstrate that applying Continual Tuning on AI models could be 16× faster (200/12) compared with applying the Full Training method while still maintaining a similar DSC score (54.2% vs. 54.4%). The results in Figure <ref type="figure" target="#fig_0">1 (d)</ref> further demonstrate the promise of Continual Tuning in interactive segmentation tasks. The first round in the blue region indicates that Continual Tuning assists in preventing the issue of forgetting. Then, the sharp increase from the first round part to the second round in red regions is attributed to the 22 CT scans predicted by the AI models after the first round of learning. There might be more prevalent errors in these 22 CT scans, which, when revised by the experts, can further enhance the model's performance. The final average DSC scores can achieve about 76.1% and 78.8% for Swin UNETR and U-Net backbones, respectively. We expect AI model performance to improve gradually through interactive segmentation and Continual Tuning.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.">Continual Tuning models pre-trained on 14 datasets</head><p>We first used 3,410 CT scans with annotations from 14 publicly available datasets to train the AI model with Swin UN-ETR backbones, which we refer to as the first round for this experiment. Those datasets are partially annotated but totally contain all nine classes used in the previous experiment. The AI model is used to infer another random 200 CT scans from the testing sets of 14 public datasets. Then, 12 out of the 200 CT scans selected for revision in four classes (stomach, postcava, aorta, and gall bladder) are used for continual finetuning, referred to as the second round. In this round, we tried to use three data strategies: one using revised annotations of 12 CT scans, the other one using 12 CT scans with nine classes, which is our Hybrid Data Continual Tuning method, and the last one is using all 200 CT scans with all nine classes. Results and Analysis. One difference between this experiment and the previous is the scale of datasets used to train the model. We hypothesize that this kind of model is closer to the model used in real scenarios. From Table <ref type="table" target="#tab_0">1</ref>, we could find that if the model is only fine-tuned with the revised CT scans, the model indeed improves the ability to segment the revised classes but also suffers from forgetting problems. Compared to using 200 CT scans in the second, using 12 CT scans could achieve a similar or better improvement of the model's ability. For example, the mean DSC score of the aorta improves by 10% using Hybrid Data Continual Tuning, while it only improves by 2% if we fine-tune the model with all 200 CT scans. This slight improvement is due to the dominance of unchanged data in the dataset (188 vs. 12).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.">Continual Tuning: Impact on Model Scales</head><p>We used 200 CT scans from one dataset with nine classes to train AI models with Swin UNETR and U-Net backbones.</p><p>The AI models are used to infer another random 200 CT scans from the testing sets of this dataset. Then the same amount of CT scans are selected for revision. And we applied the same data strategies as we did in §3.2.</p><p>Results and Analysis. From Table <ref type="table" target="#tab_1">2</ref>, we could find that the models have better performance using all 200 CT scans, especially for organs that have revised annotations. Although the unchanged data still dominates the whole dataset, it does not weaken the influence of 12 revised annotations. The variations in phenotypes between §3.2 and §3.3 could be attributed to differences in dataset utilization. Multiple datasets could have different annotation principles. For example, some datasets include annotations for the stomach, including the cavity, while others may not. Although the annotation could be more accurate with the process of revision, the model's performance could be minimized by different annotation principles. On the other hand, if the models are trained on a single dataset, each organ follows a consistent annotation principle, and more data could lead to better performance.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">CONCLUSION</head><p>In this paper, we propose Continual Tuning that integrates network design and data reuse to leverage AI predicted and expert revised annotations during the interactive segmentation procedure. Continual Tuning enables AI models to be fine-tuned efficiently (16× faster in our experiment) only with expert revised annotations in interactive segmentation tasks in the medical domain. This reveals the great potential for finetuning the AI models with incoming partial class datasets, e.g., AbdomenCT-1K, or datasets containing tumors.</p><p>Clinical Application. Our proposed Continual Tuning enhances diagnostic accuracy and minimizes annotation efforts, thus facilitating long-term learning and promoting trust in the model's decision-making process. This approach fosters continual improvement and the integration of the latest medical knowledge, thereby increasing the model's value in evidencebased healthcare settings.</p><p>Limitation. Continual Tuning involves several procedures that require human intervention, such as the annotation revision and selection process. This human involvement introduces a degree of subjectivity and variability, which may impact the overall quality and consistency of the annotations, consequently affecting the performance of the AI models. Secondly, the class-specific network we employ to prevent catastrophic forgetting is not inherently adaptive. As datasets evolve and new classes are introduced, the pre-defined classspecific network may become less effective.</p><p>Compliance with Ethical Standards. Committee/IRB of Johns Hopkins Medicine gave ethical approval for this work.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 .</head><label>1</label><figDesc>Fig. 1. (a) Catastrophic gorgetting in Swin UNETR [1] and U-Net [2] backbones. The old classes will be forgotten at the first few epochs when continual training AI models on data of new classes. (b) Comparison of Continual Tuning and Full Training. Two lines illustrate the mean DSC score using Continual Tuning method, while the asterisks show the final DSC score when applying Full Training. (c) Shared Networks with Class-Specific Extensions. The figure shows the networks we use, and we take the stomach as an example of the new class. (d) Results of Continual Tuning on Two Rounds. The blue region represents first-round results of Continual Tuning, and the red region, the second-round results.</figDesc><graphic coords="2,311.89,205.10,246.61,118.08" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1 .</head><label>1</label><figDesc>The numbers in parentheses indicate the amount of revised CT scans. The table illustrates the mean DSC score obtained from implementing various data strategies on the AI model that has been trained using 14 datasets.</figDesc><table><row><cell>Organ</cell><cell>Before Fine-tuning mDice</cell><cell>Revised Data Only Continual Tuning mDice</cell></row><row><cell>Spleen</cell><cell>0.94</cell><cell>0.25</cell></row><row><cell>Right Kidney</cell><cell>0.92</cell><cell>0.08</cell></row><row><cell>Left Kidney</cell><cell>0.91</cell><cell>0.12</cell></row><row><cell>Pancreas</cell><cell>0.81</cell><cell>0.07</cell></row><row><cell>Liver</cell><cell>0.96</cell><cell>0.01</cell></row><row><cell>Stomach (11)</cell><cell>0.93</cell><cell>0.90</cell></row><row><cell>Aorta (12)</cell><cell>0.73</cell><cell>0.83</cell></row><row><cell>Postcava (IVC) (6)</cell><cell>0.76</cell><cell>0.75</cell></row><row><cell>Gall Bladder (1)</cell><cell>0.82</cell><cell>0.82</cell></row><row><cell>Organ</cell><cell>Hybrid Data Continual Tuning mDice</cell><cell>Full Training mDice</cell></row><row><cell>Spleen</cell><cell>0.95</cell><cell>0.94</cell></row><row><cell>Right Kidney</cell><cell>0.92</cell><cell>0.92</cell></row><row><cell>Left Kidney</cell><cell>0.91</cell><cell>0.91</cell></row><row><cell>Pancreas</cell><cell>0.82</cell><cell>0.82</cell></row><row><cell>Liver</cell><cell>0.96</cell><cell>0.96</cell></row><row><cell>Stomach (11)</cell><cell>0.93</cell><cell>0.93</cell></row><row><cell>Aorta (12)</cell><cell>0.83</cell><cell>0.75</cell></row><row><cell>Postcava(IVC) (6)</cell><cell>0.77</cell><cell>0.77</cell></row><row><cell>Gall Bladder (1)</cell><cell>0.82</cell><cell>0.82</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head>Table 2 .</head><label>2</label><figDesc>The numbers in parentheses indicate the amount of revised CT scans. The table illustrates the mean DSC score obtained from implementing various data strategies on the AI models that have been trained using one dataset.</figDesc><table><row><cell>Structures</cell><cell>Organ</cell><cell>Hybrid Data Continual Tuning mDice</cell><cell>Full Training mDice</cell></row><row><cell></cell><cell>Spleen</cell><cell>0.93</cell><cell>0.93</cell></row><row><cell></cell><cell>Right Kidney</cell><cell>0.92</cell><cell>0.92</cell></row><row><cell></cell><cell>Left Kidney</cell><cell>0.90</cell><cell>0.90</cell></row><row><cell></cell><cell>Pancreas</cell><cell>0.73</cell><cell>0.80</cell></row><row><cell>Swin UNETR</cell><cell>Liver</cell><cell>0.95</cell><cell>0.96</cell></row><row><cell></cell><cell>Stomach (11)</cell><cell>0.77</cell><cell>0.89</cell></row><row><cell></cell><cell>Aorta (12)</cell><cell>0.69</cell><cell>0.80</cell></row><row><cell></cell><cell>Postcava(IVC) (6)</cell><cell>0.58</cell><cell>0.76</cell></row><row><cell></cell><cell>Gall Bladder (1)</cell><cell>0.43</cell><cell>0.82</cell></row><row><cell></cell><cell>Spleen</cell><cell>0.92</cell><cell>0.90</cell></row><row><cell></cell><cell>Right Kidney</cell><cell>0.90</cell><cell>0.92</cell></row><row><cell></cell><cell>Left Kidney</cell><cell>0.89</cell><cell>0.90</cell></row><row><cell></cell><cell>Pancreas</cell><cell>0.79</cell><cell>0.81</cell></row><row><cell>U-Net</cell><cell>Liver</cell><cell>0.95</cell><cell>0.95</cell></row><row><cell></cell><cell>Stomach (11)</cell><cell>0.64</cell><cell>0.86</cell></row><row><cell></cell><cell>Aorta (12)</cell><cell>0.70</cell><cell>0.79</cell></row><row><cell></cell><cell>Postcava(IVC) (6)</cell><cell>0.55</cell><cell>0.76</cell></row><row><cell></cell><cell>Gall Bladder (1)</cell><cell>0.42</cell><cell>0.83</cell></row></table></figure>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Acknowledgments. This work was supported by the Lustgarten Foundation for Pancreatic Cancer Research and the McGovern Foundation. We thank Yaoyao Liu, Ju He for their constructive suggestions at several stages of the project.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Self-supervised pre-training of swin transformers for 3d medical image analysis</title>
+		<author>
+			<persName><forename type="first">Yucheng</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dong</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenqi</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bennett</forename><surname>Holger R Roth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daguang</forename><surname>Landman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vishwesh</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ali</forename><surname>Nath</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Hatamizadeh</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition</title>
+				<meeting>the IEEE/CVF Conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="20730" to="20740" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">U-net: Convolutional networks for biomedical image segmentation</title>
+		<author>
+			<persName><forename type="first">Olaf</forename><surname>Ronneberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Philipp</forename><surname>Fischer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Brox</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Medical Image Computing and Computer-Assisted Intervention</title>
+				<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2015">2015</date>
+			<biblScope unit="page" from="234" to="241" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Setting the mind for intelligent interactive segmentation: Overview, requirements, and framework</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Sílvia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arnold</forename><forename type="middle">Wm</forename><surname>Olabarriaga</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Smeulders</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Biennial International Conference on Information Processing in Medical Imaging</title>
+				<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="1997">1997</date>
+			<biblScope unit="page" from="417" to="422" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Interaction in the segmentation of medical images: A survey</title>
+		<author>
+			<persName><forename type="first">Sílvia</forename><surname>Delgado</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Olabarriaga</forename></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arnold</forename><forename type="middle">Wm</forename><surname>Smeulders</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Medical image analysis</title>
+		<imprint>
+			<biblScope unit="volume">5</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="127" to="142" />
+			<date type="published" when="2001">2001</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">An overview of interactive medical image segmentation</title>
+		<author>
+			<persName><forename type="first">Feng</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xianghua</forename><surname>Xie</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Annals of the BMVA</title>
+		<imprint>
+			<biblScope unit="volume">2013</biblScope>
+			<biblScope unit="issue">7</biblScope>
+			<biblScope unit="page" from="1" to="22" />
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Segment anything</title>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Kirillov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Mintun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nikhila</forename><surname>Ravi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hanzi</forename><surname>Mao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chloe</forename><surname>Rolland</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Laura</forename><surname>Gustafson</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tete</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Spencer</forename><surname>Whitehead</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><forename type="middle">C</forename><surname>Berg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wan-Yen</forename><surname>Lo</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2304.02643</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Totalsegmentator: robust segmentation of 104 anatomical structures in ct images</title>
+		<author>
+			<persName><forename type="first">Jakob</forename><surname>Wasserthal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Manfred</forename><surname>Meyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hanns-Christian</forename><surname>Breit</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joshy</forename><surname>Cyriac</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shan</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Martin</forename><surname>Segeroth</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2208.05868</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Abdomenatlas-8k: Annotating 8,000 abdominal ct volumes for multi-organ segmentation in three weeks</title>
+		<author>
+			<persName><forename type="first">Chongyu</forename><surname>Qu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tiezheng</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hualin</forename><surname>Qiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jie</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yucheng</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alan</forename><surname>Yuille</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zongwei</forename><surname>Zhou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Conference on Neural Information Processing Systems</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">How well do supervised models transfer to 3d image segmentation?</title>
+		<author>
+			<persName><forename type="first">Wenxuan</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alan</forename><surname>Yuille</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zongwei</forename><surname>Zhou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">The Twelfth International Conference on Learning Representations</title>
+				<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Fine-tuning convolutional neural networks for biomedical image analysis: actively and incrementally</title>
+		<author>
+			<persName><forename type="first">Zongwei</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jae</forename><surname>Shin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lei</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Suryakanth</forename><surname>Gurudu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><surname>Gotway</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianming</forename><surname>Liang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition</title>
+				<meeting>the IEEE conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="7340" to="7351" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Integrating active learning and transfer learning for carotid intima-media thickness video interpretation</title>
+		<author>
+			<persName><forename type="first">Zongwei</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jae</forename><surname>Shin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ruibin</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Todd</forename><surname>Hurst</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Christopher</forename><forename type="middle">B</forename><surname>Kendall</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianming</forename><surname>Liang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of digital imaging</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="290" to="299" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Active, continual fine tuning of convolutional neural networks for reducing annotation efforts</title>
+		<author>
+			<persName><forename type="first">Zongwei</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jae</forename><forename type="middle">Y</forename><surname>Shin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michael</forename><forename type="middle">B</forename><surname>Suryakanth R Gurudu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianming</forename><surname>Gotway</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Liang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Medical image analysis</title>
+		<imprint>
+			<biblScope unit="volume">71</biblScope>
+			<biblScope unit="page">101997</biblScope>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Making your first choice: To address cold start problem in vision active learning</title>
+		<author>
+			<persName><forename type="first">Liangyu</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yutong</forename><surname>Bai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Siyu</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yongyi</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bihan</forename><surname>Wen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alan</forename><forename type="middle">L</forename><surname>Yuille</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zongwei</forename><surname>Zhou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Medical Imaging with Deep Learning</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">Adaptive aggregation networks for class-incremental learning</title>
+		<author>
+			<persName><forename type="first">Yaoyao</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Bernt</forename><surname>Schiele</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qianru</forename><surname>Sun</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF conference on Computer Vision and Pattern Recognition</title>
+				<meeting>the IEEE/CVF conference on Computer Vision and Pattern Recognition</meeting>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<biblScope unit="page" from="2544" to="2553" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Catastrophic interference in neural networks: Causes, solutions, and data</title>
+		<author>
+			<persName><forename type="first">Stephan</forename><surname>Lewandowsky</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shu-Chen</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Interference and inhibition in cognition</title>
+				<imprint>
+			<publisher>Elsevier</publisher>
+			<date type="published" when="1995">1995</date>
+			<biblScope unit="page" from="329" to="361" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Learning incrementally to segment multiple organs in a ct image</title>
+		<author>
+			<persName><forename type="first">Pengbo</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xia</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mengsi</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hongli</forename><surname>Pan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Minmin</forename><surname>Yin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaohong</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dandan</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaoying</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lian</forename><surname>Ding</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Medical Image Computing and Computer-Assisted Intervention</title>
+				<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="714" to="724" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">A two-stream continual learning system with variational domain-agnostic feature replay</title>
+		<author>
+			<persName><forename type="first">Qicheng</forename><surname>Lao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiang</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohammad</forename><surname>Havaei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yoshua</forename><surname>Bengio</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Neural Networks and Learning Systems</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="issue">9</biblScope>
+			<biblScope unit="page" from="4466" to="4478" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Continual learning for abdominal multi-organ and tumor segmentation</title>
+		<author>
+			<persName><forename type="first">Yixiao</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xinyi</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Huimiao</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alan</forename><forename type="middle">L</forename><surname>Yuille</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yaoyao</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zongwei</forename><surname>Zhou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International conference on medical image computing and computer-assisted intervention</title>
+				<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="35" to="45" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Adaptive active learning for image classification</title>
+		<author>
+			<persName><forename type="first">Xin</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuhong</forename><surname>Guo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE conference on computer vision and pattern recognition</title>
+				<meeting>the IEEE conference on computer vision and pattern recognition</meeting>
+		<imprint>
+			<date type="published" when="2013">2013</date>
+			<biblScope unit="page" from="859" to="866" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Deep bayesian active learning with image data</title>
+		<author>
+			<persName><forename type="first">Yarin</forename><surname>Gal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Riashat</forename><surname>Islam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zoubin</forename><surname>Ghahramani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International conference on machine learning</title>
+				<imprint>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="page" from="1183" to="1192" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">Clip-driven universal model for organ segmentation and tumor detection</title>
+		<author>
+			<persName><forename type="first">Jie</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yixiao</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jie-Neng</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junfei</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yongyi</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yixuan</forename><surname>Bennett A Landman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alan</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yucheng</forename><surname>Yuille</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zongwei</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Zhou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE/CVF International Conference on Computer Vision</title>
+				<meeting>the IEEE/CVF International Conference on Computer Vision</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="21152" to="21164" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<title level="m" type="main">Decoupled weight decay regularization</title>
+		<author>
+			<persName><forename type="first">Ilya</forename><surname>Loshchilov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Frank</forename><surname>Hutter</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1711.05101</idno>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<author>
+			<persName><forename type="first">Priya</forename><surname>Goyal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Piotr</forename><surname>Dollár</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ross</forename><surname>Girshick</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pieter</forename><surname>Noordhuis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lukasz</forename><surname>Wesolowski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aapo</forename><surname>Kyrola</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andrew</forename><surname>Tulloch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yangqing</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kaiming</forename><surname>He</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:1706.02677</idno>
+		<title level="m">Accurate, large minibatch sgd: Training imagenet in 1 hour</title>
+				<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">Abdomenct-1k: Is abdominal organ segmentation a solved problem?</title>
+		<author>
+			<persName><forename type="first">Jun</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yao</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Song</forename><surname>Gu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cheng</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Cheng</forename><surname>Ge</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yichi</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xingle</forename><surname>An</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Congcong</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qiyuan</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xin</forename><surname>Liu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Transactions on Pattern Analysis and Machine Intelligence</title>
+		<imprint>
+			<biblScope unit="volume">44</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page" from="6695" to="6714" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

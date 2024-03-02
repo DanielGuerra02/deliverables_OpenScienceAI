@@ -1,0 +1,752 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Probing the Information Encoded in Neural-based Acoustic Models of Automatic Speech Recognition Systems</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2024-02-29">29 Feb 2024</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Quentin</forename><surname>Raymondaud</surname></persName>
+							<email>quentin.raymondaud@univ-avignon.fr</email>
+							<affiliation key="aff0">
+								<orgName type="institution">LIA -Avignon University Avignon</orgName>
+								<address>
+									<country key="FR">France</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Mickael</forename><surname>Rouvier</surname></persName>
+							<email>mickael.rouvier@univ-avignon.fr</email>
+							<affiliation key="aff1">
+								<orgName type="institution">LIA -Avignon University Avignon</orgName>
+								<address>
+									<country key="FR">France</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Richard</forename><surname>Dufour</surname></persName>
+							<email>richard.dufour@univ-nantes.fr</email>
+							<affiliation key="aff2">
+								<orgName type="institution">LS2N -Nantes University Nantes</orgName>
+								<address>
+									<country key="FR">France</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Probing the Information Encoded in Neural-based Acoustic Models of Automatic Speech Recognition Systems</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2024-02-29">29 Feb 2024</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">2DFC2BDD0A16118E36340BE6DA73AB0F</idno>
+					<idno type="arXiv">arXiv:2402.19443v1[cs.SD]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2024-03-01T18:58+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>automatic speech recognition</term>
+					<term>acoustic model</term>
+					<term>deep neural network</term>
+					<term>artificial intelligence explanation</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Deep learning architectures have made significant progress in terms of performance in many research areas. The automatic speech recognition (ASR) field has thus benefited from these scientific and technological advances, particularly for acoustic modeling, now integrating deep neural network architectures. However, these performance gains have translated into increased complexity regarding the information learned and conveyed through these "black-box" architectures. Following many researches in neural networks interpretability, we propose in this article a protocol that aims to determine which and where information is located in an ASR acoustic model (AM). To do so, we propose to evaluate AM performance on a determined set of tasks using intermediate representations (here, at different layer levels). Regarding the performance variation and targeted tasks, we can emit hypothesis about which information is enhanced or perturbed at different architecture steps. Experiments are performed on both speaker verification, acoustic environment classification, gender classification, tempo-distortion detection systems and speech sentiment/emotion identification. Analysis showed that neural-based AMs hold heterogeneous information that seems surprisingly uncorrelated with phoneme recognition, such as emotion, sentiment or speaker identity. The low-level hidden layers globally appears useful for the structuring of information while the upper ones would tend to delete useless information for phoneme recognition.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>I. INTRODUCTION</head><p>In recent years, automatic speech recognition (ASR) systems have experienced major advances, which have resulted in very significant performance gains. These upheavals have been particularly visible with the integration of deep learning approaches at both acoustic and linguistic levels, in particular through neural network architectures, coupled with the use of massive speech data.</p><p>In a classical ASR framework, an acoustic model (AM) is trained to recognize phonemes. Acoustic modeling then went from Hidden Markov Models (HMMs) with Gaussian Mixture Models (GMMs) <ref type="bibr" target="#b0">[1]</ref>, <ref type="bibr" target="#b1">[2]</ref> to Deep Neural Network (DNN) approaches <ref type="bibr" target="#b2">[3]</ref>, <ref type="bibr" target="#b3">[4]</ref>. Even if significant gains have been observed, it is still difficult to understand and report information learned by these DNN methods. This need for explainability is found in many areas, whether in image <ref type="bibr" target="#b4">[5]</ref>, text <ref type="bibr" target="#b5">[6]</ref> or speech <ref type="bibr" target="#b6">[7]</ref> processing.</p><p>While many works focused on improving AMs, relatively few sought to shed light on the information they conveyed. In speech recognition, only a small number of papers <ref type="bibr" target="#b7">[8]</ref>, <ref type="bibr" target="#b8">[9]</ref> study representations of speech learned by feed-forward DNNs used in acoustic modeling for the phone recognition task. Other works may be found in end-to-end ASR systems, that directly encode acoustic and linguistic information in a single deep learning architecture, that identify the information encoded through the final model, but also the different layers that compose it. Classical ASR systems, comprising separate acoustic and linguistic models, are however still widely used.</p><p>Works mainly seek to understand where the information is located in the different neuronal layers, at the time being simply at the phone <ref type="bibr" target="#b9">[10]</ref>, grapheme level <ref type="bibr" target="#b10">[11]</ref> and speaker representation <ref type="bibr" target="#b11">[12]</ref>, <ref type="bibr" target="#b12">[13]</ref>. Another interesting work <ref type="bibr" target="#b13">[14]</ref> proposed to analyze each layer of an end-to-end ASR system by synthesizing speech from hidden representations, and then to evaluate by listening to the synthesized speech. They observed that the lowest layer shows less speaker variability and noise. One limit of these works is that they are focused on analyzing a single piece of information contained in these networks, even though the information contained in the AMs can be broad (paralinguistic <ref type="bibr" target="#b14">[15]</ref>, speaker <ref type="bibr" target="#b15">[16]</ref>, etc.).</p><p>In this paper, we propose to study and quantify the information contained in the acoustic models trained within the framework of a state-of-the-art classical ASR system. Following previous studies, we seek to analyze the different layers composing an AM based on a factorized time-delay neural network (TDNN-F) architecture <ref type="bibr" target="#b16">[17]</ref>. Unlike other works, a set of tasks have been identified, making it possible to highlight information of different natures and its dynamics of appearance (and disappearance) in the networks in the context of phoneme recognition. We are then trying to determine whether some information are removed, or still preserved, and at which layers level. For each targeted task, we suppose that specific information snippets are important. We therefore seek to answer the question of whether the AM forms a generalist pseudo-uniform vector space in despite of a very specialized phoneme-oriented training process. In addition, we freely released the recipes to facilitate further research <ref type="foot" target="#foot_0">1</ref> .</p><p>The paper is organized as follows. Section II summarizes the studied acoustic model used in the context of automatic speech recognition. Then, Section III presents the protocol that we used for highlighting the presence (or absence) of information of different nature in the AM. In Section IV, we describe the different probing tasks and associated datasets. A qualitative analysis is proposed in Section V before concluding and giving perspectives in Section VI.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>II. ACOUSTIC MODEL ARCHITECTURE</head><p>The acoustic model is one of the main modules of a classical ASR system. It makes possible the recognition of basic speech units, here the phonemes, and has therefore been trained to classify them in a targeted language given an acoustic signal. One of the difficulties of this acoustic modeling lies in the fact that the signal conveys a lot of information other than the phonemes themselves: linguistic, noise, speaker, etc. This information is often encoded in such a complex manner that the signal exhibits a great deal of variability, which makes the phoneme classification task difficult.</p><p>AM accuracy has recently been improved using DNNs that can handle highly correlated features. Hidden layers have then the ability to de-correlate the useless information (environment, speaker, etc.) in order to focus on the useful one for a targeted final task. DNNs allowed us to significantly improve systems, but, at the same time, made our knowledge related to the information contained in an AM more complex.</p><p>The acoustic model studied in this paper is a DNN based on the TDNN-F architecture <ref type="bibr" target="#b16">[17]</ref>. TDNN-F has the same structure as TDNN but the layers of the former are compressed by singular value decomposition and trained by random initialization with semi-orthogonal constraints in one of the two factors of each matrix. TDNN-F is constructed with 16 hidden layers, each containing 1,536 hidden nodes. TDNN-F model was trained on the Librispeech dataset <ref type="bibr" target="#b17">[18]</ref> using the Kaldi toolkit <ref type="bibr" target="#b18">[19]</ref>. The s5 recipe<ref type="foot" target="#foot_1">2</ref> has been followed. Note that no speaker adaptation method has been applied in order to keep a genericity at the speaker level.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>III. PROPOSED PROTOCOL</head><p>We make the assumption that specific information is contained in the hidden layers and may change depending on their level in the neural architecture. We propose to probe the presence (or absence) of specific information in the AM using several targeted classification tasks carried out with parameters extracted from several hidden layer. Our goal is to reveal the link between the features given by the AM hidden layers and the tasks. The classification tasks are carried out, each time with parameters extracted from specific hidden layers of the AM. High performance should then reveal important taskrelated characteristics contained in these layers, and vice versa. For every classification tasks, we use a common ECAPA-TDNN classifier <ref type="bibr" target="#b19">[20]</ref>. The ECAPA-TDNN architecture uses cutting-edge techniques: Multilayer Feature Aggregation (MFA), Squeeze-Excitation (SE) and residual blocks. This model has recently shown impressive performance in the speaker verification <ref type="bibr" target="#b20">[21]</ref>.</p><p>ECAPA-TDNN had the following parameters: the number of SE-Res2Net Blocks is set to 4 with dilation values 2, 3 and 4 to blocks; the number of filters in the convolutional frame layers C is set to 1,024 equal to the number of filter in the bottleneck of the SE-Res2Net Block; embedding layer size is set to 192. For training, we used one cycle learning rate scheduler with SGD or ADAMW optimizer depending on tasks.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>IV. PROBING TASKS</head><p>This section describes the 5 different tasks studied for probing information contained in neural-based AMs: speaker verification, speaking rate, speaker gender, channel-related information (acoustic environments) and paralinguistic information (speech sentiment / emotion).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A. Speaker verification</head><p>Speaker verification refers to the task of verifying the identity claimed by a speaker from that person's voice. This task measures how well the acoustic model encodes the speaker information (speaker-specific traits), which is crucial for the speaker verification task. We extract, for the claimed identity and from the speaker person's voice, a speaker embedding and verify the matching thanks to cosine similarity. Speaker embedding is a high-level speaker representation extracted directly from its acoustic excerpts from ECAPA-TDNN. Equal Error Rate (EER) is used as the performance criterion of speaker verification task (threshold value such that false acceptance and miss rates are equals).</p><p>The system has been trained on the VoxCeleb2 dataset <ref type="bibr" target="#b21">[22]</ref>, only on the development partition, which contains speech from 5,994 speakers. Systems are evaluated on Voxceleb1-E Cleaned <ref type="bibr" target="#b22">[23]</ref> dataset (which involves 579,818 trials). Note that </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>B. Speaking rate</head><p>In this task, we augment all utterances by 3-way speed perturbation with rates of 0.85, 1.0 and 1.15. This task measures whether the acoustic model can capture information on speaking rate. We train a three-classes ECAPA-TDNN classifier and report the classification accuracy. The system has been trained on Voxceleb2 dataset and evaluated on Voxceleb1 dataset (which contains 153,516 utterances).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>C. Speaker gender</head><p>This task measures whether the acoustic model can distinguish between gender (i.e. male or female). We train a twoclasses ECAPA-TDNN classifier and report the classification accuracy. The system has been trained on Voxceleb2 dataset and evaluated on Voxceleb1 dataset (which contains 153,516 utterances). We note that the datasets are fairly gender balanced, (55% male and 45% female).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>D. Acoustic environments</head><p>This task measures whether the acoustic model captures information on acoustic environments (air conditioner, car horn, children playing, dog bark, drilling, enginge idling, gun shot, jackhammer, siren and street music). We train a ten-classes ECAPA-TDNN classifier and report the classification accuracy. The system has been trained using the UrbanSound8k dataset <ref type="bibr" target="#b23">[24]</ref> that contains 8,732 sounds divided into 10 classes. We used the recipe proposed in Speechbrain <ref type="bibr" target="#b24">[25]</ref> that split the corpus in 10-fold cross validation.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>E. Speech sentiment/emotion recognition</head><p>Speech Sentiment Recognition (SSR) and Speech Emotion Recognition (SER) aim to classify speech records respectively in three-classes (positive, neutral and negative) and sevenclasses (anger, disgust, fear, joy, neutral, sadness and surprise). We report the classification in terms of accuracy.</p><p>The system has been train on Multimodal EmotionLines Dataset (MELD) corpus <ref type="bibr" target="#b25">[26]</ref>. This corpus is composed of 13,000 utterances from Friends TV (sitcom). Each utterance is annotated in terms of sentiment and emotion.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>V. EXPERIMENTS AND RESULTS</head><p>Table <ref type="table" target="#tab_0">I</ref> summarizes the performance obtained by the different targeted probing tasks. Scores are expressed in terms of EER for speaker verification, and accuracy for all the others. We compare the performance obtained for each task at different TDNN-F layer levels (from Layer1 to Layer16) as well as the MFCC (Mel-frequency cepstral coefficients) baseline. Note that MFCCs are the acoustic features used as input in the TDNN-F.</p><p>Globally, the vector representations from the hidden layers provide better classification results than a conventional representation of parameters extracted from a speech signal (here, MFCCs). Only the speaker verification task performs better with MFCCs: the AM therefore tends to suppress information linked to the speaker identity, that must participate negatively in the phoneme recognition task, contrary to the other tasks. We observe the same phenomenon in Self-Supervised Learning models such as wav2vec2. In <ref type="bibr" target="#b26">[27]</ref>, the authors observe that wav2vec2 models tend to suppress information linked to the speakers identity on the upper layers. This tends to confirm that information linked to the speakers identity is not useful for phoneme identification task and must be suppressed.</p><p>It therefore appears that the hidden layers contain heterogeneous and structured information from the speech signal, whether at the speaker, acoustic environment or the paralinguistic level. Depending on their depth (i.e. the position of the hidden layer in the network), they do not seem to encode the same information. Lower levels pick up surrounding noise better, with best performance achieved with Layer4 on the acoustic environments task (accuracy of 0.76). In the same way, speech sentiment and speech emotion quickly reach best performance at Layer2, with a respective accuracy of 0.50 and 0.48. Speaker gender and speaking rate achieve the highest performance at the middle level of the network with Layer8 (accuracy of 0.97) and Layer10 (accuracy of 0.70) respectively. Concerning the speaker gender classification, by listening the utterances misclassified by the system, we realize that the system has classified the speakers in terms of low and high voice (low and high voice are respectively assigned to male and female). This observation tends to confirm that information on high and low voice is important to help the phoneme classification task.</p><p>However, note that while performance tends to decrease in the highest hidden layers, these remain at a very good level of accuracy for most of the tasks. It therefore seems that as the network is built, the lower hidden layers structure the information, while the higher hidden layers will suppress information harmful to phoneme recognition. It is then interesting to note that information which seems useless in AM for the ASR task is preserved.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VI. CONCLUSION AND PERSPECTIVES</head><p>In this paper, we proposed a protocol that aims at highlighting information contained in acoustic models used in ASR systems. To do so, we finely studied a neural-based AM using different speech-oriented tasks. By analyzing the performance obtained by each specific task in the different hidden layers of the studied TDNN-F acoustic model, we were able to realize the information contained at various levels of the AM, whether at the speaker, at the acoustic environment, or at the paralinguistic information related to emotion and sentiment.</p><p>Our study showed that TDNN-F AMs provide information that encode gender, speaking rate, speaker identity, emotion and sentiment-related information inside this neural-based model, even though these AMs have been trained to recognize phonemes. The proposed work highlighted that the information is not encoded in the same way within the AM: lowlevel layers tend to structure information, with a continuous increase in performance, until tending towards a suppression of information, which is observed by a final drop in results on our targeted tasks.</p><p>In future works, we will endeavor to expand the tasks (accent, age, etc.) to obtain additional information about which information the AM encodes from the MFCCs. Similarly, we wish to focus on other representations of the acoustic signal, in particular the wav2vec unsupervised representation.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 Fig. 1 .</head><label>11</label><figDesc>Figure1summarizes the protocol of our approach based on the TDNN-F acoustic model architecture (see Section II).</figDesc><graphic coords="2,335.83,110.05,64.10,104.48" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>TABLE I PERFORMANCE</head><label>I</label><figDesc>OBTAINED FOR EACH PROBING TASK AT DIFFERENT TDNN-F LAYER LEVELS AS WELL AS THE MFCC BASELINE. THE SCORES GIVEN IN BOLD AND IN UNDERLINE ARE RESPECTIVELY THE HIGHEST AND LOWEST ONES. NOTE THAT SCORES ARE PROVIDED IN TERMS OF ACCURACY FOR ALL TASKS EXCEPT FOR SPEAKER VERIFICATION (EER).</figDesc><table><row><cell></cell><cell>Speaker</cell><cell>Speaking</cell><cell>Speaker</cell><cell>Acoustic</cell><cell>Speech</cell><cell>Speech</cell></row><row><cell></cell><cell>Gender</cell><cell>Rate</cell><cell>Verification</cell><cell>Environments</cell><cell>Sentiment</cell><cell>Emotion</cell></row><row><cell>MFCC</cell><cell>0.96</cell><cell>0.65</cell><cell>1.97</cell><cell>0.68</cell><cell>0.42</cell><cell>0.23</cell></row><row><cell>Layer1</cell><cell>0.95</cell><cell>0.65</cell><cell>2.13</cell><cell>0.69</cell><cell>0.49</cell><cell>0.34</cell></row><row><cell>Layer2</cell><cell>0.95</cell><cell>0.68</cell><cell>2.19</cell><cell>0.74</cell><cell>0.50</cell><cell>0.48</cell></row><row><cell>Layer4</cell><cell>0.94</cell><cell>0.68</cell><cell>2.33</cell><cell>0.76</cell><cell>0.49</cell><cell>0.48</cell></row><row><cell>Layer6</cell><cell>0.95</cell><cell>0.68</cell><cell>2.57</cell><cell>0.76</cell><cell>0.47</cell><cell>0.47</cell></row><row><cell>Layer8</cell><cell>0.97</cell><cell>0.68</cell><cell>2.84</cell><cell>0.75</cell><cell>0.46</cell><cell>0.48</cell></row><row><cell>Layer10</cell><cell>0.95</cell><cell>0.70</cell><cell>3.37</cell><cell>0.75</cell><cell>0.48</cell><cell>0.48</cell></row><row><cell>Layer12</cell><cell>0.95</cell><cell>0.68</cell><cell>3.80</cell><cell>0.74</cell><cell>0.46</cell><cell>0.35</cell></row><row><cell>Layer14</cell><cell>0.92</cell><cell>0.67</cell><cell>4.34</cell><cell>0.72</cell><cell>0.46</cell><cell>0.24</cell></row><row><cell>Layer16</cell><cell>0.88</cell><cell>0.66</cell><cell>5.09</cell><cell>0.71</cell><cell>0.47</cell><cell>0.48</cell></row></table><note>the development set of VoxCeleb2 is completely disjoint from the VoxCeleb1-E Cleaned dataset (i.e. no speaker in common).</note></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0">https://gitlab.com/Raymondaud.Q/probing-acoustic-model</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="2" xml:id="foot_1">https://github.com/kaldi-asr/kaldi/blob/master/egs/librispeech/s5/</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>VII. ACKNOWLEDGEMENTS</head><p>This work was financially supported by the DIETS project financed by the French National Research Agency (ANR) under contract ANR-20-CE23-0005 and was granted access to the HPC resources of IDRIS under the allocation 2021-A0111012991 made by GENCI.</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Continuous speech recognition by statistical methods</title>
+		<author>
+			<persName><forename type="first">F</forename><surname>Jelinek</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the IEEE</title>
+				<meeting>the IEEE</meeting>
+		<imprint>
+			<date type="published" when="1976">1976</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">GMM-HMM acoustic model training by a two level procedure with gaussian components determined by automatic model selection</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Xu</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)</title>
+				<imprint>
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Acoustic modeling in speech recognition: A systematic review</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Bhatt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Dev</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">International Journal of Advanced Computer Science and Applications (IJACSA)</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">On quantifying the quality of acoustic models in hybrid dnn-hmm asr</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Dighe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Asaei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Bourlard</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Speech Communication</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Explainable deep learning models in medical image analysis</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Sengupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Lakshminarayanan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Imaging</title>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Deephateexplainer: Explainable hate speech detection in under-resourced bengali language</title>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Karim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">K</forename><surname>Dey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Islam</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Sarker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">H</forename><surname>Menon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hossain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">A</forename><surname>Hossain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Decker</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Data Science and Advanced Analytics (DSAA)</title>
+				<imprint>
+			<biblScope unit="page">2021</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<analytic>
+		<title level="a" type="main">Layer-wise relevance propagation for explainable deep learning based speech recognition</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Bharadhwaj</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Symposium on Signal Processing and Information Technology (ISSPIT)</title>
+				<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Understanding how deep belief networks perform acoustic modelling</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>A.-R. Mohamed</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Hinton</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Penn</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Acoustics, Speech and Signal Processing</title>
+				<imprint>
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Understanding the representation and computation of multilayer perceptrons: A case study in speech recognition</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Nagamine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Mesgarani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Machine Learning (ICML)</title>
+				<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Analyzing hidden representations in endto-end automatic speech recognition systems</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Belinkov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Glass</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+				<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<analytic>
+		<title level="a" type="main">Analyzing phonetic and graphemic representations in end-to-end automatic speech recognition</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Belinkov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ali</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Glass</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Interspeech</title>
+				<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Disentangling style factors from speaker representations</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Williams</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>King</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+	<note>Interspeech</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Probing the information encoded in X-Vectors</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Raj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Snyder</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Povey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Khudanpur</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE Automatic Speech Recognition and Understanding (ASRU)</title>
+				<imprint>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">What does a network layer hear? analyzing hidden representations of end-to-end ASR through speech synthesis</title>
+		<author>
+			<persName><forename type="first">C.-Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P.-C</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H.-Y</forename><surname>Lee</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)</title>
+				<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<title level="m" type="main">Towards the explainability of multimodal speech emotion recognition</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Kaushik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Raman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note>Interspeech</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Retrieving speaker information from personalized acoustic models for speech recognition</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mdhaffar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J.-F</forename><surname>Bonastre</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Tommasi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Tomashenko</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Estève</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Acoustics, Speech and Signal Processing</title>
+				<imprint>
+			<biblScope unit="page">2022</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Semi-orthogonal low-rank matrix factorization for deep neural networks</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Povey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Yarmohammadi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Khudanpur</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note>Interspeech</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Librispeech: an ASR corpus based on public domain audio books</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Panayotov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Povey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Khudanpur</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)</title>
+				<imprint>
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">The kaldi speech recognition toolkit</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Povey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ghoshal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Boulianne</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Burget</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Glembek</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Goel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Hannemann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Motlicek</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Schwarz</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Workshop on Automatic Speech Recognition and Understanding (ASRU)</title>
+				<imprint>
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<monogr>
+		<title level="m" type="main">ECAPA-TDNN: Emphasized Channel Attention, Propagation and Aggregation in TDNN based speaker verification</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Desplanques</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Thienpondt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Demuynck</surname></persName>
+		</author>
+		<editor>Interspeech</editor>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">The IDLab VoxSRC-20 submission: Large margin fine-tuning and quality-aware score calibration in DNN based speaker verification</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Thienpondt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Desplanques</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Demuynck</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Acoustics, Speech and Signal Processing</title>
+				<imprint>
+			<biblScope unit="page">2021</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<title level="m" type="main">Voxceleb2: Deep speaker recognition</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">S</forename><surname>Chung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Nagrani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zisserman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+	<note>Interspeech</note>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title level="m" type="main">Voxceleb: a large-scale speaker identification dataset</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Nagrani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">S</forename><surname>Chung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Zisserman</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+	<note>Interspeech</note>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<analytic>
+		<title level="a" type="main">A dataset and taxonomy for urban sound research</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Salamon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Jacoby</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">P</forename><surname>Bello</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">International Conference on Multimedia (ACM)</title>
+				<imprint>
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Speechbrain: A general-purpose speech toolkit</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Ravanelli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Parcollet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Plantinga</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Rouhe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Cornell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Lugosch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Subakan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Dawalatabad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Heba</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhong</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2106.04624</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<title level="m" type="main">MELD: A multimodal multi-party dataset for emotion recognition in conversations</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Poria</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Hazarika</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Majumder</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Naik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Cambria</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Mihalcea</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2019">2019</date>
+			<publisher>Association for Computational Linguistics</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Large-scale self-supervised speech representation learning for automatic speaker verification</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Qian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Zeng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE International Conference on Acoustics, Speech and Signal Processing</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

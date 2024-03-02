@@ -1,0 +1,1937 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Crafting Knowledge: Exploring the Creative Mechanisms of Chat-Based Search Engines</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2024-02-29">29 Feb 2024</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Lijia</forename><surname>Ma</surname></persName>
+							<email>lijiam@uw.edu</email>
+						</author>
+						<author>
+							<persName><forename type="first">Cedric</forename><surname>Xu</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Yong</forename><surname>Tan</surname></persName>
+							<email>ytan@uw.edu</email>
+						</author>
+						<author>
+							<affiliation key="aff0">
+								<orgName type="department">Michael G. Foster School of Business</orgName>
+								<orgName type="institution">University of Washington</orgName>
+								<address>
+									<postCode>98195</postCode>
+									<settlement>Seattle</settlement>
+									<region>WA</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<affiliation key="aff1">
+								<orgName type="department">Michael G. Foster School of Business</orgName>
+								<orgName type="institution">University of Washington</orgName>
+								<address>
+									<postCode>98195</postCode>
+									<settlement>Seattle</settlement>
+									<region>WA</region>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<affiliation key="aff2">
+								<orgName type="department">Michael G. Foster School of Business</orgName>
+								<orgName type="institution">University of Washington</orgName>
+								<address>
+									<postCode>98195</postCode>
+									<settlement>Seattle</settlement>
+									<region>WA</region>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Crafting Knowledge: Exploring the Creative Mechanisms of Chat-Based Search Engines</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2024-02-29">29 Feb 2024</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">1BEC98F02D71FC4049A0A621E484D1A5</idno>
+					<idno type="arXiv">arXiv:2402.19421v1[cs.IR]</idno>
+					<note type="submission">Article submitted to Information Systems Research;</note>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2024-03-01T18:58+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<textClass>
+				<keywords>
+					<term>Generative AI</term>
+					<term>RAG</term>
+					<term>AI Creativity</term>
+					<term>AI Metacognition</term>
+					<term>AI Alignment</term>
+					<term>Search Engine</term>
+					<term>NLP</term>
+				</keywords>
+			</textClass>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>In the domain of digital information dissemination, search engines act as pivotal conduits linking information seekers with providers. The advent of chat-based search engines utilizing Large Language Models (LLMs) and Retrieval Augmented Generation (RAG), exemplified by Bing Chat, marks an evolutionary leap in the search ecosystem. They demonstrate metacognitive abilities in interpreting web information and crafting responses with human-like understanding and creativity. Nonetheless, the intricate nature of LLMs renders their "cognitive" processes opaque, challenging even their designers' understanding. This research aims to dissect the mechanisms through which an LLM-powered chat-based search engine, specifically Bing Chat, selects information sources for its responses. To this end, an extensive dataset has been compiled through engagements with New Bing, documenting the websites it cites alongside those listed by the conventional search engine. Employing natural language processing (NLP) techniques, the research reveals that Bing Chat exhibits a preference for content that is not only readable and formally structured, but also demonstrates lower perplexity levels, indicating a unique inclination towards text that is predictable by the underlying LLM. Further enriching our analysis, we procure an additional dataset through interactions with the GPT-4 based knowledge retrieval API, unveiling a congruent text preference between the RAG API and Bing Chat. This consensus suggests that these text preferences intrinsically emerge from the underlying language models, rather than being explicitly crafted by Bing Chat's developers. Moreover, our investigation documents a greater similarity among websites cited by RAG technologies compared to those ranked highest by conventional search engines. Collectively, these findings illuminate the unique sources, preferences, and potential economic implications of chat-based search engines' content selection behavior, providing fresh perspectives for both academic research and practical applications within the search engine domain.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1.">Introduction</head><p>In the contemporary digital landscape, the volume and variety of information are expanding rapidly.</p><p>To bridge the gap between information providers and seekers, search engines have become indispensable tools in everyday life. Data from Serpwatch reveals that 87% of mobile device users engage with search engines at least once daily. Google, for instance, processes an estimated 63,000 search queries per second, translating to approximately 2 trillion global searches each year 1 . Given the dominant role of search engines in facilitating information access, website owners aspire to gain increased visibility on these platforms, whether for the consumption of their textual content or the purchase of products offered on their websites <ref type="bibr" target="#b4">(Berman and</ref><ref type="bibr">Katona 2013, Jansen et al. 2008)</ref>.</p><p>However, the search engine landscape is currently experiencing a paradigmatic shift owing to the emergence of Large Language Models (LLMs) and associated applications, especially those based on Retrieval Augmented Generation (RAG). On November 30, 2022, OpenAI introduced Chat-GPT, a tool designed to address user queries in a conversational manner. Subsequently, Microsoft incorporated GPT-4 into its search engine, culminating in the debut of New Bing on February 7, 2023 2 . This iteration of Bing integrates a chatbot, hereafter referred to as Bing Chat 3 , enabling online searches and the delivery of responses in comprehensive natural language. Concurrently, on March 21, 2023, Google commenced experimental trials of its chatbot-enhanced search engine, Bard, which has seen its monthly user base surpass 142 million as of early 2024 4 . This novel category of chatbots, exemplified by Bing Chat and Bard, merges search engine capabilities with LLM-based generative artificial intelligence (AI), and are hence termed "chat-based search engines". In contrast, their predecessors are hereafter denoted as "conventional search engines".</p><p>3 Unlike conventional search engines that merely present a list of websites, chat-based search engines initiate their process by comprehending the query, subsequently assimilating information from pertinent websites, and ultimately delivering a coherent response that integrates references to multiple websites for substantiation, during which they demonstrate human-like metacognitive skills, including the acquisition of new knowledge and the demonstration of creativity. Nevertheless, the "cognitive" procedure through which the chatbot discerns pertinent information and formulates the final responses remains largely inscrutable, attributed to the complexity of its foundational model. As the parameter size of LLMs increases, elucidating the mechanism becomes increasingly unfeasible, even for the system's architects <ref type="bibr" target="#b37">(Kosinski 2023)</ref>. Delving into this machine-driven creative process is not only of scientific intrigue but also bears significant economic implications. Prior research in the realm of search engines has shed light on the considerable impact of search engine visibility on both the decision-making processes of individuals <ref type="bibr" target="#b24">(Gong et al. 2018</ref><ref type="bibr" target="#b18">, Ghose et al. 2014</ref>) and the distribution of welfare among stakeholders within an economic equilibrium <ref type="bibr" target="#b4">(Berman and Katona 2013)</ref>. Within this novel search paradigm, the visibility of a website hinges on its citation by the chatbot. As chat-based search engines evolve and enhance their ability to modulate users' exposure to diverse websites<ref type="foot" target="#foot_0">5</ref> , the economic ramifications can escalate correspondingly.</p><p>Historically, conventional search engines also intentionally introduce opacity to their ranking algorithms, serving as a deterrent against manipulation by website proprietors. This obscurity, juxtaposed with the economically pivotal role of visibility through search engines, has given rise to the domain of Search Engine Optimization (SEO). SEO endeavors to decode the myriad factors that influence website standings within search engine results, aiming to tailor content to enhance its visibility <ref type="bibr" target="#b50">(Reisenbichler et al. 2022</ref><ref type="bibr" target="#b12">, Danaher et al. 2006</ref>). Nonetheless, these insights pertaining to the ranking criteria of conventional search engines may not be directly applicable to comprehending the citation criteria of chat-based search engines, given their distinct attributes. To begin with, leading LLMs, such as those within the GPT series, are constructed using a human-in-theloop methodology, wherein human evaluators determine the optimal responses to specific queries Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00 <ref type="bibr" target="#b48">(Ouyang et al. 2022)</ref>. Consequently, these LLMs tend to produce answers that conform to certain linguistic styles <ref type="bibr" target="#b25">(Guo et al. 2023)</ref>, potentially influencing their source preferences during information retrieval tasks. Furthermore, when referencing websites, LLMs must choose suitable textual content. However, LLMs demonstrate varied levels of understanding for different text types, typically evaluated through perplexity metrics <ref type="bibr" target="#b23">(Gonen et al. 2022)</ref>. This disparity in comprehension may also shape their preferences in the source selection process. Given such inherent uncertainties, we posit our first research question.</p><p>RQ1: How do chat-based search engines select websites to cite in response to a query?</p><p>In order to address our first research question, we procure an extensive dataset by executing queries on New Bing and harvesting responses via Bing Chat (the chat-based interface), alongside the websites referenced therein and those listed by Bing (its conventional counterpart). Following a sequence of preprocessing and text mining procedures, we conduct a comparative analysis of the linguistic characteristics of websites cited within Bing Chat's responses against those that are not cited. Our findings indicate that the chat-based search engine exhibits a preference for source content that is more readable and analytical, while demonstrating lower levels of polarity and a reduced conversational tone. Furthermore, our analysis reveals a noteworthy trend: content deemed more "readable" by GPT, as quantified by perplexity scores, is more likely to be cited in support of the responses. This suggests the possibility that the criteria for citation are influenced by the characteristics of the underlying LLM, rather than being exclusively determined by the New Bing engineers.</p><p>Nonetheless, it is conceivable that these criteria may be derived from the conventional search engine engine, especially considering that Bing Chat initiates its process by first identifying relevant websites prior to learning and generating responses<ref type="foot" target="#foot_1">6</ref> . Prior investigations into conventional search engines have unveiled distinct linguistic predilections within their ranking algorithms <ref type="bibr" target="#b50">(Reisenbichler et al. 2022)</ref>. Should Bing Chat predominantly extract information from websites that are highly ranked by traditional search engines, it is likely that the ranking algorithms' preferences will be perpetuated, thus confounding the distinct preferences attributable to the foundational LLM. To discount this alternative explanation and gain a comprehensive understanding of how chat-based search engines diverge from traditional ranking algorithms, we propose our second research question.</p><p>RQ2: How do the selection criteria employed by chat-based search engines diverge from the ranking criteria utilized by conventional search engines?</p><p>Utilizing the same dataset, we investigate the ranking criteria employing an identical set of variables. Our findings reveal that, while there are similarities between the ranking criteria of Bing Chat's citation process (such as readability), significant differences also exist in terms of other linguistic styles (e.g., certitude) and perplexity. These outcomes again underscore the distinct nature of chat-based search engines.</p><p>While our perplexity analysis hints at the influence of the foundational LLM on specific criteria, it remains uncertain whether these criteria are the product of deliberate design choices by Bing Chat's designers, akin to the dynamic anti-gaming measures employed in traditional ranking algorithms.</p><p>However, compared with these traditional counterparts, the LLM used for chat-based search engines poses a greater challenge for manual design. Existing literature underscores that LLMs can manifest unforeseen behaviors once the scale of their parameters surpasses certain thresholds, with the underpinnings of these emergent phenomena eluding even the models' creators <ref type="bibr" target="#b58">(Wei et al. 2022a</ref><ref type="bibr" target="#b37">, Kosinski 2023)</ref>. In light of these considerations, we advance our third research question.</p><p>RQ3: Do chat-based search engine's criteria originate through manual curation or naturally emerge from underlying language models?</p><p>To address this research inquiry, we delve into the information retrieval and content creation processes executed by Bing Chat's foundational model, GPT-4, with a direct examination. Should the predilection for sourcing citation texts be attributed to the intrinsic model, analogous trends are expected to manifest in scenarios utilizing GPT-4 for Retrieval Augmented Generation (RAG).</p><p>In pursuit of this objective, we gather an additional dataset through the use of OpenAI's knowledge Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00 retrieval API by prompting with both queries and a compilation of website contents. Upon replicating our examination of the citation criteria within this RAG context, we uncover that the criteria employed by the GPT-4 based RAG are qualitatively aligned with those observed in Bing Chat. This consistency further suggests that the citation preferences of Bing Chat are derived from the LLM's inherent capabilities, rather than being artificially engineered by the search engine's developers. Furthermore, the texts cited by RAG API demonstrate greater similarities when compared with the top-ranked websites presented by conventional search engines. The disparity provides another intriguing yet justifiable distinctiveness of the LLM-based information retrieval, given its responsibility for furnishing a singular coherent response, thereby requiring an elevated level of information congruity.</p><p>In the subsequent sections of this paper, we integrate relevant literature and highlight our theoretical contributions in Section 2. Section 3 describes our methodology for data acquisition and the construction of variables. Section 4 presents our data analysis, addressing each research question sequentially. Finally, Section 5 concludes with a discussion on practical implications and suggests directions for future research.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.">Related Literature</head><p>Our research builds on and contributes to three streams of literature: i) AI Performance, AI Metacognition, and AI Alignment; ii)search engine ranking, optimization, and marketing; iii) information retrieval with generative AI.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1.">AI Performance, AI Metacognition, and AI Alignment</head><p>Broadly speaking, our paper is related to the research on AI performance, AI metacognition, and AI alignment, especially for LLM-based generative AI and related applications.</p><p>Given the intricate architecture of LLM-based generative AI, the output and performance of such models is not entirely predictable by their designers. Particularly when the models scale up to a high number of parameters, they begin to exhibit emergent capabilities, which include unanticipated enhancements in performance on novel tasks, as discussed in the literature <ref type="bibr" target="#b37">(Kosinski 2023</ref><ref type="bibr" target="#b33">, Johnston and Fusi 2023</ref><ref type="bibr">, Wei et al. 2022a,b)</ref>. In response to these developments, computer scientists are devising novel metrics, tasks, and methodologies to comprehensively assess the efficacy of generative AI across various dimensions <ref type="bibr" target="#b65">(Zhao et al. 2023)</ref>. For instance, <ref type="bibr" target="#b57">Wang et al. (2022)</ref> compiles an extensive list of over 1,600 NLP tasks to evaluate the adaptability of universal language models. More interestingly, recent advancements in LLMs have notably highlighted their potential in paving the way toward Artificial General Intelligence (AGI). According to a classification proposed by Google DeepMind, AI systems can be segmented into ten diverse categories, evaluated across five performance levels (emerging, competent, expert, virtuoso, or superhuman) and categorized by their breadth of application (narrow or general) <ref type="bibr" target="#b46">(Morris et al. 2023)</ref>. Although earlier iterations of AI have evolved from rudimentary rule-based systems to highly advanced entities exemplified by <ref type="bibr">AlphaFold Jumper et al. (2021)</ref>, they are predominantly narrow in their focus and designed for specific tasks. In stark contrast, current generative AI models based on LLMs, like ChatGPT and Llama 2, demonstrate a broad spectrum of metacognitive capabilities, including the acquisition of new skills and creativity <ref type="bibr" target="#b46">(Morris et al. 2023)</ref>. Motivated by these developments, scholars are now endeavoring to dissect the inherent cognitive processes of AI, such as personality and rationality <ref type="bibr" target="#b45">(Mei et al. 2024</ref><ref type="bibr" target="#b11">, Chen et al. 2023b</ref><ref type="bibr">, Wang et al. 2023)</ref>, and to utilize AI's cognitive functions in simulating human responses <ref type="bibr" target="#b7">(Brand et al. 2023</ref><ref type="bibr" target="#b27">, Horton 2023)</ref>.</p><p>As AI systems exhibit increasingly sophisticated cognitive capabilities and the capacity for creativity that surpasses human expectations, the concept of AI alignment has garnered heightened scrutiny <ref type="bibr" target="#b16">(Gabriel 2020)</ref>. The objective of AI alignment is to ensure that AI systems act in accordance with human intentions and values, promoting robustness, interpretability, controllability, and ethicality in AI <ref type="bibr" target="#b32">(Ji et al. 2023)</ref>. Throughout the development and application of Large Language Models (LLMs), alignment principles are integrally applied. For instance, during the development phase, Reinforcement Learning from Human Feedback (RLHF) is employed to align AI with human's goals <ref type="bibr" target="#b48">(Ouyang et al. 2022</ref>). Subsequent to model development, AI outputs and their underlying mechanisms undergo evaluation and interpretation <ref type="bibr" target="#b21">(Gilpin et al. 2018)</ref>. Moreover, Red Teaming Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00 and other assurance strategies are deployed to enhance AI safety <ref type="bibr" target="#b17">(Ganguli et al. 2022)</ref>. Upon the deployment of AI systems, it is imperative from a societal alignment perspective to assess the systems' impacts on the broader society <ref type="bibr" target="#b36">(Korinek and Balwit 2022)</ref>. Within this expansive framework, previous research into the economics of AI can be subsumed under AI alignment, such as studies on the effects of Generative AI on labor markets <ref type="bibr" target="#b41">(Liu et al. 2023a</ref><ref type="bibr" target="#b30">, Hui et al. 2023)</ref>, social communities <ref type="bibr" target="#b5">(Borwankar and</ref><ref type="bibr">Khern-am nuai 2023, Xue et al. 2023)</ref>, and software development <ref type="bibr" target="#b49">(Peng et al. 2023</ref><ref type="bibr" target="#b13">, Dohmke et al. 2023)</ref>.</p><p>Pursuant to this line of inquiry, our paper delves into the creative process underpinning the responses of chat-based search engines, assessing their outputs via an array of textual characteristics. Beyond identifying the distinct textual predilections of chat-based search engines, our study furnishes empirical support for the proposition that these preferences arise naturally from the foundational LLM, rather than being the product of manual curation. Furthermore, our findings elucidate potential mechanisms by which chat-based search engines may wield economic influence, specifically through their unique exposure allocation processes based on textual preferences, coupled with a reduction in information diversity.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2.">Search Engine Ranking, Optimization, and Marketing</head><p>In terms of the application context, our inquiry also contributes to the extensive academic discourse on search engine rankings, optimization, and marketing. This body of work is multifaceted, encompassing a diverse array of subtopics.</p><p>Primarily, certain studies concentrate on the commercial values of search engine rankings and advertisements. These investigations endeavor to decode consumer reactions to search advertisements, examining phenomena such as rank-order effects, and to evaluate the efficacy of such advertisements <ref type="bibr" target="#b18">(Ghose et al. 2014</ref><ref type="bibr" target="#b22">, Goldfarb and Tucker 2011</ref><ref type="bibr" target="#b20">, Ghose and Yang 2009</ref>). In addition, there is scholarly effort dedicated to elucidating the dynamics between various modes of information acquisition for consumers, such as organic versus sponsored searches <ref type="bibr" target="#b64">(Yang and Ghose 2010)</ref>, generic versus branded searches <ref type="bibr" target="#b51">(Rutz and Bucklin 2011)</ref>, and the utilization of search engines in conjunction with social media platforms <ref type="bibr" target="#b19">(Ghose et al. 2019)</ref>.</p><p>Building upon these insights, the extant literature also delves into competitive strategies from the perspective of website proprietors (advertisers). It has been proposed that entities positioned at the pinnacle of organic search results may experience a reduction in their motivation to compete for sponsored clicks <ref type="bibr" target="#b35">(Katona and Sarvary 2010)</ref>. Furthermore, modeling such competition among websites also necessitates the consideration of the actions of consumers and search engines, such as the search engine's incentive to prioritize low-quality websites to maximize its advertising revenue <ref type="bibr" target="#b1">(Athey and Ellison 2011</ref><ref type="bibr" target="#b60">, Xu et al. 2011</ref><ref type="bibr" target="#b61">, 2012)</ref>. <ref type="bibr" target="#b4">Berman and Katona (2013)</ref> presents a framework that examines the impact of Search Engine Optimization (SEO) on the competitive landscape among advertisers and the resulting welfare for visitors, advertisers, and the search engine.</p><p>Finally, given the significance of search engine ranking, scholars also seek to employ techniques to comprehend and enhance website exposure. For organic search, previous research tends to investigate factors that can influence website ranking and subsequently optimize website content accordingly <ref type="bibr" target="#b50">(Reisenbichler et al. 2022</ref><ref type="bibr" target="#b15">, Erdmann et al. 2022</ref><ref type="bibr" target="#b67">, Ziakis et al. 2019</ref><ref type="bibr" target="#b55">, Su et al. 2014</ref><ref type="bibr" target="#b12">, Danaher et al. 2006)</ref>. Regarding sponsored search, scholars concentrate on optimizing websites' keyword auction strategies to maximize revenue while adhering to specific constraints in a competitive environment <ref type="bibr" target="#b40">(Liu and Toubia 2018</ref><ref type="bibr" target="#b14">, Du et al. 2017</ref><ref type="bibr" target="#b53">, Shin 2015</ref><ref type="bibr" target="#b0">, Abhishek and Hosanagar 2013</ref><ref type="bibr" target="#b39">, Liu et al. 2010)</ref>.</p><p>Our investigation principally situates itself within the last stream of literature, as it too aims to elucidate the determinants influencing the content selection mechanism of search engines. Specifically, our study concentrates on the nascent domain of chat-based search engines, analyzing the criteria they employ to select websites for citation and how these criteria diverge from those of conventional search engines' ranking algorithms. This differentiation could engender a novel competitive environment owing to the unique traffic channel these chat-based search engines direct toward websites. Such an evolution also necessitates consideration in future SEO and platform strategies for both researchers and industry experts.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3.">Information Retrieval with Generative AI</head><p>More specifically, our research further intersects with the rapidly expanding domain concerning information retrieval facilitated by generative AI. Despite the longstanding history of information Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00 retrieval methodologies <ref type="bibr" target="#b52">(Schütze et al. 2008</ref><ref type="bibr" target="#b54">, Singhal et al. 2001)</ref>, the emergence of LLM-based generative AI and its associated applications are revolutionizing information retrieval processes.</p><p>Consequently, scholars are endeavoring to design and evaluate the information retrieval techniques in this new context.</p><p>On the design side, the advent of LLM-based generative AI heralds a significant shift-or potentially a paradigmatic transformation-in the domain of information retrieval. These generative AI systems, trained on extensive datasets, are capable of delivering substantiated responses to queries, thereby facilitating direct access to information encapsulated within the original training corpus <ref type="bibr" target="#b3">(Bénédict et al. 2023)</ref>. Moreover, to embed domain-specific insights and contemporary information within these responses, designers may employ several strategies: (1) fine-tuning the LLMs with updated datasets <ref type="bibr" target="#b28">(Hu et al. 2023</ref>); (2) leveraging retrieval-augmented generation that combines the original model with new data <ref type="bibr" target="#b26">(Hofstätter et al. 2023)</ref>; or (3) utilizing straightforward prompt engineering techniques with the incorporation of new data <ref type="bibr" target="#b42">(Liu et al. 2023b</ref>). Significantly, LLM-based generative AI can be instrumental across various stages of information retrieval, including query reformulation, content recall, content re-ranking, and the synthesis of content for the final output <ref type="bibr" target="#b66">(Zhu et al. 2023)</ref>. This multifaceted utility paves the way for the enhancement or creation of novel applications powered by generative AI, such as LLM-based recommendation engines and search agents <ref type="bibr" target="#b29">(Hua et al. 2023</ref><ref type="bibr" target="#b47">, Nakano et al. 2021)</ref>.</p><p>Regarding the evaluation aspect, the intricacies inherent in both the foundational model and the unstructured information sources render the assessment of information retrieval techniques involving generative AI a formidable challenge. To address this, computer scientists devise an array of baseline tasks spanning multiple domains to gauge their efficiency <ref type="bibr" target="#b10">(Chen et al. 2023a</ref>). Additionally, human evaluations are conducted to appraise the systems' outputs <ref type="bibr" target="#b38">(Lewis et al. 2020)</ref>. In certain instances, behavioral researchers engage human participants to undertake information-seeking tasks employing various information retrieval techniques, facilitating a comparative analysis of performance with human involvement <ref type="bibr" target="#b62">(Xu et al. 2023)</ref>.</p><p>Our research mainly enriches the second line of literature concentrating on the evaluation of LLM-based information retrieval systems. Employing a variety of NLP techniques and metrics, this study elucidates the selection criteria employed by Bing Chat for citing websites and delineates the divergence of these criteria from those utilized by traditional search engines' ranking algorithms.</p><p>More crucially, our research reveals that the observed disparities stem from the foundational large language models, rather than being artifacts manually introduced by the designers of Bing Chat. Specifically, we observe that: (1) Bing Chat exhibits a preference for content that is more readily interpretable (i.e., perplexity) by models within the GPT family; (2) the application of retrievalaugmented generation with GPT-4 demonstrates qualitative consistency in selection criteria akin to that of Bing Chat. Consequently, our research also advocates for future scholarly endeavors to adopt a more integrative approach towards the evaluation of LLM-based applications and the underlying large language models.  contemporaneous data extracted from pertinent websites. Links to these sources are furnished at the dialogue box's base. Among these hyperlinks, some are explicitly referenced within the composite answer, whereas others are simply enumerated without direct citation. It is noteworthy that a single sentence may reference none to multiple websites, while a singular website may also be cited in support of none to multiple sentences. Each query is individually inputted into the search engine, acting as the keyword for information retrieval. A subset of queries fails to generate search results, attributable to the inclusion of sensitive or prohibited content, such as hate speech or violent material. Additionally, instances where the Bing Chat fails to produce responses due to the aforementioned reasons, or presents responses devoid of citations to websites, albeit infrequent, are also classified as unsuccessful queries. Constrained by the limitations of response time, our data collection ceases after conducting 700 successful queries that yield results. We then collect the conventional search outcomes displayed on the initial two pages of search results, encompassing titles, excerpts, and hyperlinks of the websites listed. Afterwards, for each Bing Chat response, we gather the textual content, the hyperlinks cited within these responses, and any specific locational markers referencing these hyperlinks. Furthermore, we proceed to capture and archive the complete textual content of all websites listed by the conventional search engine or cited by Bing Chat, culminating in a repository of 13,428 distinct websites. To offer a foundational understanding of the dataset's hierarchical structure, we present summary statistics delineated by various levels of granularity within the raw dataset in Table <ref type="table" target="#tab_0">1</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.">Data and Variables</head><p>For every query submitted, we show three variables that capture the scope of our data collection: N umT otalW ebs, denoting the aggregate number of websites gathered per query;</p><p>N umCitedSentences, signifying the count of sentences within each query's response that reference at least one website; and N umCitedW ebs, specifying the number of websites cited by at least one sentence in Bing Chat's responses. The value of N umCitedW ebs naturally varies across different queries, reflecting Bing Chat's selection criteria to substantiate its responses. It is pertinent to highlight that the count of websites collected from the conventional search engine may also exhibit variability, attributed to the exclusion of duplicate websites that are displayed in the first two pages of conventional search outcomes.</p><p>Delving further, among the 700 responses generated by Bing Chat, a total of 2,586 sentences are identified that cite at least one website for reference. This observation is encapsulated in the variable N umCitedW ebsSent, representing the count of websites cited at the sentence level. Correspondingly, for each website, we ascertain the frequency with which it is referenced across different sentences, thereby defining the variable N umCitedSentencesW eb to quantify this metric. However, the dataset cannot be immediately employed for the investigation of Bing Chat's criteria, given that each website may comprise tens of thousands of words, with only a minor fraction being referenced to substantiate sentences in Bing Chat's responses. To find the most relevant texts, as delineated in the pseudocode Algorithm 1 and Figure <ref type="figure">2</ref>, we undertake a series of preprocessing steps to compile dataset 1A: For every query, we pinpoint sentences within Bing Chat's response that cite at least one website. Subsequently, for each website sourced from this query, we identify the chunk exhibiting the highest similarity to each sentence with references and archive this chunk. This procedure involves dividing the websites into uniform chunks (128 characters each), employing the Universal Sentence Encoder to generate embeddings for both the sentences and all chunks from each website <ref type="bibr" target="#b8">(Cer et al. 2018)</ref>, and utilizing cosine distance to gauge their similarities. This methodology for each query i: do Retrieve all the sentences that cite at least one website J i .</p><p>Retrieve all the related websites K i .</p><p>for each sentence j ∈ J i : do for each website k ∈ K i : do Embed sentence j using Universal Sentence Encoder.</p><p>Segment website k into M k chunks of equal length.</p><p>Embed all the chunks m ∈ M k .</p><p>Find the chunk m = arg max m∈M k cosine_similarity(m ′ 's embedding, j's embedding).</p><p>Add i, j, k, and m's content to Dataset 1A.</p><p>end for end for end for</p><p>Regarding our second research question, which seeks to elucidate the ranking criteria and compare them with Bing Chat's criteria, we assemble Dataset 1B from the websites cataloged by the conventional search engine. Given that the search engine highlights one excerpt for each listed website it deems most pertinent to the search query, we employ this excerpt as the basis for our ranking analysis. To extract the original content of these excerpts, we identify the chunk that includes the excerpt for each website listed by the conventional search engine, thereby creating Dataset 1B following the the bespoke pre-processing and post-processing layers implemented by Bing's designers for search engine tasks, this API may more authentically reveal the underlying LLM's linguistic predispositions.</p><p>To achieve our research objectives, it is imperative to construct an additional dataset, labeled as Dataset 2, building upon the queries and websites acquired from the first data source. For each query, we aim to upload the content of all the relevant websites and ascertain which of these are referenced by the aforementioned RAG API in formulating its responses. This approach, however, introduces a challenge analogous to the one encountered during the assembly of datasets 1A and 1B, namely, the prohibitive length and resultant computational cost of processing all the websites entirely. Consequently, a methodology to distill a more concise segment from each website is necessitated. Adhering to Algorithm 3, we divide each of the 13,428 websites into segments of uniform length (128 tokens in this instance). Subsequently, for each website indexed by the conventional search engines, we leverage the search result excerpt to identify and extract the chunk encompassing this excerpt as the representative chunk for the website 9 . Conversely, if the website is exclusively cited by Bing Chat -thus lacking a corresponding excerpt -we utilize the sentence within Bing Chat's response that references the website as a focal sentence. The chunk bearing the highest similarity to this focal sentence, as quantified by cosine similarity between their embeddings, is then selected as the representative chunk for the website. Employing this methodology across the 13,428 websites, we successfully compile an equivalent number of corresponding chunks.</p><p>Subsequently, for each query, a compilation of websites is gathered alongside the query itself, with an equivalent number of chunks (one per website) extracted from these sites. These chunks are then amalgamated into a singular text document for each query, which functions as the retrieval source document. Upon submitting both the query content and the corresponding source text document to the OpenAI Knowledge Retrieval API, a synthesized response, inclusive of citations, is generated 10 . Each citation delineates the original sentence along with its location within the submitted 9 If a website is both listed by the conventional search engine and cited by Bing Chat, we also use this method.</p><p>10 A detailed illustration of the prompt, query, and resultant outputs is provided in Appendix A. for each query i: do Retrieve all the sentences that cite at least one website J i .</p><p>Retrieve all the related websites K i .</p><p>Retrieve all the corresponding excerpts E k where k ∈ CK i , where CK i ⊆ K i contains websites that are listed in the conventional search engine results of query i.</p><formula xml:id="formula_0">for each website k ∈ K i : do Segment website k into M k chunks of equal length. if website k ∈ CK i then</formula><p>Find the chunk m that has the longest common subsequence with the excerpt.</p><p>else Find all the sentences from J i that cite website k.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Merge these sentences into a new sentence j all</head><p>Embed the sentence j all using Universal Sentence Encoder.</p><p>Embed all the chunks m ∈ M k .</p><p>Find the chunk m = arg max m∈M k cosine_similarity(m ′ 's embedding, j all 's embedding).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>end if</head><p>Add i, k, and m's content to Dataset 2.</p><p>end for end for</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.">Variable Construction</head><p>In the process of assembling the aforementioned three datasets (Datasets 1A, 1B, and 2) sourced from two distinct data repositories (New Bing and OpenAI's Knowledge Retrieval API), we systematically acquire the textual content alongside the corresponding outcome variables. This section elaborates on the variables derived from these datasets and presents summary statistics for each dataset.</p><p>We initiate by elucidating the outcome variables associated with each dataset. In Dataset 1A, for each sentence with references, we define the set of relevant chunks from all websites as the citation consideration set. Consequently, we obtain 49,917 observations, calculated as the product of the number of sentences with references and the number of websites retrieved for each query, summed across all queries, denoted as i Number of Sentences i × Number of Websites i . In this dataset, the variable Cited signifies whether a particular sentence cites the corresponding chunk, which, by extension, is equivalent to citing the website, given that a singular chunk from each website is considered. For Dataset 1B, we document 11,741 observations, where each encompasses the content of a website and its position as determined by a conventional search engine, encapsulated by the variable Rank. The content refers to the chunk within the website that contains the excerpt highlighted by the conventional search engine. In Dataset 2, consisting of 13,428 observations, each observation includes the content of a website and a variable Cited denoting whether it is cited by the RAG API. Here, the content corresponds to a chunk which either contains the excerpt (if listed by the conventional search engine) or bears resemblance to sentences within Bing Chat's responses</p><formula xml:id="formula_1">(if not listed).</formula><p>In addressing the research questions pertinent to the citation and ranking behaviors of different systems, we also extract various features from website content (i.e., chunks) to serve as independent variables. Since our research is anchored in the domain of search engine ranking literature, prompting the inclusion of the Readability metric, a widely recognized measure within this field <ref type="bibr" target="#b50">(Reisenbichler et al. 2022)</ref>. Readability evaluates the ease with which text can be understood by human readers.</p><p>To quantify readability, we utilize the New Dale-Chall Readability Formula <ref type="bibr" target="#b9">(Chall and Dale 1995)</ref>,</p><p>Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00</p><p>analyzing the readability of targeted website sections. For interpretative convenience, we introduce a negative sign to the formula's output, whereby a higher score implies enhanced readability.</p><p>Additionally, given the relevance of our research to assessing the outputs of generative AI, which aims to replicate human-like text, we examine several linguistic features commonly employed in such evaluations. The Analytic variable quantifies the extent of analytical thought in the text, with higher values denoting greater logical consistency. The Subjectivity measures the propensity to favor objective over subjective content, with higher scores reflecting greater subjectivity. These variables primarily concern the informational content's logicality and objectivity.</p><p>Moreover, we incorporate measures of expressive styles, such as P olarity, which gauges the emotional polarity (absolute value) of the text, with higher values indicating increased emotional polarization. The Certitude variable assesses the text's level of assertiveness, for instance, texts employing phrases like "of course" may be deemed to exhibit higher certitude. The Conversational measure evaluates the text's colloquialism, including the use of internet slang (e.g., "lmao", "lol")</p><p>or discourse markers (e.g., "um", "oh"). The calculation of Subjectivity and P olarity is facilitated through TextBlob <ref type="bibr" target="#b43">(Loria et al. 2018)</ref>, while the remaining metrics are derived using the Linguistic Inquiry and Word Count (LIWC) tool <ref type="bibr" target="#b6">(Boyd et al. 2022)</ref>.</p><p>Finally, based on the research focus on LLM-based generative AI, we are particularly intrigued by the possibility that certain criteria might naturally emerge from these models. Of specific interest is the influence of "readability" from the perspective of language models on the content selection process. To explore this, we introduce the concept of P erplexity, which is formally defined as the exponentiated average negative log-likelihood of a sequence as predicted by a language model <ref type="bibr" target="#b2">(Azzopardi et al. 2003</ref>). Intuitively, it can measure the extent to which a model anticipates the input content, wherein a sentence that aligns closely with the model's expectations exhibits lower perplexity, and conversely, a more unexpected sentence exhibits higher perplexity.</p><p>Following the above steps, for every observation within the datasets, we derive a single outcome variable and seven independent variables, the summary statistics of which are presented subsequently. Dataset 1A, 1B, and 2 will be utilized for conducting regression analyses aimed at investigating research questions 1, 2, and 3, respectively.  </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.">Data Analyses</head><p>In this section, we systematically address each of our research questions. First, in Section 4.1, we scrutinize the criteria by which the chat-based search engine, specifically Bing Chat in our study, selects websites for inclusion in its responses. Following this, Section 4.2 delineates the ranking criteria employed by conventional search engines and contrasts them with those utilized by Bing Chat. Finally, Section 4.3 elucidates the source of citation criteria by utilizing the RAG model based on GPT-4 and juxtaposing them with those employed by Bing Chat.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.">Chat-based Search Engine's Content Selection Criteria</head><p>We initiate our exploration with the first research question, which investigates the criteria Bing Chat utilizes to select websites for substantiating its responses, employing Dataset 1A as elaborated in Section 3. For each query i, Bing Chat generates a response comprising at least one sentence that incorporates references. The crux of our analysis lies in discerning the textual predilections that predispose the selection of certain websites over others to underpin these referenced sentences.</p><p>Given the voluminous content available on each website, we delineate a single relevant chunk from each website k to constitute the consideration set for a given sentence j. Consequently, Dataset 1A forms a query-sentence-website level dataset, encompassing 49,917 entries.</p><p>The variable of interest, Cited ijk , indicates whether a chunk from website k has been referenced</p><p>to support sentence j in Bing Chat's response to query i. To decipher the relationship between the textual features of a website's chunk and its likelihood of citation, we incorporate a suite of independent variables, as delineated on the right side of Equation 1. To strengthen the robustness of our results, we employ three distinct regression models: Ordinary Least Squares (OLS) regression (i.e., linear probability model), logistic regression, and probit regression.  The regression outcomes, as presented in Table <ref type="table" target="#tab_7">5</ref>, manifest consistency across the three employed models, underscoring robust findings. First, congruent with prior literature on search engines <ref type="bibr" target="#b50">(Reisenbichler et al. 2022)</ref>, chat-based search engines also exhibit a preference for content that is more readily comprehensible (β 1 &gt; 0, p &lt; 0.01). Additionally, Bing Chat demonstrate a proclivity for content characterized by higher degrees of logical reasoning and analytical thought (β 2 &gt; 0, p &lt; 0.01). Beyond these preferences more related to substantive information, Bing Chat also displays discernible inclination regarding stylistic attributes of content. Specifically, there is a tendency to reference websites manifesting reduced emotional polarity and a lower degree of conversationality (β 5 &lt; 0, β 6 &lt; 0), signaling a preference for more logical and formal expressions.</p><formula xml:id="formula_2">Cited ijk =β 0 + β 1 *</formula><p>Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00</p><p>A particularly noteworthy finding pertains to Bing Chat's likelihood of citing websites with significantly lower perplexity scores (β 7 &lt; 0, p &lt; 0.01). Given that perplexity serves as a measure of text predictiveness from the perspective of the language model, this trend suggests an inclination towards sourcing content that resonates more closely with the foundational language model's training corpus. This also implies that the textual preferences exhibited by chat-based search engines may not be manually curated but rather emerge spontaneously from the underlying large language model, which is trained on extensive datasets.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2.">Comparison with Conventional Search Engines</head><p>In the previous subsection, we delineate the selection criteria employed by Bing Chat for citing content in support of its responses. The objective of this subsection is to elucidate the ranking criteria utilized by conventional search engines, employing Dataset 1B for this purpose, and to undertake a comparative analysis with the criteria observed in Bing Chat. From a total collection of 13,428 websites, 11,741 are indexed by the conventional search engine and thus included in our analysis. This dataset also encompasses the websites that are both cited by Bing Chat and listed by the conventional search engine.</p><p>For each website k listed by the conventional search engine in response to query i, we identify the chunk containing the excerpt highlighted by the engine for our ranking analysis. The dependent variable, Rank ik , signifies the rank position of website k within the conventional search engine results for query i. Notably, the ranking system commences at one, with lower values indicating superior rank positions. Following the same logic, we extract an identical set of independent variables for each website's chunk, as incorporated in the regression model delineated in Equation <ref type="formula">2</ref>. The ordered logit and ordered probit regression models are employed to ascertain the impact of these independent variables on the websites' ranking outcomes.  Given that a higher rank value corresponds to a lower priority within the ranking system, it necessitates an inverse interpretation of the coefficients. As evidenced in Table <ref type="table">6</ref>, there are some observed similarities in preference between the conventional and chat-based search engines. Specifically, conventional search engines also favor websites characterized by greater readability (β 1 &lt; 0, p &lt; 0.01) and those exhibiting a less conversational tone (β 6 &gt; 0, p &lt; 0.05). However, contrary to Bing Chat, there is no discernible preference for content imbued with analytical elements or content with diminished emotional polarity. Moreover, the conventional search engine demonstrates a preference for content with a higher degree of certitude (β 3 &lt; 0, p &lt; 0.05), a tendency not mirrored by the chat-based counterpart. Notably, the analysis reveals no significant correlation between perplexity and ranking, further highlighting the distinctiveness of LLM-based, chat-based search engines. Table <ref type="table">7</ref> elucidates that the RAG based on GPT-4 exhibits pronounced and consistent preferences towards text characteristics compared with Bing Chat. Notably, it demonstrates a higher likelihood of citing content that is more readable, logical, less polarized, less conversational, and more predictable by GPT models (evidenced by lower perplexity scores). These findings reinforce the argument that the criteria applied by chat-based search engines are derived from the intrinsic attributes of the underlying large language model, rather than being manually engineered. This underscores the importance of considering the foundational LLM in analyses of future chat-based search engine developments.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Rank</head><p>Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00</p><p>All preceding analyses have concentrated on textual characteristics, treating different websites as isolated entities. Nonetheless, the similarity of content across websites constitutes a significant dimension for evaluating search engine outputs. As underscored in previous studies <ref type="bibr" target="#b50">(Reisenbichler et al. 2022)</ref>, content similarity can offer insights into the diversity of information made available to users and elucidate the exposure relationship among various websites. This metric assumes greater relevance in the context of chat-based search engines, which are tasked with providing a singular answer that references multiple supporting websites, thereby creating an indirect linkage among these sites through the response. Hence, in addition to website-level textual disparities, chat-based search engines may also exhibit unique "market-level" content similarities.</p><p>Employing Dataset 2, our investigation extends to the analysis of content similarity among websites cited through the RAG process in contrast to those ranked highly by traditional search engines.</p><p>For each query i involving citations from N i websites, we calculate the mean cosine similarity among the embeddings of these cited sites. In a parallel fashion, for the top N i websites as per conventional search rankings, their average cosine similarities are computed. Out of 700 queries, 607 that feature at least two citations during the RAG process are selected for this similarity analysis, resulting in two sets of 607 similarity metrics-one derived from RAG-cited websites and the other from websites top-ranked by conventional search engines. A t-test between these datasets unveils a notable finding:</p><p>websites cited by RAG display a higher degree of similarity compared to those in the top-ranked group by traditional search engines (t − stats = 5.32, p &lt; 0.01), with the former's mean similarity at 0.570 (std = 0.117) and the latter's at 0.533 (std = 0.128).</p><p>Thus, in addition to distinctive criteria based on textual features at the individual website level, applications through RAG also manifest a reduction in information diversity among cited websites relative to an equivalent number of top-ranked websites. These findings collectively underscore the unique operational mechanisms and outputs of chat-based search engines, underscoring the imperative for revised industry practices and further research inputs.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5.">Discussion and Conclusion</head><p>With the advent of LLMs, a novel chat-based search engine paradigm has been introduced, leveraging LLMs to assimilate information from web sources and articulate responses in natural language, thereby exhibiting human-like cognitive faculties such as information assimilation and the generation of novel content. In pursuit of delineating the criteria for information selection and the foundational principles thereof, this study compiled two datasets through engagements with New Bing and the Knowledge Retrieval API powered by GPT-4. Our findings elucidate Bing Chat's inclination for content that is not only readable, formal, and logical but also exhibits lower perplexity, indicating a</p><p>preference for text congruent with the anticipations of the underlying LLM. This preference is not adequately elucidated by traditional search engine ranking algorithms, underscoring the distinctive nature of chat-based search engine outputs. Additionally, through the employment of an ancillary dataset acquired via the RAG API, our research substantiates a consistent textual preference that aligns between the RAG API and Bing Chat, suggesting that these preferences are inherent to the language models rather than being explicitly configured by Bing Chat developers. Beyond the aforementioned website-level distinctions, our investigation discerns a greater similarity among websites referenced by RAG technologies vis-à-vis those prioritized by conventional search engines, signaling a broader market-level uniqueness.</p><p>Our research intersects with and contributes to multiple domains within the scholarly literature.</p><p>Predominantly, our study falls into the AI alignment framework, which emphasizes the interpretation of AI systems' behavior. We enhance this body of work by assessing the distinctive outputs generated by a LLM-based AI system and delineating the mechanisms driving these outputs. More specifically, our investigation not only reveals how chat-based search engines reference websites based on textual characteristics, but also furnishs evidence that such selection criteria are influenced by the foundational LLM. This insight extends the literature on evaluating information retrieval systems powered by generative AI. Additionally, we underscore the importance of considering both LLMbased applications and the underlying LLMs in tandem to gain a comprehensive understanding of Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00 these systems' behaviors. Finally, our study further enriches search engine literature by delineating the criteria of a novel form of search engine, marking a preliminary exploration into SEO practices for chat-based search engine. We also demonstrate that the chat-based search engine's imperative to deliver coherent responses, as opposed to simply listing websites, reduces the information diversity among highly visible websites. This observation may inform future economic analyses within the search engine ecosystem.</p><p>Our study is not merely of scientific interest but also offers substantive insights for a diverse array of stakeholders. For developers of LLM-based RAG systems, including chat-based search engines, direct interaction with the underlying model is advised. This approach allows for a nuanced understanding of behaviors potentially attributed to the foundational LLM, enhancing system testing and refinement. Similarly, this holds significance for SEO professionals and website proprietors aiming to amplify their visibility within chat-based search engine results. By engaging directly with the LLM, they can fine-tune and evaluate their content prior to website updates. Furthermore, given the chat-based search engine's response format, it could be beneficial to optimize for compatibility with frequently cited websites. Users, on the other hand, should be cognizant of the limited information diversity inherent to chat-based search engine's responses, necessitating a balance between search efficiency and the breadth of information. Furthermore, the coexistence of chat-based and traditional search engines necessitates adaptive behavior from both website owners and users, given the distinct criteria of each search modality. This dynamic introduces additional market complexities, urging market administrators and regulatory bodies to re-evaluate market designs, such as auction mechanisms, to facilitate information dissemination and balance stakeholder welfare effectively.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head></head><label></label><figDesc>3.1. Data Sources, Data Collection, and Preprocessing Procedures 3.1.1. Data Source 1: New BingWe source the first raw dataset from New Bing, an AI-driven search engine developed by Microsoft, officially released on February 7, 2023. In contrast to traditional methods of listing pertinent web content, hereafter denoted as "conventional search engine," New Bing offers users an additional chatbot known as "Bing Chat" which can provide consolidated responses by aggregating information from different websites 7 .</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 1</head><label>1</label><figDesc>Figure 1 offers a graphical depiction of the search output produced by the New Bing platform. To</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 1</head><label>1</label><figDesc>Figure 1An Example of Using New Bing</figDesc><graphic coords="12,90.00,227.15,432.01,276.19" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="14,126.00,273.29,360.00,158.03" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_0"><head>Table 1</head><label>1</label><figDesc>Summary Statistics on Raw Data from Bing Chat</figDesc><table><row><cell></cell><cell>Statistic</cell><cell>N</cell><cell>Mean</cell><cell>St. Dev.</cell><cell>Min</cell><cell>Median</cell><cell>Max</cell></row><row><cell></cell><cell>Query-level Statistics</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell></cell><cell>NumTotalWebs</cell><cell>700</cell><cell>19.18</cell><cell>1.18</cell><cell>12</cell><cell>20</cell><cell>20</cell></row><row><cell></cell><cell>NumCitedSentences</cell><cell>700</cell><cell>3.69</cell><cell>1.73</cell><cell>1</cell><cell>3</cell><cell>14</cell></row><row><cell></cell><cell>NumCitedWebs</cell><cell>700</cell><cell>3.37</cell><cell>1.31</cell><cell>1</cell><cell>3</cell><cell>10</cell></row><row><cell></cell><cell>Sentence-level Statistics</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell></cell><cell>NumCitedWebsSent</cell><cell>2,586</cell><cell>1.38</cell><cell>0.67</cell><cell>1</cell><cell>1</cell><cell>5</cell></row><row><cell></cell><cell>Website-level Statistics</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell></cell><cell>NumCitedSentencesWeb</cell><cell>13,428</cell><cell>0.27</cell><cell>0.68</cell><cell>0</cell><cell>0</cell><cell>8</cell></row><row><cell>Figure 2</cell><cell cols="3">Chunk Selection for Bing Chat Criteria Evaluation</cell><cell></cell><cell></cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head></head><label></label><figDesc>yields a query-sentence-website level dataset, where each entry corresponds to a website chunk most akin to the sentence. For instance, should a query yield 20 websites and Bing Chat's response include 2 sentences that have citations, this results in 40 (20×2) distinct entries within dataset 1A. Using this method, we get 49,917 observations in total.</figDesc><table><row><cell>Algorithm 1 Chunk Selection Process for Dataset 1A: Pseudocode</cell></row><row><cell>Require: Bing Chat's Responses, Website Content</cell></row><row><cell>Initialize Dataset 1A.</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_2"><head></head><label></label><figDesc>Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00 pseudocode Algorithm 2. This process results in 11,741 observations, each corresponding to one of the 11,741 websites. This quantity is less than the total number of websites gathered (i.e., 13,428), attributable to the fact that some websites are exclusively cited by Bing Chat and do not appear in the conventional search engine listings, thus precluding our ability to ascertain their ranking.</figDesc><table><row><cell>Algorithm 2 Chunk Selection Process for Dataset 1B: Pseudocode</cell></row><row><cell>Require: Excerpts, Website Content</cell></row><row><cell>Initialize Dataset 1B.</cell></row><row><cell>end for</cell></row><row><cell>end for</cell></row><row><cell>3.1.2. Data Source 2: GPT4-based RAG</cell></row><row><cell>To address our third research question, which endeavors to elucidate the origins of Bing Chat's</cell></row><row><cell>preference for specific textual content -questioning whether it is attributable to the inherent capa-</cell></row><row><cell>bilities of the LLM or the result of deliberate modifications by the search engine's developers -we</cell></row><row><cell>propose a direct engagement with the foundational model, specifically GPT-4. OpenAI's Knowledge</cell></row><row><cell>Retrieval API presents a viable means to accomplish this, offering the ability to systematically seg-</cell></row></table><note>for each query i: do Retrieve all the related websites K i .Retrieve all the corresponding excerpts E k where k ∈ CK i , where CK i ⊆ K i contains websites that are listed in the conventional search engine results of query i.for each website k ∈ K i : do Segment website k into M k chunks of equal length.Find the chunk m that has the longest common subsequence with the excerpt. Add i, k, and m's content to Dataset 2. ment and access pertinent information from files provided by users, and to formulate responses that consider both the newly uploaded content and the pre-existing data repository 8 . By circumventing 8 See https://platform.openai.com/docs/assistants/tools/knowledge-retrieval.</note></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head></head><label></label><figDesc>Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00 document, enabling the determination of whether a specific website (chunk) has been cited. Consequently, Dataset 2 comprises 13,428 entries, each accompanied with an outcome variable indicating its citation status by the RAG algorithm.</figDesc><table><row><cell>Algorithm 3 Chunk Selection Process for Dataset 2: Pseudocode</cell></row><row><cell>Require: Bing Chat's Responses, Excerpts, Website Content</cell></row><row><cell>Initialize Dataset 2.</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head></head><label></label><figDesc>Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00</figDesc><table><row><cell>Table 3</cell><cell cols="6">Summary Statistics on Dataset 1B -Conventional Bing's Ranking</cell></row><row><cell>Statistic</cell><cell></cell><cell>N</cell><cell>Mean</cell><cell>St. Dev.</cell><cell>Min</cell><cell>Median</cell><cell>Max</cell></row><row><cell>Outcome Variable</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>Rank</cell><cell></cell><cell>11,741</cell><cell>8.97</cell><cell>4.96</cell><cell>1</cell><cell>9</cell><cell>20</cell></row><row><cell cols="2">Independent Variable</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>Readability</cell><cell></cell><cell>11,741</cell><cell>-23.79</cell><cell>10.27</cell><cell>-54.54</cell><cell>-24.39</cell><cell>76.30</cell></row><row><cell>Analytic</cell><cell></cell><cell>11,741</cell><cell>76.17</cell><cell>21.99</cell><cell>1</cell><cell>83.13</cell><cell>99</cell></row><row><cell>Certitude</cell><cell></cell><cell>11,741</cell><cell>0.43</cell><cell>0.76</cell><cell>0</cell><cell>0</cell><cell>7.75</cell></row><row><cell>Subjectivity</cell><cell></cell><cell>11,741</cell><cell>0.44</cell><cell>0.12</cell><cell>0</cell><cell>0.44</cell><cell>0.92</cell></row><row><cell>Polarity</cell><cell></cell><cell>11,741</cell><cell>0.12</cell><cell>0.09</cell><cell>0</cell><cell>0.10</cell><cell>0.68</cell></row><row><cell>Conversation</cell><cell></cell><cell>11,741</cell><cell>0.16</cell><cell>0.52</cell><cell>0</cell><cell>0</cell><cell>10.08</cell></row><row><cell>Perplexity</cell><cell></cell><cell>11,741</cell><cell>4.70</cell><cell>0.35</cell><cell>2.12</cell><cell>4.72</cell><cell>5.77</cell></row><row><cell cols="2">Table 4</cell><cell cols="5">Summary Statistics on Dataset 2 -RAG's Citation</cell></row><row><cell>Statistic</cell><cell></cell><cell>N</cell><cell>Mean</cell><cell>St. Dev.</cell><cell>Min</cell><cell>Median</cell><cell>Max</cell></row><row><cell>Outcome Variable</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>Cited</cell><cell></cell><cell>13,428</cell><cell>0.19</cell><cell>0.39</cell><cell>0</cell><cell>0</cell><cell>1</cell></row><row><cell cols="2">Independent Variable</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>Readability</cell><cell></cell><cell>13,428</cell><cell>-23.43</cell><cell>10.40</cell><cell>-54.54</cell><cell>-24.06</cell><cell>76.30</cell></row><row><cell>Analytic</cell><cell></cell><cell>13,428</cell><cell>76.76</cell><cell>21.80</cell><cell>1</cell><cell>84.50</cell><cell>99</cell></row><row><cell>Certitude</cell><cell></cell><cell>13,428</cell><cell>0.42</cell><cell>0.75</cell><cell>0</cell><cell>0</cell><cell>7.75</cell></row><row><cell>Subjectivity</cell><cell></cell><cell>13,428</cell><cell>0.44</cell><cell>0.12</cell><cell>0</cell><cell>0.44</cell><cell>0.92</cell></row><row><cell>Polarity</cell><cell></cell><cell>13,428</cell><cell>0.12</cell><cell>0.09</cell><cell>0</cell><cell>0.10</cell><cell>0.68</cell></row><row><cell>Conversation</cell><cell></cell><cell>13,428</cell><cell>0.16</cell><cell>0.52</cell><cell>0</cell><cell>0</cell><cell>10.08</cell></row><row><cell>Perplexity</cell><cell></cell><cell>13,428</cell><cell>4.70</cell><cell>0.35</cell><cell>2.12</cell><cell>4.72</cell><cell>6.74</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6"><head></head><label></label><figDesc>Readability ijk + β 2 * Analytic ijk + β 3 * Certitude ijk + β 4 * Subjectivity ijk + β 5 * P olarity ijk + β 6 * Conversation ijk + β 7 * P erplexity ijk + ϵ ijk</figDesc><table><row><cell>(1)</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7"><head>Table 5</head><label>5</label><figDesc>Citation Criteria of Chat-based Search Engine</figDesc><table><row><cell></cell><cell cols="3">Dependent variable:</cell></row><row><cell></cell><cell></cell><cell>Cited</cell><cell></cell></row><row><cell></cell><cell>OLS</cell><cell>Logistic</cell><cell>Probit</cell></row><row><cell></cell><cell>(1)</cell><cell>(2)</cell><cell>(3)</cell></row><row><cell>Readability</cell><cell>0.0009  *  *  *</cell><cell>0.0110  *  *  *</cell><cell>0.0057  *  *  *</cell></row><row><cell></cell><cell>(0.0001)</cell><cell>(0.0016)</cell><cell>(0.0008)</cell></row><row><cell>Analytic</cell><cell>0.0004  *  *  *</cell><cell>0.0073  *  *  *</cell><cell>0.0034  *  *  *</cell></row><row><cell></cell><cell>(0.0001)</cell><cell>(0.0010)</cell><cell>(0.0005)</cell></row><row><cell>Certitude</cell><cell>−0.0014</cell><cell>−0.0241</cell><cell>−0.0105</cell></row><row><cell></cell><cell>(0.0015)</cell><cell>(0.0260)</cell><cell>(0.0124)</cell></row><row><cell>Subjectivity</cell><cell>0.0124</cell><cell>0.2084</cell><cell>0.0927</cell></row><row><cell></cell><cell>(0.0109)</cell><cell>(0.1618)</cell><cell>(0.0790)</cell></row><row><cell>Polarity</cell><cell>−0.0240  *</cell><cell>−0.3874  *</cell><cell>−0.1689  *</cell></row><row><cell></cell><cell>(0.0133)</cell><cell>(0.2118)</cell><cell>(0.1022)</cell></row><row><cell cols="2">Conversation −0.0032  *  *</cell><cell>−0.0637  *  *</cell><cell>−0.0311  *  *</cell></row><row><cell></cell><cell>(0.0014)</cell><cell>(0.0324)</cell><cell>(0.0154)</cell></row><row><cell>Perplexity</cell><cell cols="3">−0.0302  *  *  *  −0.4185  *  *  *  −0.2082  *  *  *</cell></row><row><cell></cell><cell>(0.0036)</cell><cell>(0.0477)</cell><cell>(0.0240)</cell></row><row><cell>Constant</cell><cell>0.2030  *  *  *</cell><cell cols="2">−0.9414  *  *  *  −0.6306  *  *  *</cell></row><row><cell></cell><cell>(0.0184)</cell><cell>(0.2560)</cell><cell>(0.1254)</cell></row><row><cell>Observations</cell><cell>49,917</cell><cell>49,917</cell><cell>49,917</cell></row><row><cell cols="4">Note: Robust standard errors in parentheses; *** p &lt; 0.01, ** p &lt; 0.05, * p &lt; 0.1</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_8"><head></head><label></label><figDesc>ik =Thresholds + β 1 * Readability ik + β 2 * Analytic ik + β 3 * Certitude ik + β 4 * Subjectivity ik + β 5 * P olarity ik + β 6 * Conversation ik + β 7 * P erplexity ik + ϵ ik</figDesc><table><row><cell>(2)</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="5" xml:id="foot_0">See https://www.demandsage.com/google-gemini-statistics/.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="6" xml:id="foot_1">See https://www.microsoft.com/en-us/bing/do-more-with-ai/how-bing-chat-works.</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" xml:id="foot_2">Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00</note>
+		</body>
+		<back>
+
+			<div type="availability">
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>//serpwatch.io/blog/search-engine-statistics/.</p><p>2 See https://techcrunch.com/2023/03/14/microsofts-new-bing-was-using-gpt-4-all-along/.</p><p>3 It is now part of Microsoft Copilot. See https://copilot.microsoft.com/ 4 See https://www.demandsage.com/google-bard-statistics/.</p></div>
+			</div>
+
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00</p><p>Therefore, the emergence of unique preferences within chat-based search engines underscores the imperative to revisit and reevaluate search engine research, particularly as this novel form of information retrieval continues to gain prominence.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3.">Criteria Foundation Exploration via Retrieval-Augmented Generation</head><p>In the preceding subsections, we have identified distinctive selection criteria employed by the chat-based search engine, which notably diverges from the criteria of conventional search engine rankings. Intriguingly, Bing Chat's preference for content exhibiting lower perplexity intimates that such uniqueness may originate from the foundational large language model (specifically, GPT-4 in this study) rather than being deliberately programmed by New Bing's designers. Should this be the case, similar text selection criteria are anticipated to be observable during direct interactions with GPT-4 as well.</p><p>To further investigate this hypothesis and address our third research question, we compile Dataset 2 by utilizing OpenAI's knowledge retrieval API. This process entails the submission of queries alongside documents containing segments of content from various websites (the methodology for which is detailed in Section 3.1.2). The API's response, which includes references to specific segments of the document, enables us to ascertain whether the content from website k is cited in response to query i. The outcome variable Cite ik is thus defined. Analogous to the approach outlined in the previous subsections, we employ the same spectrum of textual features extracted from the website chunks as independent variables. The analysis also encompasses three regression models (Linear probability, Logistic, and Probit regressions) with the specification summarized in Equation <ref type="formula">3</ref>.</p><p>Please answer the question based on the content in the file attached: { query content } Please answer the question with several clear references to the original files.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Sample Query</head><p>Why do we wear ties? Like why as in the origins, not just to look professional. Who said it made us look professional?</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Sample Answer from GPT-4 API</head><p>The origins of wearing ties trace back to various historical points and represent different meanings and purposes throughout history:</p><p>-**Ancient Roots in China**: Ties, in a form akin to scarves, were worn by ancient Chinese warriors; terracotta statues that are around 2000 years old display warriors with silk around their necks, indicating that ties were a sign of power and to establish identity even in ancient times【7 †source】.</p><p>-**Croatian Mercenaries' Influence**: The tie gained popularity during the 30-year war in the 17th century when Croatian mercenaries who fought alongside King Louis XIII of France wore pieces of cloth around their neck to tie their jackets; King Louis XIII himself took a liking to this practice, which helped to popularize the accessory【8 †source】.</p><p>-**Roman Era Representation**: Soldiers depicted on Trajan's Column, a monument commemorating Roman Emperor Trajan's victory over the Dacians, are shown wearing ties as a symbol of a warrior's courageous character, providing further historical evidence of ties being associated with military and strength 【9 †source】.</p><p>-**Elitism and Professionalism**: In Victorian England, guidelines on how to properly wear and tie a necktie emerged, such as the advice found in the book "Clothes And The Man," which could imply a sense of professionalism and elitism associated with the proper way to wear a tie【10 †source】.</p><p>-**Designer Trends in the 1920s**: The modern notion of the tie as a professional and decorative accessory might be traced to the 1920s, where French fashion designers innovated the "designer tie" utilizing expensive fabrics and textile patterns to create stylish and coveted pieces【11 †source】.</p><p>Article submitted to Information Systems Research; manuscript no. ISRE-0000-0000.00</p><p>These references suggest that the wearing of ties has evolved from ancient symbols of power and identification to part of military uniform, and finally into a sophisticated fashion item that carries connotations of professionalism, status, and social identity. The tradition of wearing ties has been influenced by various cultures and periods, eventually leading to the contemporary association of ties with professional attire.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Sample Annotations</head></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>【7 †source】</head><p>Quote: Ancient Chinese warriors are the first known wearers of scarves. A discovery of 2000-year-old terracotta statues shows the warriors wearing silk around their necks. This shows that even back then, ties were a sign of power and to show identity.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>【8 †source】</head><p>Quote: During the 30 year war, Croatian mercenaries fought alongside the King in battle. To keep their jackets tied they used a piece of cloth which King Louis XIII took a strong liking to ...</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>【9 †source】</head><p>Quote: When Roman emperor Trajan defeated the Dacians, he erected a marble column to celebrate his victory. This column featured thousands of soldiers, many of whom were wearing ties, again as a symbol of a warrior's courageous character.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>【10 †source】</head><p>Quote: When it came to bow ties, the major was very clear: "Of course, no gentleman ever does wear a made-up tie."</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>【11 †source】</head><p>Quote: In the 1920s, French fashion designers innovated the "designer tie," which was made from expensive fabrics and decorated with textile patterns.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Interpretation of the Results</head><p>In this interaction, we submit a query along with a document comprising chunks extracted from all the corresponding websites. The API subsequently furnishes a cohesive response, supported by four distinct references, each delineating the original portions (i.e., annotations) sourced from the uploaded document.</p><p>Subsequently, we leverage these annotations to identify the websites containing these four annotations, designating them as cited websites, while categorizing the remaining websites as uncited.</p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<analytic>
+		<title level="a" type="main">Optimal bidding in multi-item multislot sponsored search auctions</title>
+		<author>
+			<persName><forename type="first">V</forename><surname>Abhishek</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hosanagar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Operations Research</title>
+		<imprint>
+			<biblScope unit="volume">61</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="855" to="873" />
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<analytic>
+		<title level="a" type="main">Position auctions with consumer search</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Athey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Ellison</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">The Quarterly Journal of Economics</title>
+		<imprint>
+			<biblScope unit="volume">126</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="1213" to="1270" />
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<analytic>
+		<title level="a" type="main">Investigating the relationship between language model perplexity and ir precision-recall measures</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Azzopardi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Girolami</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Van Risjbergen</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 26th annual international ACM SIGIR conference on Research and development in informaion retrieval</title>
+				<meeting>the 26th annual international ACM SIGIR conference on Research and development in informaion retrieval</meeting>
+		<imprint>
+			<date type="published" when="2003">2003</date>
+			<biblScope unit="page" from="369" to="370" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Gen-ir@ sigir 2023: The first workshop on generative information retrieval</title>
+		<author>
+			<persName><forename type="first">G</forename><surname>Bénédict</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Metzler</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval</title>
+				<meeting>the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="3460" to="3463" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">The role of search engine optimization in search marketing</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Berman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Katona</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Marketing Science</title>
+		<imprint>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="644" to="651" />
+			<date type="published" when="2013">2013</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<title level="m" type="main">Unraveling the impact: An empirical investigation of chatgpt&apos;s exclusion from stack overflow</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Borwankar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Khern-Am</forename><surname>Nuai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename></persName>
+		</author>
+		<idno>SSRN 4481959</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">The development and psychometric properties of liwc-22</title>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">L</forename><surname>Boyd</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ashokkumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Seraj</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">W</forename><surname>Pennebaker</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+			<biblScope unit="page" from="1" to="47" />
+			<pubPlace>Austin, TX</pubPlace>
+		</imprint>
+		<respStmt>
+			<orgName>University of</orgName>
+		</respStmt>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Using gpt for market research</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Brand</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Israeli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Ngwe</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">SSRN 4395751</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Universal sentence encoder for english</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Cer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kong</forename><surname>Sy</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Hua</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Limtiaco</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">S</forename><surname>John</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Constant</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Guajardo-Cespedes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Tar</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 2018 conference on empirical methods in natural language processing: system demonstrations</title>
+				<meeting>the 2018 conference on empirical methods in natural language processing: system demonstrations</meeting>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="page" from="169" to="174" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<monogr>
+		<title level="m" type="main">Readability revisited: The new Dale-Chall readability formula</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">S</forename><surname>Chall</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Dale</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1995">1995</date>
+			<publisher>Brookline Books</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Benchmarking large language models in retrieval-augmented generation</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Sun</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2309.01431</idno>
+		<imprint>
+			<date type="published" when="2023">2023a</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Article submitted to Information Systems Research</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><forename type="middle">X</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Shan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Zhong</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2305.12763</idno>
+		<idno>ISRE-0000-0000.00</idno>
+	</analytic>
+	<monogr>
+		<title level="m">The emergence of economic rationality of gpt</title>
+				<imprint>
+			<date type="published" when="2023">2023b</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note>manuscript no</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">Factors affecting web site visit duration: A cross-domain analysis</title>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">J</forename><surname>Danaher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><forename type="middle">W</forename><surname>Mullarkey</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Essegaier</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Marketing Research</title>
+		<imprint>
+			<biblScope unit="volume">43</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="182" to="194" />
+			<date type="published" when="2006">2006</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">Sea change in software development: Economic and productivity analysis of the ai-powered developer lifecycle</title>
+		<author>
+			<persName><forename type="first">T</forename><surname>Dohmke</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Iansiti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Richards</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2306.15033</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Bidding for multiple keywords in sponsored search advertising: Keyword categories and match types</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zheng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Information Systems Research</title>
+		<imprint>
+			<biblScope unit="volume">28</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="711" to="722" />
+			<date type="published" when="2017">2017</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">Search engine optimization: The long-term strategy of keyword choice</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Erdmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Arilla</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">M</forename><surname>Ponzoa</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Business Research</title>
+		<imprint>
+			<biblScope unit="volume">144</biblScope>
+			<biblScope unit="page" from="650" to="662" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Artificial intelligence, values, and alignment. Minds and machines</title>
+		<author>
+			<persName><forename type="first">I</forename><surname>Gabriel</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2020">2020</date>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="page" from="411" to="437" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<author>
+			<persName><forename type="first">D</forename><surname>Ganguli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Lovitt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Kernion</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Askell</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Bai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Kadavath</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Mann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Perez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Schiefer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Ndousse</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2209.07858</idno>
+		<title level="m">Red teaming language models to reduce harms: Methods, scaling behaviors, and lessons learned</title>
+				<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<analytic>
+		<title level="a" type="main">Examining the impact of ranking on consumer behavior and search engine revenue</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ghose</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">G</forename><surname>Ipeirotis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Management Science</title>
+		<imprint>
+			<biblScope unit="volume">60</biblScope>
+			<biblScope unit="issue">7</biblScope>
+			<biblScope unit="page" from="1632" to="1654" />
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Modeling consumer footprints on search engines: An interplay with social media</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ghose</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><forename type="middle">G</forename><surname>Ipeirotis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Management Science</title>
+		<imprint>
+			<biblScope unit="volume">65</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="1363" to="1385" />
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<analytic>
+		<title level="a" type="main">An empirical analysis of search engine advertising: Sponsored search in electronic markets</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ghose</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Management science</title>
+		<imprint>
+			<biblScope unit="volume">55</biblScope>
+			<biblScope unit="issue">10</biblScope>
+			<biblScope unit="page" from="1605" to="1622" />
+			<date type="published" when="2009">2009</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<analytic>
+		<title level="a" type="main">Explaining explanations: An overview of interpretability of machine learning</title>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">H</forename><surname>Gilpin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Bau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">Z</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Bajwa</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Specter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Kagal</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">IEEE 5th International Conference on data science and advanced analytics (DSAA)</title>
+				<imprint>
+			<publisher>IEEE</publisher>
+			<date type="published" when="2018">2018. 2018</date>
+			<biblScope unit="page" from="80" to="89" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<analytic>
+		<title level="a" type="main">Online display advertising: Targeting and obtrusiveness</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Goldfarb</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Tucker</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Marketing Science</title>
+		<imprint>
+			<biblScope unit="volume">30</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="389" to="404" />
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<title level="m" type="main">Demystifying prompts in language models via perplexity estimation</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Gonen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Iyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Blevins</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><forename type="middle">A</forename><surname>Smith</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Zettlemoyer</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2212.04037</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<analytic>
+		<title level="a" type="main">Examining the impact of keyword ambiguity on search advertising performance</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Gong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Abhishek</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Li</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">MIS Quarterly</title>
+		<imprint>
+			<biblScope unit="volume">42</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="805" to="A814" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<monogr>
+		<title level="m" type="main">How close is chatgpt to human experts? comparison corpus, evaluation, and detection</title>
+		<author>
+			<persName><forename type="first">B</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Nie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Yue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wu</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2301.07597</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Fid-light: Efficient and effective retrieval-augmented text generation</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Hofstätter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Raman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Zamani</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval</title>
+				<meeting>the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="1437" to="1447" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<title level="m" type="main">Large language models as simulated economic agents: What can we learn from homo silicus?</title>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">J</forename><surname>Horton</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+		<respStmt>
+			<orgName>National Bureau of Economic Research</orgName>
+		</respStmt>
+	</monogr>
+	<note type="report_type">Technical report</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<monogr>
+		<title level="m" type="main">Llm-adapters: An adapter family for parameter-efficient fine-tuning of large language models</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Lan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><forename type="middle">P</forename><surname>Lim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rkw</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Bing</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Poria</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2304.01933</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<analytic>
+		<title level="a" type="main">Tutorial on large language models for recommendation</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Hua</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 17th ACM Conference on Recommender Systems</title>
+				<meeting>the 17th ACM Conference on Recommender Systems</meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page" from="1281" to="1283" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">The short-term effects of generative artificial intelligence on employment: Evidence from an online labor market</title>
+		<author>
+			<persName><forename type="first">X</forename><surname>Hui</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Reshef</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Zhou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">SSRN 4527336</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<analytic>
+		<title level="a" type="main">Determining the informational, navigational, and transactional intent of web queries</title>
+		<author>
+			<persName><forename type="first">B</forename><forename type="middle">J</forename><surname>Jansen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">L</forename><surname>Booth</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Spink</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Information Processing &amp; Management</title>
+		<imprint>
+			<biblScope unit="volume">44</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="1251" to="1266" />
+			<date type="published" when="2008">2008</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<author>
+			<persName><forename type="first">J</forename><surname>Ji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Qiu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Lou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Duan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Zhang</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2310.19852</idno>
+		<title level="m">Ai alignment: A comprehensive survey</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<analytic>
+		<title level="a" type="main">Abstract representations emerge naturally in neural networks trained to perform multiple tasks</title>
+		<author>
+			<persName><forename type="first">W</forename><forename type="middle">J</forename><surname>Johnston</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Fusi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature Communications</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page">1040</biblScope>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Highly accurate protein structure prediction with alphafold</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Jumper</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Evans</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Pritzel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Green</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Figurnov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Ronneberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Tunyasuvunakool</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Bates</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Žídek</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Potapenko</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature</title>
+		<imprint>
+			<biblScope unit="volume">596</biblScope>
+			<biblScope unit="issue">7873</biblScope>
+			<biblScope unit="page" from="583" to="589" />
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<analytic>
+		<title level="a" type="main">The race for sponsored links: Bidding patterns for search advertising</title>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Katona</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Sarvary</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Marketing Science</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="199" to="215" />
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<monogr>
+		<title level="m" type="main">Aligned with whom? direct and social goals for ai systems</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Korinek</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Balwit</surname></persName>
+		</author>
+		<idno>ISRE-0000-0000.00</idno>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+		<respStmt>
+			<orgName>National Bureau of Economic Research</orgName>
+		</respStmt>
+	</monogr>
+	<note type="report_type">Technical report</note>
+	<note>Article submitted to Information Systems Research. manuscript no</note>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><surname>Kosinski</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2302.02083</idno>
+		<title level="m">Theory of mind may have spontaneously emerged in large language models</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<analytic>
+		<title level="a" type="main">Retrieval-augmented generation for knowledge-intensive nlp tasks</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Lewis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Perez</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Piktus</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">F</forename><surname>Petroni</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Karpukhin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Goyal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Küttler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Lewis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yih</forename><surname>Wt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Rocktäschel</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<biblScope unit="volume">33</biblScope>
+			<biblScope unit="page" from="9459" to="9474" />
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<analytic>
+		<title level="a" type="main">Ex ante information and the design of keyword auctions</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">B</forename><surname>Whinston</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Information Systems Research</title>
+		<imprint>
+			<biblScope unit="volume">21</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="133" to="153" />
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<analytic>
+		<title level="a" type="main">A semantic approach for estimating consumer content preferences from online search queries</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">O</forename><surname>Toubia</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Marketing Science</title>
+		<imprint>
+			<biblScope unit="volume">37</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="930" to="952" />
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<monogr>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tan</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2308.05201</idno>
+		<title level="m">generate&quot; the future of work through ai: Empirical evidence from online labor markets</title>
+				<imprint>
+			<date type="published" when="2023">2023a</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Pre-train, prompt, and predict: A systematic survey of prompting methods in natural language processing</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Fu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Hayashi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">G</forename><surname>Neubig</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ACM Computing Surveys</title>
+		<imprint>
+			<biblScope unit="volume">55</biblScope>
+			<biblScope unit="issue">9</biblScope>
+			<biblScope unit="page" from="1" to="35" />
+			<date type="published" when="2023">2023b</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">S</forename><surname>Loria</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2018">2018</date>
+			<biblScope unit="volume">2</biblScope>
+			<biblScope unit="page">269</biblScope>
+		</imprint>
+	</monogr>
+	<note>textblob documentation. Release 0.15</note>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<monogr>
+		<title level="m" type="main">Understanding Media: The Extensions of Man</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Mcluhan</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="1964">1964</date>
+		</imprint>
+	</monogr>
+	<note>Routledge</note>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<analytic>
+		<title level="a" type="main">A turing test of whether ai chatbots are behaviorally similar to humans</title>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Mei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jackson</forename><surname>Mo</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Proceedings of the National Academy of Sciences</title>
+		<imprint>
+			<biblScope unit="volume">121</biblScope>
+			<biblScope unit="issue">9</biblScope>
+			<biblScope unit="page">e2313925121</biblScope>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<monogr>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">R</forename><surname>Morris</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Sohl-Dickstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">N</forename><surname>Fiedel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Warkentin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Dafoe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Faust</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Farabet</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Legg</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2311.02462</idno>
+		<title level="m">Levels of agi: Operationalizing progress on the path to agi</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<monogr>
+		<title level="m" type="main">Webgpt: Browser-assisted question-answering with human feedback</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Nakano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Hilton</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Balaji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Ouyang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Kim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Hesse</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Jain</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Kosaraju</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2112.09332</idno>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<analytic>
+		<title level="a" type="main">Training language models to follow instructions with human feedback</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Ouyang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Almeida</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Wainwright</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Mishkin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Agarwal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Slama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ray</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Advances in Neural Information Processing Systems</title>
+		<imprint>
+			<biblScope unit="volume">35</biblScope>
+			<biblScope unit="page" from="27730" to="27744" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<monogr>
+		<author>
+			<persName><forename type="first">S</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Kalliamvakou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Cihon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Demirer</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2302.06590</idno>
+		<title level="m">The impact of ai on developer productivity: Evidence from github copilot</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<analytic>
+		<title level="a" type="main">Frontiers: Supporting content marketing with natural language generation</title>
+		<author>
+			<persName><forename type="first">M</forename><surname>Reisenbichler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Reutterer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><forename type="middle">A</forename><surname>Schweidel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dan</forename><forename type="middle">D</forename></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Marketing Science</title>
+		<imprint>
+			<biblScope unit="volume">41</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="441" to="452" />
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<analytic>
+		<title level="a" type="main">From generic to branded: A model of spillover in paid search advertising</title>
+		<author>
+			<persName><forename type="first">O</forename><forename type="middle">J</forename><surname>Rutz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><forename type="middle">E</forename><surname>Bucklin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of Marketing Research</title>
+		<imprint>
+			<biblScope unit="volume">48</biblScope>
+			<biblScope unit="issue">1</biblScope>
+			<biblScope unit="page" from="87" to="102" />
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<monogr>
+		<title level="m" type="main">Introduction to information retrieval</title>
+		<author>
+			<persName><forename type="first">H</forename><surname>Schütze</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">D</forename><surname>Manning</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Raghavan</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2008">2008</date>
+			<publisher>Cambridge University Press</publisher>
+			<biblScope unit="volume">39</biblScope>
+			<pubPlace>Cambridge</pubPlace>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<analytic>
+		<title level="a" type="main">Keyword search advertising and limited budgets</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Shin</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Marketing Science</title>
+		<imprint>
+			<biblScope unit="volume">34</biblScope>
+			<biblScope unit="issue">6</biblScope>
+			<biblScope unit="page" from="882" to="896" />
+			<date type="published" when="2015">2015</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<analytic>
+		<title level="a" type="main">Modern information retrieval: A brief overview</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Singhal</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">IEEE Data Eng. Bull</title>
+		<imprint>
+			<biblScope unit="volume">24</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="35" to="43" />
+			<date type="published" when="2001">2001</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<analytic>
+		<title level="a" type="main">How to improve your search engine ranking: Myths and reality</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">J</forename><surname>Su</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><forename type="middle">C</forename><surname>Hu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Kuzmanovic</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">K</forename><surname>Koh</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">ACM Transactions on the Web (TWEB)</title>
+		<imprint>
+			<biblScope unit="volume">8</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page" from="1" to="25" />
+			<date type="published" when="2014">2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<monogr>
+		<title level="m" type="main">Unraveling generative ai from a human intelligence perspective: A battery of experiments</title>
+		<author>
+			<persName><forename type="first">W</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Pei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Sun</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+			<biblScope unit="page">4543351</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b57">
+	<monogr>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Mishra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Alipoormolabashi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Kordi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Mirzaei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Arunkumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ashok</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">S</forename><surname>Dhanasekaran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Naik</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Stap</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2204.07705</idno>
+		<title level="m">Super-naturalinstructions: Generalization via declarative instructions on 1600+ nlp tasks</title>
+				<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b58">
+	<monogr>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tay</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Bommasani</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Raffel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Zoph</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Borgeaud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Yogatama</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bosma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Metzler</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2206.07682</idno>
+		<title level="m">Emergent abilities of large language models</title>
+				<imprint>
+			<date type="published" when="2022">2022a</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b59">
+	<monogr>
+		<author>
+			<persName><forename type="first">J</forename><surname>Wei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Schuurmans</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Bosma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chi</forename><forename type="middle">E</forename><surname>Le</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename></persName>
+		</author>
+		<idno type="arXiv">arXiv:2201.11903</idno>
+		<title level="m">Chain of thought prompting elicits reasoning in large language models</title>
+				<imprint>
+			<date type="published" when="2022">2022b</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b60">
+	<analytic>
+		<title level="a" type="main">Price competition and endogenous valuation in search advertising</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Whinston</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Journal of marketing Research</title>
+		<imprint>
+			<biblScope unit="volume">48</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="566" to="586" />
+			<date type="published" when="2011">2011</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b61">
+	<analytic>
+		<title level="a" type="main">Effects of the presence of organic listing in search advertising</title>
+		<author>
+			<persName><forename type="first">L</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Whinston</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Information Systems Research</title>
+		<imprint>
+			<biblScope unit="volume">23</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="1284" to="1302" />
+			<date type="published" when="2012">2012</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b62">
+	<monogr>
+		<author>
+			<persName><forename type="first">R</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Feng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Chen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2307.01135</idno>
+		<title level="m">Chatgpt vs. google: A comparative study of search performance and user experience</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b63">
+	<monogr>
+		<title level="m" type="main">Can chatgpt kill user-generated q&amp;a platforms? Available at SSRN 4448938 . Article submitted to Information Systems Research</title>
+		<author>
+			<persName><forename type="first">J</forename><surname>Xue</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Tan</surname></persName>
+		</author>
+		<idno>ISRE-0000-0000.00</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note>manuscript no</note>
+</biblStruct>
+
+<biblStruct xml:id="b64">
+	<analytic>
+		<title level="a" type="main">Analyzing the relationship between organic and sponsored search advertising: Positive, negative, or zero interdependence?</title>
+		<author>
+			<persName><forename type="first">S</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Ghose</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Marketing science</title>
+		<imprint>
+			<biblScope unit="volume">29</biblScope>
+			<biblScope unit="issue">4</biblScope>
+			<biblScope unit="page" from="602" to="623" />
+			<date type="published" when="2010">2010</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b65">
+	<monogr>
+		<author>
+			<persName><forename type="first">W</forename><forename type="middle">X</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">X</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Hou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Min</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">B</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Dong</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2303.18223</idno>
+		<title level="m">A survey of large language models</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b66">
+	<monogr>
+		<title level="m" type="main">Large language models for information retrieval: A survey</title>
+		<author>
+			<persName><forename type="first">Y</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Z</forename><surname>Dou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><forename type="middle">R</forename><surname>Wen</surname></persName>
+		</author>
+		<idno type="arXiv">arXiv:2308.07107</idno>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b67">
+	<analytic>
+		<title level="a" type="main">Important factors for improving google search rank</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Ziakis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Vlachopoulou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Kyrkoudis</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Karagkiozidou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Future internet</title>
+		<imprint>
+			<biblScope unit="volume">11</biblScope>
+			<biblScope unit="issue">2</biblScope>
+			<biblScope unit="page">32</biblScope>
+			<date type="published" when="2019">2019</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

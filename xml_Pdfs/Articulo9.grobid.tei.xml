@@ -1,0 +1,2108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">DATA INTERPRETER: AN LLM AGENT FOR DATA SCIENCE</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2024-02-28">28 Feb 2024</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Sirui</forename><surname>Hong</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Yizhang</forename><surname>Lin</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Bangbang</forename><surname>Liu</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Binhao</forename><surname>Wu</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Danyang</forename><surname>Li</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Jiaqi</forename><surname>Chen</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Fudan University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jiayi</forename><surname>Zhang</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Renmin University of China</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Jinlin</forename><surname>Wang</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Lingyao</forename><surname>Zhang</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Fudan University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Mingchen</forename><surname>Zhuge</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="institution" key="instit1">AI Initiative</orgName>
+								<orgName type="institution" key="instit2">King Abdullah University of Science and Technology</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Taicheng</forename><surname>Guo</surname></persName>
+							<affiliation key="aff3">
+								<orgName type="institution">University of Notre Dame</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Tuo</forename><surname>Zhou</surname></persName>
+							<affiliation key="aff4">
+								<orgName type="institution">The University of Hong Kong</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Wei</forename><surname>Tao</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Fudan University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Wenyi</forename><surname>Wang</surname></persName>
+							<affiliation key="aff2">
+								<orgName type="institution" key="instit1">AI Initiative</orgName>
+								<orgName type="institution" key="instit2">King Abdullah University of Science and Technology</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Xiangru</forename><surname>Tang</surname></persName>
+							<affiliation key="aff5">
+								<orgName type="institution">Yale University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Xiangtao</forename><surname>Lu</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Xinbing</forename><surname>Liang</surname></persName>
+							<affiliation key="aff6">
+								<orgName type="department">East China Normal University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yaying</forename><surname>Fei</surname></persName>
+							<affiliation key="aff7">
+								<orgName type="institution">Beijing University of Technology</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Yuheng</forename><surname>Cheng</surname></persName>
+							<affiliation key="aff8">
+								<orgName type="institution">The Chinese University of Hong Kong</orgName>
+								<address>
+									<settlement>Shenzhen</settlement>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Zongze</forename><surname>Xu</surname></persName>
+							<affiliation key="aff9">
+								<orgName type="institution">Hohai University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Chenglin</forename><surname>Wu</surname></persName>
+						</author>
+						<author>
+							<persName><forename type="first">Min</forename><surname>Yang</surname></persName>
+							<affiliation key="aff10">
+								<orgName type="department">Shenzhen Institute of Advanced Technology</orgName>
+								<orgName type="institution">Chinese Academy of Sciences</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Xiawu</forename><surname>Zheng</surname></persName>
+							<affiliation key="aff11">
+								<orgName type="institution">Xiamen University</orgName>
+							</affiliation>
+						</author>
+						<author>
+							<persName><surname>Deepwisdom</surname></persName>
+						</author>
+						<title level="a" type="main">DATA INTERPRETER: AN LLM AGENT FOR DATA SCIENCE</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2024-02-28">28 Feb 2024</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">97CBAAF892DD5A3A209BD67BF5E3CC22</idno>
+					<idno type="arXiv">arXiv:2402.18679v1[cs.AI]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2024-03-01T18:58+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Large Language Model (LLM)-based agents have demonstrated remarkable effectiveness. However, their performance can be compromised in data science scenarios that require real-time data adjustment, expertise in optimization due to complex dependencies among various tasks, and the ability to identify logical errors for precise reasoning. In this study, we introduce the Data Interpreter, a solution designed to solve with code that emphasizes three pivotal techniques to augment problem-solving in data science: 1) dynamic planning with hierarchical graph structures for real-time data adaptability; 2) tool integration dynamically to enhance code proficiency during execution, enriching the requisite expertise; 3) logical inconsistency identification in feedback, and efficiency enhancement through experience recording. We evaluate the Data Interpreter on various data science and real-world tasks. Compared to open-source baselines, it demonstrated superior performance, exhibiting significant improvements in machine learning tasks, increasing from 0.86 to 0.95. Additionally, it showed a 26% increase in the MATH dataset and a remarkable 112% improvement in open-ended tasks. The solution will be released at https://github.com/geekan/MetaGPT.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">INTRODUCTION</head><p>Large Language Models (LLMs) have enabled agents to excel in a wide range of applications, demonstrating their adaptability and effectiveness <ref type="bibr" target="#b11">(Guo et al., 2024;</ref><ref type="bibr" target="#b42">Wu et al., 2023a;</ref><ref type="bibr" target="#b51">Zhou et al., 2023b)</ref>. These LLM-powered agents have significantly influenced areas like software engineering <ref type="bibr" target="#b14">(Hong et al., 2023)</ref>, navigating complex open-world scenarios <ref type="bibr" target="#b41">(Wang et al., 2023;</ref><ref type="bibr" target="#b6">Chen et al., 2024a)</ref>, facilitating collaborative multi-agent structures for multimodal tasks <ref type="bibr" target="#b52">(Zhuge et al., 2023)</ref>, improving the responsiveness of virtual assistants <ref type="bibr">(Lu et al.)</ref>, optimizing group intelligence <ref type="bibr" target="#b53">(Zhuge et al., 2024)</ref>, and contributing to scientific research <ref type="bibr" target="#b37">(Tang et al., 2024)</ref>.</p><p>Recent studies focused on improving the problem-solving capabilities of these agents by improving their reasoning process, aiming for increased sophistication and efficiency <ref type="bibr" target="#b47">(Zhang et al., 2023;</ref><ref type="bibr" target="#b1">Besta et al., 2023;</ref><ref type="bibr" target="#b33">Sel et al., 2023;</ref><ref type="bibr" target="#b46">Yao et al., 2024;</ref><ref type="bibr" target="#b42">Wei et al., 2022)</ref>. However, data-centric scientific problems, including machine learning, data analysis, and mathematical problem-solving, present unique challenges that remain to be addressed. The machine learning process involves complex, lengthy task handling steps, characterized by intricate dependencies among multiple tasks. This requires expert intervention for process optimization and dynamic adjustment in the event of failure or data updates. It is often challenging for LLMs to provide the correct solution in a single attempt. Furthermore, these problems demand precise reasoning, and thorough data verification <ref type="bibr" target="#b30">(Romera-Paredes et al., 2023)</ref>, which poses additional challenges to the LLM-based agent framework.</p><p>Moreover, existing works such as <ref type="bibr" target="#b29">(Qiao et al., 2023;</ref><ref type="bibr">OpenAI, 2023;</ref><ref type="bibr" target="#b23">Lucas, 2023)</ref> address datacentric problems through code-based problem-solving methods, known as the interpreter paradigm, which combines static requirement decomposition with code execution. However, several key challenges arise when employing these frameworks in practical data science tasks: 1) Data dependence intensity: The complexity inherent in data science arises from the intricate interplay among various steps, which are subject to real-time changes <ref type="bibr" target="#b21">(Liu et al., 2021)</ref>. For accurate results, data cleaning and comprehensive feature engineering are prerequisites before developing any machine learning model. Therefore, it is critical to monitor data changes and dynamically adjust to the transformed data and variables. The machine learning modeling process, encompassing feature selection, model training, and evaluation, involves a broad spectrum of processing operators and search spaces <ref type="bibr" target="#b49">(Zheng et al., 2021)</ref>. The challenge lies in generating and resolving the entire process code simultaneously. 2) Refined domain knowledge: The specialized knowledge and coding practices of data scientists are pivotal in addressing data-related challenges. Typically embedded in proprietary code and data, this knowledge often remains inaccessible to current LLMs. For instance, generating code for data transformation in specific domains such as energy or geology may pose a challenge for LLMs without the requisite domain expertise. Existing methodologies predominantly depend on LLMs, a reliance that may streamline the process but potentially compromise performance. 3) Rigorous logic requirements: Currently, interpreters such as <ref type="bibr" target="#b29">(Qiao et al., 2023;</ref><ref type="bibr">OpenAI, 2023;</ref><ref type="bibr" target="#b23">Lucas, 2023)</ref> incorporate code execution and error capturing capabilities to enhance problem-solving performance. However, they often neglect error-free execution, erroneously considering it as correct. While basic programming tasks can be streamlined and depend on immediate execution feedback when requirements are clearly delineated, data science problems often pose ambiguous, irregular, and not well-defined requirements, making it difficult for LLMs to understand. Consequently, LLM-generated code solutions for task resolution may contain ambiguities that necessitate rigorous validation of logical soundness, extending beyond mere execution feedback.</p><p>To address the aforementioned challenges, we propose 1) Dynamic planning with hierarchical structure: Our framework employs hierarchical graph structures to comprehend the inherent complexities of data science more effectively. A dynamic planning approach equips it with the adaptability to task variations, proving especially efficient in monitoring data changes and managing intricate variable dependencies inherent in data science problems. 2) Tool utilization and generation: We enhance coding proficiency by integrating various human-authored code snippets, creating custom tools for specific tasks beyond mere API-focused capabilities. This process involves the automatic combination of diverse tools with self-generated code. It utilizes task-level execution to independently build and expand its tool library, simplify tool usage, and perform code restructuring as needed. 3) Enhancing reasoning with logic bug aware: This is based on the confidence score obtained from execution results and test-driven validations. It detects inconsistencies between the code solution and test code execution and compares multiple trials to reduce logic errors. Throughout the execution and reasoning process, task-level experiences, primarily comprising metadata and runtime trajectory, which include both successes and failures, are recorded.</p><p>As depicted in Figure <ref type="figure" target="#fig_0">1</ref>, Data Interpreter significantly surpasses existing open-source frameworks. In comparison to these baselines, Data Interpreter exhibits superior performance, with 10.3% (from 0.86 to 0.95) improvement in machine learning tasks and 26% enhancement on the MATH dataset, demonstrating robust problem-solving capabilities. In open-ended tasks, its performance has more than doubled, marking a 112% increase, showcasing its efficacy in tackling a wide spectrum of challenges.</p><p>We summarize our contributions as follows:</p><p>• We propose a dynamic planning framework with hierarchical structures, enhancing adaptability and problem-solving capabilities in data science tasks. • We improve the proficiency and efficiency of coding in LLMs by introducing automated tool integration for tool utilization and generation. • We improve reasoning by integrating verification and experience, thereby enhancing the accuracy and efficiency of problem-solving. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">RELATED WORK</head><p>LLMs as data scientist agents Cutting-edge Large Language Models (LLMs), pre-trained on diverse natural and programming data, exhibit strong interpretation abilities. Like, <ref type="bibr" target="#b9">(Gao et al., 2023</ref>) <ref type="bibr" target="#b8">(Chen et al., 2022)</ref> leverages program interpreters to decouple complex computation, <ref type="bibr" target="#b50">(Zhou et al., 2023a)</ref> boost their performance on the MATH dataset, and <ref type="bibr" target="#b13">(Hendrycks et al., 2021)</ref>, <ref type="bibr" target="#b18">(Li et al., 2023)</ref>, <ref type="bibr" target="#b19">(Liang et al., 2023)</ref> enable code-based reasoning capabilities in embodied agents. Building on code interpretation capabilities, researchers are exploring ways to leverage LLMs to address data science challenges <ref type="bibr" target="#b4">(Bordt et al., 2024;</ref><ref type="bibr" target="#b7">Chen et al., 2024b;</ref><ref type="bibr" target="#b44">Yang et al., 2024;</ref><ref type="bibr" target="#b12">Hassan et al., 2023;</ref><ref type="bibr" target="#b31">Sänger et al., 2023)</ref> and integrate LLMs with specialized machine learning pipelines. For instance, <ref type="bibr" target="#b15">(Huang et al., 2023)</ref> develops or enhances Machine Learning models from data and task descriptions autonomously. In addition, <ref type="bibr" target="#b30">(Romera-Paredes et al., 2023)</ref> pairs LLMs with systematic evaluation to discover solutions to open problems by evolving executable programs describing solution methods. However, there is a lack of datasets and evaluation methods designed to assess the abilities of LLM-based methods in this field. We benchmark our work and various open-source frameworks on machine learning problem-solving to provide more insight and understanding of this research area.</p><p>Planning Planning is the critical capability of LLM-based agents. Planning capability emphasizes the generation of logically structured actions or thoughts roadmap for specific problems <ref type="bibr" target="#b16">(Huang et al., 2024;</ref><ref type="bibr" target="#b6">Chen et al., 2024a)</ref>. For the planning capability of LLM-based agents, earlier work such as CoT <ref type="bibr" target="#b42">(Wei et al., 2022)</ref> and ReAct <ref type="bibr" target="#b45">(Yao et al., 2022)</ref> focus on the decomposition of complicated tasks and perform sequential planning for subtasks. Due to the complexity of tasks, one single plan generated by the LLM-based agent is sometimes infeasible. Hence, some kinds of work, such as ToT <ref type="bibr" target="#b46">(Yao et al., 2024)</ref> and GoT <ref type="bibr" target="#b1">(Besta et al., 2023)</ref>, are designed to generate multiple plans and select one plan to execute. Although these previous planning approaches demonstrate impressive performance, they struggle to address multi-step problems with strong task dependencies, a common occurrence in data science tasks. Alternatively, we utilize dynamic hierarchical planning to enhance the capability, allowing for the decomposition of complex problems into task and action graphs, commonly encountered in data science scenarios.</p><p>Tools Recent research has focused on improving the capabilities of LLMs by creating and integrating external tools <ref type="bibr" target="#b32">(Schick et al., 2024)</ref>, <ref type="bibr" target="#b27">(Paranjape et al., 2023)</ref>. <ref type="bibr" target="#b52">(Zhuge et al., 2023)</ref>  <ref type="bibr" target="#b34">(Shen et al., 2024)</ref> proposes multiple agents to solve multimodal tasks. <ref type="bibr" target="#b20">(Liu et al., 2023)</ref> proposed an automatic tool selection mechanism based on LLM decision-making rather than statically assigning specific tools for certain tasks. In the field of self-creation of tools, <ref type="bibr" target="#b5">(Cai et al., 2023)</ref> transformed the role of LLM from a tool user to a creator, achieving self-sufficiency in tool creation. <ref type="bibr" target="#b15">(Qian et al., 2023)</ref> presented a framework that combines the creation and use of tools to solve problems. In this paper, we have expanded the types and range of tools usage. We not only implemented the two types of tools proposed in their future work, named "Upgrade of Existing Tool" and "Combination of Multiple Tools", but also improved tool generation efficiency and practicality. We achieve this by leveraging execution experience instead of relying on Few-Shot Prompts. Furthermore, this study supports creating various private tool libraries and allows LLMs to independently select and combine multiple tools as needed.</p><p>Reasoning Reasoning capability emphasizes understanding and processing of information to make decisions <ref type="bibr" target="#b16">(Huang et al., 2024)</ref>, which is another key strength of LLM-based agents. For the reasoning capability, previous works such as Reflexion <ref type="bibr" target="#b36">(Shinn et al., 2024)</ref>, Self-Refine <ref type="bibr" target="#b24">(Madaan et al., 2024)</ref>, CRITIC <ref type="bibr" target="#b10">(Gou et al., 2023)</ref> focus on encouraging LLM-based agents to reflect on failures and refine the reasoning process. Moreover, <ref type="bibr" target="#b9">(Gao et al., 2023)</ref> is pioneering work in leveraging code to improve the accuracy of LLM to solve mathematical, symbolic, and algorithmic reasoning problems. <ref type="bibr" target="#b8">(Chen et al., 2022)</ref> decouples complex computation from language understanding and reasoning by using a program interpreter to solve numeric reasoning tasks. <ref type="bibr" target="#b41">(Wang et al., 2023)</ref> leverages an iterative prompting mechanism to enhance programs used as actions by agents in Minecraft based on feedback from the environment and self-verification. Unlike prior approaches that primarily focused on general language feedback or execution feedback, our work tackles the unique challenges posed by data science problems that require advanced logical reasoning. Specifically, we propose novel automated confidence-based verification mechanisms to improve reasoning capability.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">METHODOLOGY</head><p>The methodology adopted in this paper, as depicted in Figure <ref type="figure">2</ref>, employs a plan-code-review paradigm, integrating dynamic planning within a hierarchical structure to monitor and adjust goals in real time. Further details are elaborated in Section 3.1.</p><p>Our interpreter uses code to accomplish each task. Tasks are decomposed following the plan, with code generated through LLMs based on these tasks. Tools are incorporated as needed to augment proficiency. The executor carries out code execution, producing traceable runtime results. Detailed explanations are provided in Section 3.2. Moreover, each task is subjected to a validation process to ensure its reliability. The process of executing a task is then characterized and analyzed as an experience, which can be retrieved for similar tasks in the future. More information on this mechanism is provided in Section 3.3.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">DYNAMIC PLANNING WITH HIERARCHICAL STRUCTURE</head><p>The intensive data dependence complicates modeling and orchestrating data science pipelines. In this section, we outline these pipelines naturally organized by the graph, modeling them with the hierarchical structure, and introduce dynamic plan management for effective orchestration.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.1">HIERARCHICAL GRAPH FOR DATA SCIENCE PROBLEMS</head><p>Data science projects encompass extensive detailing and long-range pipelines, complicating the direct planning of all detailed tasks and coding. This complexity necessitates careful planning, execution, and management <ref type="bibr" target="#b3">(Biswas et al., 2022)</ref>. Drawing inspiration from the application of hierarchical planning in automated machine learning tasks <ref type="bibr" target="#b25">(Mohr et al., 2018;</ref><ref type="bibr" target="#b26">Mubarak &amp; Koeshidayatullah, 2023)</ref>, we organize the data science pipelines via hierarchical structure, which initially decomposes the intricate data science problem into manageable tasks and further break down each task into specific actions executed through code.</p><p>Figure <ref type="figure" target="#fig_1">3</ref> illustrates the hierarchical data science task pipelines composed of preprocessing, feature construction, feature selection, hyperparameter tuning, model training, model evaluation, ensemble, and model prediction tasks (green circle in Figure <ref type="figure" target="#fig_1">3</ref>). Alongside, an execution graph, referred to as Figure <ref type="figure">2</ref>: The overall design of Data Interpreter. This model consists of three stages: dynamic plan graph and management, wherein a plan is generated for data-centric tasks, and the state of each step is managed during execution; tool utilization and evolution, involving the selection or creation of suitable tools to solve problems, continually evolving these tools; and automated confidence-based verification, which examines and votes on logically sound solutions.</p><p>the action graph, represents the corresponding execution actions (purple circle in Figure <ref type="figure" target="#fig_1">3</ref>). This hierarchical graph structure facilitates structured problem-solving for our interpreter and adeptly captures both sequential task relationships (such as from model evaluation to ensemble and model prediction) and parallel task relationships (such as model training and hyperparameter tuning). Therefore, we propose structuring data science workflows as a hierarchical directed acyclic graph (DAG), aptly representing data science pipelines at both task and coding levels. Our interpreter leverages the advanced planning capabilities of LLMs to decompose the complex data science problem into multiple tasks consistent with the problem goal and express their executing dependencies through a graph structure. We design the metadata for each task node, including task description, completion status as well as code. More details about the task node are described in Appendix A.1.1.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1.2">DYNAMIC PLAN MANAGEMENT</head><p>Leveraging a hierarchical graph structure, tasks are executed automatically. Unlike previous methods <ref type="bibr" target="#b42">(Wei et al., 2022;</ref><ref type="bibr" target="#b1">Besta et al., 2023;</ref><ref type="bibr" target="#b45">Yao et al., 2022)</ref> that create and execute plans once before execution for static problems, we investigate that in intensive data dependence scenario, the intermediate data among tasks will be dynamically changed during execution due to tool operations or new information in the workflow, which can lead to runtime errors if the data does not match the pre-defined plan. To tackle this, we introduce a dynamic plan management, detailed in Figure <ref type="figure" target="#fig_2">4</ref>.</p><p>To ensure efficient progress execution and facilitate plan modifications, our interpreter dynamically updates the corresponding code, execution result, and status of each node in the task graph following each task execution. A task is considered completed by successfully executing the corresponding code. Once completed, the task is marked as "Success" and added to a completed tasks list, proceeding to the next task according to the plan. On the contrary, the task is marked as "Failure" if it fails.</p><p>We have designed two strategies: Self-debugging and Human editing, aimed at enhancing the autonomous completeness and correctness of our interpreter. In the event of task failure, Selfdebugging is enabled, utilizing LLMs to debug the code based on runtime errors, up to a predefined number of attempts. If the task remains unresolved, it is flagged as "Failure". Due to the high logic requirements of data science problems, an additional human-in-the-loop approach, human editing, is introduced to ensure code precision. When Human editing is activated, our interpreter holds the task until it is manually modified, upon which it is rerun based on human input.</p><p>For failed or manually edited tasks, our interpreter will regenerate the plan based on current episodic memory and the context of execution. Specifically, the regenerated task graph is sorted in topological order and then compared to the original task graph using a prefix matching algorithm <ref type="bibr" target="#b40">(Waldvogel, 2000)</ref> to identify any differences in instructions. Based on this comparison, the fork can be identified.</p><p>The final output of this process includes all unchanged tasks existing before the fork and any new tasks added or modified after the fork.</p><p>Throughout execution, our interpreter monitors the dynamic task graph, promptly removing failed tasks, generating refined tasks, and updating the graph. This avoids the inefficiency of generating fine-grained planning tasks at once and improves the success rate of plans requiring multi-step execution, making it better suited for scenarios where the data flow constantly changes in data science problems.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2">TOOL UTILIZATION AND GENERATION</head><p>To address the intricate nature of tasks that are too complex to be entirely coded from scratch, utilizing existing toolkits or integrating existing code snippets becomes essential. Take, for example, feature engineering, which demands domain-specific expertise for data transformation. In such cases, using tools crafted by experts can be significantly more effective, as generating this type of code directly through LLMs poses considerable challenges. Similarly, email processing involves orchestrating different code snippets to establish efficient workflows. To improve the efficiency of using these tools, we suggest a two-pronged method: one focuses on recommending or generating the most suitable tools, while the other organizes these tools effectively. This approach offers clear advantages over previous methods <ref type="bibr" target="#b32">(Schick et al., 2024;</ref><ref type="bibr" target="#b14">Hong et al., 2023)</ref>, which relied on mere library calls or did not incorporate tools using clear modularization in the code. By combining the strengths and mitigating the weaknesses of these methods, our approach presents a more balanced and efficient solution. Notice that tool usages follow the principles and procedures of the task graph described in Section 3.1.1; the use of tools itself would be considered one of the tasks in the graph.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.1">TOOL RECOMMENDATION AND ORGANIZATION</head><p>In tool recommendations, our interpreter classifies tools based on task descriptions and types. This process effectively narrows down the pool of potential tools, making the selection process more efficient for subsequent tasks. Our interpreter then identifies the top-k tools that best fit the tasks by evaluating the compatibilities of the candidate tools with one task. Additionally, we incorporate a tool schema to help LLMs understand these tools' functionalities and use cases, embedding this schema during execution phases as outlined in Appendix A.3. This schema-guided understanding enables more accurate tool selection and application. Besides, during execution, the algorithm dynamically adjusts tool parameters using LLMs, considering the code context and task requirements. This dynamic parameter adjustment improves tool adaptability to the tasks at hand.</p><p>In tool organizations, our method employs LLMs to seamlessly integrate tools into the code, optimally positioning them based on a thorough analysis of the tool functions. This is particularly useful for complex tasks such as feature engineering, facilitating a process that is efficient and adaptable to the integration of tools. We refine this process by considering the context of the current task and the tools at our disposal. The LLM is directed to craft code that not only invokes the required tool functions but also seamlessly integrates these calls with other aspects of the code. This allows for dynamic orchestration of various tools tailored to the specific requirements of the encoding process.</p><p>A prime example of this adaptability is demonstrated with the CatCount tool in our deployment pipeline (Figure <ref type="figure" target="#fig_3">5</ref>), showcasing the dynamic use of its fit and transform functions according to the task context. This strategy ensures that tool integration is automated and precisely aligned with task demands, significantly boosting coding efficiency and flexibility.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.2.2">CONTINUOUS TOOL EVOLUTION</head><p>To minimize the frequency of debugging and improve execution efficiency, our model learns from experience during task execution. After each task, it abstracts tools by distilling their core function-alities, stripping away any sample-specific logic. This creates versatile, generic tool functions that are added to the library for future use.</p><p>In addition, Data Interpreter automatically ensures the reliability of these tools by conducting rigorous unit tests and leveraging its self-debugging capabilities through LLMs. Consequently, Data Interpreter facilitates rapidly transforming sample-specific code snippets into reusable tool functions, continuously improving its toolkit and coding expertise over time.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3">ENHANCING REASONING WITH VERIFICATION AND EXPERIENCE</head><p>Our designed task graph, dynamic plan management, and tool utilization can improve task planning and tool mastery. However, relying only on error detection or capturing exceptions is inadequate feedback to complete a task. For complex reasoning problems, even if the code runs without errors, it can still contain logical flaws <ref type="bibr" target="#b41">(Wang et al., 2023;</ref><ref type="bibr" target="#b50">Zhou et al., 2023a)</ref>.Therefore, in this section, we introduce automated confidence-based verification and leverage experience further to improve the correctness and efficiency of the reasoning results.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.1">AUTOMATED CONFIDENCE-BASED VERIFICATION</head><p>To address this issue, we propose a simple yet effective technique, Automated Confidence-based Verification (ACV) , which introduces an interpretation layer between the environment and the interpreter. This approach allows LLMs to evaluate code execution results and determine if the code solution is mathematically rigorous or logically correct. Specifically, once a code solution for the task starts to be executed, our interpreter is required to generate a validation code to ensure that the output result complies with the task requirement. The validation code is designed to simulate the logical process according to the task description and to verify the correctness of the result generated by the code.</p><p>This process is similar to performing white-box testing on each task, guaranteeing that the code produces the expected output.</p><p>Our interpreter returns a confidence score that indicates how likely the output will pass the verification. Formally, in the first verification, given the initial code C 1 , its execution result (i.e, candidate answer) A 1 and the task description T , validation code is generated by LLM, and this process is denoted as V. The validation code V k in k-th verification is generated as follows:</p><formula xml:id="formula_0">V k = V(T , C k , A k ),<label>(1)</label></formula><p>where k denotes the k-th verification and it starts from 1. After that, the validation code (i.e., V k ) is executed and its result is denoted as R k . N represents the maximum verification process that we allow.</p><p>For each verification, the confidence score is calculated based on the validation result R k as follows,</p><formula xml:id="formula_1">Confidence =    1, if R k = True, 0.2, if R k = False, 0.5, otherwise.</formula><p>(2)</p><p>The confidence score helps the interpreter select a more accurate result as the final answer. It helps the interpreter choose a more accurate result as the final answer by ranking the average confidence scores corresponding to different execution results.</p><p>A specific example of this automated confidence-based verification process from the MATH dataset is shown in 6. The validation code takes into account both the task, the code, and its execution result. The function is prime is to check the code, the probability is generated from the task description, and given answer is the candidate answer. In this example, the process undergoes five separate verifications. Specifically, the results of the code execution (that is, the candidate response) for the first and fifth validations are 1/108. For the remaining verifications, the results consistently are 56/219. The candidate answer (i.e. 1/108) gets two confidence scores (0.2 and 1), with an average of 0.6. Another candidate answer (i.e. 56/219) gets three confidence scores (0.2, 0.5, and 0.2), with an average of 0.3. As the former gets a higher average confidence score, our interpreter selects 1/108 as the final answer, and it is correct. In contrast, simply using the majority voting strategy will choose the latter, which is wrong. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.3.2">EXPERIENCE-DRIVEN REASONING</head><p>As the automated confidence-based verification makes the task-solving process more transparent and reliable, the data generated in the verification can be reused as experience for other tasks. Therefore, we improve our interpreter's adaptability through a reflective analysis that allows tasks to be reviewed, updated, and confirmed. This process is called Experience-Driven Reasoning. Specifically, our interpreter integrates an external repository designated as the 'experience pool' to archive essential elements of each task, including task description, final version code, and final answer. In the pool, all archived data is reorganized into reusable experiences based on the reflective mechanism <ref type="bibr" target="#b48">(Zhao et al., 2023;</ref><ref type="bibr" target="#b35">Shin et al., 2023)</ref>. These experiences, including both failed and successful attempts, can provide a comprehensive context for a task. This pool functions as a valuable resource, enabling the retrieval of past experiences to inform and optimize new task executions. An experience can be reused if it is found to be one of the nearest neighbors of a new task from the vector store, which is generated through task-level reflective analysis. Specifically, for a certain task, top-k experiences are retrieved as the context of the current task, which can improve the accuracy and efficiency of its reasoning. This approach mirrors the fundamental principles of human cognition, where individuals take advantage of past experiences to enhance decision-making and problem-solving. More experimental evaluations that validate this approach can be found in Section 4.3.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">EXPERIMENTS</head><p>4.1 EXPERIMENTAL SETUP 4.1.1 DATASET MATH dataset The MATH dataset <ref type="bibr" target="#b13">(Hendrycks et al., 2021)</ref> comprises 12,500 problems, with 5,000 designated as the test set, covering various subjects and difficulty levels. These subjects include Prealgebra (Prealg), Algebra, Number Theory (N.Theory), Counting and Probability (C.Prob), Geometry, Intermediate Algebra, and Precalculus (Precalc), with problems categorized from levels "1" to "5" based on difficulty. Following the setting of Wu et al. <ref type="bibr" target="#b43">(Wu et al., 2023b)</ref>, we evaluated four typical problem types (C.Prob, N.Theory, Prealg, Precalc), excluding level-5 geometry problems from the test set.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>ML-Benchmark</head><p>Given the absence of datasets and evaluation metrics for assessing capabilities in the machine learning domain, we developed a benchmark dataset and corresponding evaluation method known as ML-Benchmark. This dataset encompassed eight representative machine learning tasks categorized into three difficulty levels, ranging from easy (level 1) to most complex (level 3). Each task was accompanied by data, a concise description, standard user requirements, suggested steps, and metrics (see Table <ref type="table" target="#tab_7">8</ref> in the Appendix). For tasks labeled as "toy", the data was not divided into training and test splits, which required the framework to perform data splitting during modeling.</p><p>Open-ended task benchmark To evaluate the ability to generalize to real-world tasks, we developed the Open-ended task benchmark, comprising 20 tasks. Each task required the framework to understand user needs, break down complex tasks, and execute code. They delineated their requirements, foundational data or sources, steps for completion, and specific metrics. The scope was broad, encompassing common needs like Optical Character Recognition (OCR), web search and crawling (WSC), automated email replies (ER), web page imitation (WPI), text-to-image conversion (T2I), image-to-HTML code generation (I2C), image background removal (IBR), and mini-game generation (MGG). We showcase about these tasks in Figure <ref type="figure" target="#fig_9">10</ref>, Figure <ref type="figure" target="#fig_0">12</ref>, and Figure <ref type="figure" target="#fig_10">13</ref> in the Appendix.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.2">EVALUATION METRICS</head><p>In the MATH benchmark <ref type="bibr" target="#b13">(Hendrycks et al., 2021)</ref>, accuracy served as the chosen evaluation metric, aligning with the setting proposed in <ref type="bibr" target="#b43">(Wu et al., 2023b;</ref><ref type="bibr" target="#b13">Hendrycks et al., 2021)</ref>. Considering the variability in interpreting test results, we manually reviewed the outputs generated by all methods to determine the count of accurate responses. For the ML-Benchmark, three evaluation metrics were utilized: completion rate (CR), normalized performance score (NPS), and comprehensive score (CS). These metrics provided comprehensive insights into the model's performance and were defined as follows:</p><p>Completion rate (CR): In the task requirements description, there were T steps, and the task completion status of each step was denoted by a score s t , with a maximum score s max of 2 and a minimum score s min of 0. The task completion status categories were defined as follows: missing (score of 0), fail (score of 0), success -non-compliant (score of 1), success-compliant (score of 2), and optional step (not involved in scoring). To measure the completion level, we proposed a completion ratio where the numerator was the sum of scores s t for each step, and the denominator was the sum of the maximum possible scores for all steps (s max × T ):</p><formula xml:id="formula_2">CR = T t=1 s t s max × T . (<label>3</label></formula><formula xml:id="formula_3">)</formula><p>Normalized performance score (NPS): In our ML-Benchmark, each task was associated with its evaluation metric, which may vary between tasks, including metrics such as accuracy, F1, AUC and RMSLE, etc. For metrics such as accuracy, F1, and AUC, we presented the raw values to facilitate We evaluate all the problems with difficulty level 5 from 4 categories of the MATH dataset. We set N=3 for ACV.</p><p>comparison across identical data tasks. We normalize all performance values s:</p><formula xml:id="formula_4">NPS =    1 1 + s , if s is smaller the better s, otherwise.<label>(4)</label></formula><p>This transformation ensured that loss-based metrics like RMSLE are scaled from 0 to 1, with higher normalized performance score values indicating better performance.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Comprehensive score (CS):</head><p>To simultaneously assess both the completion rate of task requirements and the performance of generated machine learning models, we calculated the weighted sum of CR and NPS as follows: CS = 0.5 × CR + 0.5 × NPS.</p><p>(5)</p><p>Considering the lack of unified performance standards for open-ended tasks, we default to NPS = 0 and directly equate CS to CR.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.1.3">BASELINES AND IMPLEMENTATION DETAILS</head><p>GPT <ref type="bibr">-4-Turbo (gpt-4-1106-preview)</ref> was used in all frameworks to ensure an impartial performance evaluation. To ensure a fair comparison with other frameworks, we kept our experience pool empty to eliminate any prior knowledge. The effect of experience learning is reported in Table <ref type="table" target="#tab_3">3</ref>. MATH dataset: We adopted zero-shot baselines, including MathChat <ref type="bibr" target="#b43">(Wu et al., 2023b)</ref> and AutoGen <ref type="bibr" target="#b42">(Wu et al., 2023a)</ref> with GPT-4-Turbo as the baseline for a fair comparison. We set N=3 for ACV in the MATH dataset. Considering the variability in interpreting test results, we manually reviewed the outputs generated by all methods to determine the count of accurate responses <ref type="bibr" target="#b43">(Wu et al., 2023b)</ref>. ML-Benchmark: We selected four typical open-source LLM-based agent frameworks that support data analysis and modeling as baselines: XAgent <ref type="bibr" target="#b38">(Team, 2023)</ref>, AutoGen <ref type="bibr" target="#b42">(Wu et al., 2023a)</ref>, Open-Interpreter <ref type="bibr" target="#b23">(Lucas, 2023)</ref>, and TaskWeaver <ref type="bibr" target="#b29">(Qiao et al., 2023)</ref>. By default, we set N = 1 for ACV in ML-Benchmark and conducted the experiments before January 2024 for all baseline frameworks.</p><p>Open-ended task benchmark: We employed AutoGen <ref type="bibr" target="#b42">(Wu et al., 2023a)</ref> and OpenInterpreter <ref type="bibr" target="#b23">(Lucas, 2023)</ref> as baseline models. Each framework underwent three experiments per task, and we reported the average completion rate. We also set N = 1 for ACV in the open-ended task benchmark by default.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.2">MAIN RESULT</head><p>Performance on math problem solving As illustrated in the Figure <ref type="figure" target="#fig_5">7</ref>, the Data Interpreter achieved the best results across all tested categories, reaching 0.81 accuracy in the N.Theory cat-Table <ref type="table">1</ref>: Performance comparisons on ML-Benchmark. "WR", "BCW", "ICR", "SCTP", and "SVPC" represent "Wine recognition", "Breast cancer wisconsin", "ICR -Identifying age-related conditions", "Santander customer transaction prediction", and "Santander value prediction challenge", respectively. Table <ref type="table">2</ref>: Performance comparisons on Open-ended task benchmark. The tested tasks include "OCR" (Optical Character Recognition), "WSC" (Web Search and Crawling), and "ER" ( Email Reply), "WPI" (Web Page Imitation), "IBR" (Image Background Removal), "T2I" (Text-to-Image), "I2C" (Image-to-Code) and "MGG" (Mini Game Generation). egory, which was a 0.15 improvement over AutoGen. In the most challenging category, Precalc, the Data Interpreter obtained an accuracy of 0.28, an increase of 0.16 compared to AutoGen. Notably, the inclusion of ACV resulted in significant improvements across all task categories, with an average improvement of 17.29% relative improvement compared to the version without ACV. On average, the ACV strategy showed 26% relative improvement compared to AutoGen.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Performance on machine learning</head><p>In Table <ref type="table">1</ref>, Data Interpreter achieved a comprehensive score of 0.95 across the seven tasks, compared to an average score of 0.86 by AutoGen, marking a significant 10.3% improvement. It was the only framework with a comprehensive score exceeding 0.9 on Titanic, House Prices, SCTP, and ICR. Data Interpreter outperformed other frameworks and gained a significant advantage on corresponding datasets, showing a notable improvement of 24.7% and 21.2% over AutoGen in ICR and SVPC, respectively. The Data Interpreter completed all mandatory processes on every dataset and consistently maintained superior performance, more details can be found in Table <ref type="table" target="#tab_5">6</ref> in the Appendix.</p><p>Performance on open-ended tasks Table <ref type="table">2</ref> illustrates that Data Interpreter achieved a completion rate of 0.97, marking a substantial 112% improvement compared to AutoGen.</p><p>For the IBR task, all three frameworks achieved a 1.0 completion score. In OCR-related tasks, Data Interpreter achieved an average completion rate of 0.85, outperforming AutoGen and OpenInterpreter by 26.8% and 70.0%, respectively. In tasks requiring multiple steps and utilizing multimodal tools/interfaces, such as WPI, I2C, and T2I, the Data Interpreter emerged as the sole method to execute all steps. AutoGen and OpenInterpreter failed to log in and obtain the status for the ER task, resulting in a lower completion rate. The Data Interpreter can dynamically adjust the task and achieve a 0.98 score in completion rate.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4.3">ABLATION STUDY</head><p>Ablation on core modules To assess the performance of various modules, we conducted ablation experiments with three additional configurations on the ML-Benchmark. The initial setup entailed the ReAct <ref type="bibr" target="#b45">(Yao et al., 2022)</ref> framework with simplified prompt phrases that allow code execution.</p><p>The second configuration integrated dynamic planning, encompassing hierarchical planning and dynamic plan management following each step to facilitate real-time adjustments. The third config-  As indicated by Table <ref type="table" target="#tab_3">3</ref>, dynamic planning yielded a significant improvement of 0.48. It helped prepare the dataset and track changes to the data in real-time, resulting in better performance, especially in terms of completion rate. Furthermore, using tools resulted in an additional improvement of 9.84%, bringing the comprehensive score to 0.94.</p><p>Ablation on LLM backbones In machine learning tasks, more extensive LLM backbones such as Qwen-72B-Chat <ref type="bibr" target="#b0">(Bai et al., 2023)</ref> and <ref type="bibr">Mixtral-8x7B (Jiang et al., 2024)</ref> exhibited performance comparable to GPT-3.5-Turbo, while smaller LLMs experienced performance degradation.</p><p>As shown in Figure <ref type="figure" target="#fig_6">8</ref>, Data Interpreter, when paired with smaller models such as Yi-34B-Chat (01ai, 2023), Qwen-14B-Chat <ref type="bibr" target="#b0">(Bai et al., 2023)</ref>, Llama2-13B-Chat <ref type="bibr" target="#b39">(Touvron et al., 2023)</ref>, and even DeepSeek-7B-Chat <ref type="bibr" target="#b2">(Bi et al., 2024)</ref>, effectively handled tasks such as data loading and analysis. However, these models faced limitations when executing tasks requiring advanced coding proficiency, which can lead to incomplete processes. In open-ended tasks, Mixtral-8x7B achieved high completion rates in three tasks but encountered challenges in the WSC task due to difficulty accurately outputting complete results to CSV files. Similar to machine learning tasks, smaller LLMs encountered execution failures due to their restricted coding abilities while acquiring images or parsing webpage results. (See Figure <ref type="figure" target="#fig_6">8</ref>).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Ablation on experience learning</head><p>To evaluate experience learning, we conducted experiments on five tasks with varying experience pool sizes, measuring task efficiency by debugging attempts and cost. Increasing the pool size from 0 to 200 significantly reduced debugging attempts from 1.48 to 0.32 per task, with costs decreasing from $0.80 to $0.24. This highlights substantial efficiency gains from experience learning. Notably, at a pool size of 80, debugging attempts decreased, especially in ER, Titanic, and House Prices tasks, by 1.25, 1, and 1, respectively. This underscored the Table <ref type="table">4</ref>: Ablation on experience pool size. We evaluate the efficiency of completing tasks by taking the average of the number of debugging attempts (NDA) required and the total cost, excluding experience retrieval and usage. We take the mean of multiple attempts to arrive at the final value. </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">CONCLUSION</head><p>While current LLM-based agents have proven effective in managing static and straightforward tasks, they lose competency when confronted with intricate multi-step challenges, particularly evident in tasks such as machine learning. Our analysis reveals that the complex dependencies among various tasks pose critical challenges, often involving task decomposition where the failure of a single task disrupts the entire process. Additionally, the dynamic nature of these tasks introduces variability in specific problems, demanding a nuanced understanding of coding tools beyond the current API-focused capabilities. Existing methods, primarily designed for static tasks, often overlook these challenges common in complex data science scenarios. In addition, LLM-based agents, with the aid of code execution feedback, can enhance their problem-solving abilities. However, their capacity is limited when interpreting error feedback for task completion evaluation. In data science scenarios, LLM-based agents must distinguish logical errors from error-free feedback, thereby verifying the reliability of their code solutions and providing more accurate results.</p><p>To address these challenges, we introduce the Data Interpreter, a solution for data science problemsolving through dynamic planning with hierarchical graphs, tools integration and evolution, and automated confidence-based verification. Our Data Interpreter is meticulously designed to enhance reliability, automation, and reasoning capability in managing complex data science tasks. Through extensive evaluations, our Data Interpreter outperforms various open-source frameworks in machine learning tasks, mathematical problems, and real-world task performance, signifying a substantial advancement in the capabilities of LLM-based agents for data science.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A APPENDIX</head><p>A.1 PLAN EXAMPLE A.1.1 NODE COMPONENTS IN THE TASK GRAPH Figure <ref type="figure" target="#fig_7">9</ref> illustrates the structure of each task. Each task is structured to include instructions, dependencies array, code, and a flag. Specifically, dependencies array and flag are designed to maintain and manage the node's dependency and runtime status, while instructions and code describe tasks in natural and coding languages respectively. Since the code of each task is automatically executed in the code interpreter, the corresponding code is directly entered into the code interpreter used by its predecessor task to ensure the consistency of code variables between sequential tasks. During the task execution process, the execution results will be stored as runtime results.   We are showcasing several typical Open-Ended Tasks in the following illustrations. For each task, we include the necessary data, user requirements, and assessment pipeline.    </p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Figure 1 :</head><label>1</label><figDesc>Figure 1: Comparison with various open-source frameworks on machine learning tasks and realworld open-ended tasks.</figDesc><graphic coords="2,108.00,76.19,396.00,214.04" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_1"><head>Figure 3 :</head><label>3</label><figDesc>Figure 3: Directed acyclic graph (DAG) of tasks: Take wine recognition problem as an example. The task graph is an expression of the disassembled planned tasks. The action graph also referred to as the execution graph, executes the node based on the planned task graph. The execution code of each node is converted by LLM.</figDesc><graphic coords="6,161.46,81.86,289.08,363.64" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_2"><head>Figure 4 :</head><label>4</label><figDesc>Figure 4: Dynamic Plan management of Data Interpreter. (a) Plan refinement using Human editing. The left image illustrates a human-edited task on the graph, and the refined plan with updated tasks 3.1', 3.2', along with newly added task 3.3 is delineated in the right image. (b) Plan refinement for the failed task. After task execution, Task 3.3 fails. The refined plan consists of existing success tasks and updated task 4.1 from task 4', as well as newly added tasks 4.2, and 4.3.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_3"><head>Figure 5 :</head><label>5</label><figDesc>Figure 5: Tool usage pipeline in Data Interpreter. The tool recommendation initially selects tools based on task classification. Then the tool organization combines multiple tools as needed to accomplish tasks.</figDesc><graphic coords="8,108.00,81.86,396.01,363.62" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_4"><head>Figure 6 :</head><label>6</label><figDesc>Figure 6: Example for Automated Confidence-based Verification. Inside the dotted box is the verification process, and below the dotted box is the final answer based on verification.</figDesc><graphic coords="10,108.00,81.86,396.01,394.54" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_5"><head>Figure 7 :</head><label>7</label><figDesc>Figure 7: Performance on the MATH dataset.We evaluate all the problems with difficulty level 5 from 4 categories of the MATH dataset. We set N=3 for ACV.</figDesc><graphic coords="12,108.00,81.86,395.98,187.05" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_6"><head>Figure 8 :</head><label>8</label><figDesc>Figure 8: Evaluation on ML-Benchmark with different LLMs. Left: completion rate. Right: comprehensive score. uration incorporated the utilization and generation functionalities of tools, which defaulted to the Data Interpreter.</figDesc><graphic coords="14,108.00,195.44,396.01,188.62" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_7"><head>Figure 9 :</head><label>9</label><figDesc>Figure 9: The components of a task in task graph</figDesc><graphic coords="19,108.00,333.95,396.00,229.43" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_8"><head></head><label></label><figDesc>Scan all the necessary fields and amounts from the given file and then create an Excel sheet with the extracted data Pipeline Requirement: 1.Load and read images from a given folder/path 2.Install OCR tools/software 3.Using OCR tools/software to extract necessary fields and amounts 4.Collect results and convert them to a DataFrame 5.Save the result in a csv/xlsx forma and filter the required information 3.Download or transform the data, convert them into a specified format 4.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_9"><head>Figure 10 :</head><label>10</label><figDesc>Figure 10: Open-ended task cases (invoice OCR and web search and crawling)</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_10"><head>Figure 13 :</head><label>13</label><figDesc>Figure13: Open-ended task cases (mini-game generation)</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="31,108.00,106.26,396.01,297.01" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0"><head></head><label></label><figDesc></figDesc><graphic coords="31,108.00,480.95,396.00,203.60" type="bitmap" /></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_3"><head>Table 3 :</head><label>3</label><figDesc>Ablation on core modules. Evaluated with comprehensive score on ML-Benchmark. "ICR", "SCTP", and "SVPC" represent "ICR -Identifying age-related conditions", "Santander customer transaction prediction", and "Santander value prediction challenge", respectively.</figDesc><table><row><cell>Code execution</cell><cell>Dynamic plan</cell><cell>Tool</cell><cell>House Prices</cell><cell>SCTP</cell><cell>SVPC</cell><cell>ICR</cell><cell>Avg.</cell></row><row><cell>✓</cell><cell></cell><cell></cell><cell>0.51</cell><cell>0.17</cell><cell>0.66</cell><cell>0.17</cell><cell>0.37</cell></row><row><cell>✓</cell><cell>✓</cell><cell></cell><cell>0.96</cell><cell>0.91</cell><cell>0.80</cell><cell>0.74</cell><cell>0.85</cell></row><row><cell>✓</cell><cell>✓</cell><cell>✓</cell><cell>0.96</cell><cell>0.95</cell><cell>0.89</cell><cell>0.96</cell><cell>0.94</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_4"><head></head><label></label><figDesc>Lower values indicate better performance. "Avg." and "Std." denote "Average" and "Standard deviation", respectively.</figDesc><table><row><cell>Experience pool size</cell><cell></cell><cell>size=0</cell><cell></cell><cell>size=80</cell><cell cols="2">size=200</cell></row><row><cell>Metric</cell><cell>NDA</cell><cell>Cost ($)</cell><cell>NDA</cell><cell>Cost ($)</cell><cell>NDA</cell><cell>Cost ($)</cell></row><row><cell>WSC</cell><cell>1.50</cell><cell>0.69</cell><cell>0.80</cell><cell>0.33</cell><cell>0.40</cell><cell>0.29</cell></row><row><cell>ER</cell><cell>1.50</cell><cell>0.81</cell><cell>0.25</cell><cell>0.27</cell><cell>0</cell><cell>0.13</cell></row><row><cell>Titanic</cell><cell>1.40</cell><cell>0.65</cell><cell>0.40</cell><cell>0.35</cell><cell>0.40</cell><cell>0.31</cell></row><row><cell>House Prices</cell><cell>1.60</cell><cell>1.01</cell><cell>0.60</cell><cell>0.15</cell><cell>0.40</cell><cell>0.15</cell></row><row><cell>ICR</cell><cell>1.40</cell><cell>0.85</cell><cell>0.60</cell><cell>0.44</cell><cell>0.40</cell><cell>0.37</cell></row><row><cell>Avg. / Std.</cell><cell cols="6">1.48 / 0.08 0.80 / 0.14 0.53 / 0.21 0.31 / 0.11 0.32 / 0.18 0.24 / 0.10</cell></row><row><cell cols="7">efficiency enhancement even with a modest pool size, indicating the sensitivity of LLMs to context</cell></row><row><cell cols="3">and effectiveness in code-centric problem-solving.</cell><cell></cell><cell></cell><cell></cell><cell></cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_5"><head>Table 6 :</head><label>6</label><figDesc>Performance comparisons on ML benchmark. "WR", "BCW", "ICR", "SCTP", and "SVPC" represent "Wine recognition"", "Breast cancer wisconsin", "ICR -Identifying age-related conditions", "Santander customer transaction prediction", and "Santander value prediction challenge", respectively. "Avg." denotes "Average".</figDesc><table><row><cell>Model / Task</cell><cell>WR</cell><cell>BCW</cell><cell>Titanic</cell><cell>House Prices</cell><cell>SCTP</cell><cell>ICR</cell><cell>SVPC</cell><cell>Avg.</cell></row><row><cell>Completion rate</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>AutoGen</cell><cell>0.92</cell><cell>1.00</cell><cell>0.92</cell><cell>0.83</cell><cell>0.83</cell><cell>0.83</cell><cell>0.83</cell><cell>0.91</cell></row><row><cell>Open Interpreter</cell><cell>1.00</cell><cell>0.90</cell><cell>0.92</cell><cell>0.88</cell><cell>0.85</cell><cell>0.91</cell><cell>0.88</cell><cell>0.93</cell></row><row><cell>TaskWeaver</cell><cell>1.00</cell><cell>1.00</cell><cell>0.83</cell><cell>0.88</cell><cell>0.67</cell><cell>0.83</cell><cell>0.80</cell><cell>0.89</cell></row><row><cell>XAgent</cell><cell>1.00</cell><cell>1.00</cell><cell>0.83</cell><cell>0.83</cell><cell>0</cell><cell>0.67</cell><cell>0</cell><cell>0.70</cell></row><row><cell>Data Interpreter</cell><cell>1.00</cell><cell>1.00</cell><cell>1.00</cell><cell>1.00</cell><cell>1.00</cell><cell>1.00</cell><cell>1.00</cell><cell>1.00</cell></row><row><cell cols="3">Normalized performance score</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>AutoGen</cell><cell>1.00</cell><cell>0.97</cell><cell>0.82</cell><cell>0.88</cell><cell>0.82</cell><cell>0.71</cell><cell>0.63</cell><cell>0.83</cell></row><row><cell>Open Interpreter</cell><cell>1.00</cell><cell>0.96</cell><cell>0.81</cell><cell>0.87</cell><cell>0.52</cell><cell>0.25</cell><cell>0</cell><cell>0.63</cell></row><row><cell>TaskWeaver</cell><cell>1.00</cell><cell>0.96</cell><cell>0.43</cell><cell>0.49</cell><cell>0</cell><cell>0.65</cell><cell>0.17</cell><cell>0.53</cell></row><row><cell>XAgent</cell><cell>1.00</cell><cell>0.94</cell><cell>0</cell><cell>0</cell><cell>0</cell><cell>0</cell><cell>0</cell><cell>0.28</cell></row><row><cell>Data Interpreter</cell><cell>0.96</cell><cell>0.99</cell><cell>0.82</cell><cell>0.91</cell><cell>0.89</cell><cell>0.91</cell><cell>0.77</cell><cell>0.89</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_6"><head>Table 7 :</head><label>7</label><figDesc>Additional ablation on core modules. Evaluated with CR, NPS and CS on ML-Benchmark. "ICR", "SCTP", and "SVPC" represent "ICR -Identifying age-related conditions", "Santander customer transaction prediction", and "Santander value prediction challenge", respectively.</figDesc><table><row><cell>Code execution</cell><cell>Dynamic plan</cell><cell>Tool</cell><cell>House Prices</cell><cell>SCTP</cell><cell>SVPC</cell><cell>ICR</cell><cell>Avg.</cell></row><row><cell>Completion rate</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>✓</cell><cell></cell><cell></cell><cell>0.58</cell><cell>0.33</cell><cell>0.67</cell><cell>0.33</cell><cell>0.48</cell></row><row><cell>✓</cell><cell>✓</cell><cell></cell><cell>1.00</cell><cell>1.00</cell><cell>0.92</cell><cell>0.88</cell><cell>0.95</cell></row><row><cell>✓</cell><cell>✓</cell><cell>✓</cell><cell>1.00</cell><cell>1.00</cell><cell>1.00</cell><cell>1.00</cell><cell>1.00</cell></row><row><cell cols="2">Normalized performance score</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>✓</cell><cell></cell><cell></cell><cell>0.43</cell><cell>0</cell><cell>0.64</cell><cell>0</cell><cell>0.27</cell></row><row><cell>✓</cell><cell>✓</cell><cell></cell><cell>0.91</cell><cell>0.82</cell><cell>0.68</cell><cell>0.60</cell><cell>0.75</cell></row><row><cell>✓</cell><cell>✓</cell><cell>✓</cell><cell>0.91</cell><cell>0.89</cell><cell>0.77</cell><cell>0.91</cell><cell>0.87</cell></row><row><cell cols="2">Comprehensive score</cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell><cell></cell></row><row><cell>✓</cell><cell></cell><cell></cell><cell>0.51</cell><cell>0.17</cell><cell>0.66</cell><cell>0.17</cell><cell>0.37</cell></row><row><cell>✓</cell><cell>✓</cell><cell></cell><cell>0.96</cell><cell>0.91</cell><cell>0.8</cell><cell>0.74</cell><cell>0.86</cell></row><row><cell>✓</cell><cell>✓</cell><cell>✓</cell><cell>0.96</cell><cell>0.95</cell><cell>0.89</cell><cell>0.96</cell><cell>0.94</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_7"><head>Table 8 :</head><label>8</label><figDesc>Details of the ML-Benchmark dataset, including dataset name, brief description, standard user requirements, dataset type, task type, difficulty, and metric used.</figDesc><table><row><cell>User Req.</cell></row><row><cell>Dataset Name</cell></row><row><cell>ID</cell></row></table></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_8"><head>User Requirement: -Task 4:</head><label></label><figDesc>Get data from `paperlist` table in https://papercopilot.com/statistics/iclr-statistics/iclr-2024-statistics/, and save it to a csv file. paper title must include `multiagent` or `large language model`.</figDesc><table /><note>Output in a tabular form Performance Requirement: Recall / Precision / Accuracy notice: print key variables</note></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="1" xml:id="foot_0">https://www.kaggle.com/</note>
+		</body>
+		<back>
+			<div type="annex">
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>39</head><p>"dependent_task_ids": ["2", "3", "4", "6", "7"], 40 "instruction": "Write a detailed report covering → methodologies, findings, and model performance, and save → it as a text file."             </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>A.4 TOOL USAGE PROMPTS</head><p>We use two types of prompts for tool utilization. For open-ended tasks, we use zero-shot prompts, and for machine-learning tasks, we use one-shot prompts as illustrated below. 1. Login to the target email account 2. Summarize and filter the email content accordingly.</p><p>3. set up an automatic reply to the sender with an email address that ends with a specific domain name.</p><p>Performance Requirement: -(4) Web page imitation (Task 9-13)</p><p>Scenario Description: Using Selenium and WebDriver to access a webpage and convert it to an image, with the assistance of GPT-4V to mimic the creation of a one-page website.</p><p>-Task 10: This is a URL of webpage: https://pytorch.org/. Firstly, utilize Selenium and WebDriver for rendering. Secondly, convert image to a webpage including HTML, CSS and JS in one go. Finally, save webpage in a file. NOTE: All required dependencies and environments have been fully installed and configured.</p><p>-Task 11: This is a URL of webpage: https://www.kaggle.com/. Firstly, utilize Selenium and WebDriver to render the webpage, ensuring the browser window is maximized for an optimal viewing experience. Secondly, convert image to a webpage including HTML, CSS and JS in one go. Finally, save webpage in a file. NOTE: All required dependencies and environments have been fully installed and configured.</p><p>-Task 12: This is a URL of webpage: https://chat.openai.com/auth/login. Firstly, utilize Selenium and WebDriver to render the webpage, ensuring the browser window is maximized for an optimal viewing experience. Secondly, convert image to a webpage including HTML, CSS and JS in one go.   </p></div>			</div>
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<title/>
+		<author>
+			<persName><forename type="first">Jinze</forename><surname>Bai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuai</forename><surname>Bai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yunfei</forename><surname>Chu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zeyu</forename><surname>Cui</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kai</forename><surname>Dang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaodong</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yang</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenbin</forename><surname>Ge</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fei</forename><surname>Huang</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Graph of thoughts: Solving elaborate problems with large language models</title>
+		<author>
+			<persName><forename type="first">Maciej</forename><surname>Besta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nils</forename><surname>Blach</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ales</forename><surname>Kubicek</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Robert</forename><surname>Gerstenberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lukas</forename><surname>Gianinazzi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Joanna</forename><surname>Gajda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tomasz</forename><surname>Lehmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michal</forename><surname>Podstawski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hubert</forename><surname>Niewiadomski</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Piotr</forename><surname>Nyczyk</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">Deepseek llm: Scaling open-source language models with longtermism</title>
+		<author>
+			<persName><forename type="first">Xiao</forename><surname>Bi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Deli</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Guanting</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shanhuang</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Damai</forename><surname>Dai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chengqi</forename><surname>Deng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Honghui</forename><surname>Ding</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kai</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qiushi</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhe</forename><surname>Fu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">The art and practice of data science pipelines: A comprehensive study of data science pipelines in theory, in-the-small, and in-thelarge</title>
+		<author>
+			<persName><forename type="first">Sumon</forename><surname>Biswas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohammad</forename><surname>Wardat</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hridesh</forename><surname>Rajan</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICSE</title>
+				<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<monogr>
+		<title level="m" type="main">Data science with llms and interpretable models</title>
+		<author>
+			<persName><forename type="first">Sebastian</forename><surname>Bordt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ben</forename><surname>Lengerich</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Harsha</forename><surname>Nori</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rich</forename><surname>Caruana</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<monogr>
+		<author>
+			<persName><forename type="first">Tianle</forename><surname>Cai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xuezhi</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tengyu</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xinyun</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Denny</forename><surname>Zhou</surname></persName>
+		</author>
+		<title level="m">Large language models as tool makers</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">S-agents: self-organizing agents in open-ended environment</title>
+		<author>
+			<persName><forename type="first">Jiaqi</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuxian</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiachen</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Zhang</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024a</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<monogr>
+		<author>
+			<persName><forename type="first">Kexin</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hanqun</forename><surname>Cao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Junyou</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuyang</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Menghao</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xin</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lanqing</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jiezhong</forename><surname>Qiu</surname></persName>
+		</author>
+		<title level="m">Pheng Ann Heng, and Guangyong Chen. An autonomous large language model agent for chemical literature data mining</title>
+				<imprint>
+			<date type="published" when="2024">2024b</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<monogr>
+		<title level="m" type="main">Program of thoughts prompting: Disentangling computation from reasoning for numerical reasoning tasks</title>
+		<author>
+			<persName><forename type="first">Wenhu</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xueguang</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xinyi</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">William</forename><forename type="middle">W</forename><surname>Cohen</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Pal: Program-aided language models</title>
+		<author>
+			<persName><forename type="first">Luyu</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aman</forename><surname>Madaan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuyan</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Uri</forename><surname>Alon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pengfei</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yiming</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jamie</forename><surname>Callan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Graham</forename><surname>Neubig</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICML</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Critic: Large language models can self-correct with tool-interactive critiquing</title>
+		<author>
+			<persName><forename type="first">Zhibin</forename><surname>Gou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhihong</forename><surname>Shao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yeyun</forename><surname>Gong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yelong</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yujiu</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nan</forename><surname>Duan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weizhu</forename><surname>Chen</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<monogr>
+		<title level="m" type="main">Large language model based multi-agents: A survey of progress and challenges</title>
+		<author>
+			<persName><forename type="first">Taicheng</forename><surname>Guo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiuying</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yaqi</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ruidi</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shichao</forename><surname>Pei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Nitesh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Olaf</forename><surname>Chawla</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiangliang</forename><surname>Wiest</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Zhang</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<monogr>
+		<author>
+			<persName><forename type="first">Md</forename><surname>Mahadi Hassan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alex</forename><surname>Knipper</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shubhra</forename><surname>Kanti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karmaker</forename><surname>Santu</surname></persName>
+		</author>
+		<title level="m">Chatgpt as your personal data scientist</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<monogr>
+		<title level="m" type="main">Measuring mathematical problem solving with the math dataset</title>
+		<author>
+			<persName><forename type="first">Dan</forename><surname>Hendrycks</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Collin</forename><surname>Burns</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Saurav</forename><surname>Kadavath</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Akul</forename><surname>Arora</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Steven</forename><surname>Basart</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dawn</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jacob</forename><surname>Steinhardt</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<monogr>
+		<author>
+			<persName><forename type="first">Sirui</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiawu</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jonathan</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuheng</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jinlin</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ceyao</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zili</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Steven</forename><surname>Ka</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shing</forename><surname>Yau</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zijuan</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Liyang</forename><surname>Zhou</surname></persName>
+		</author>
+		<title level="m">Meta programming for multiagent collaborative framework</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<monogr>
+		<author>
+			<persName><forename type="first">Qian</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jian</forename><surname>Vora</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Percy</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jure</forename><surname>Leskovec</surname></persName>
+		</author>
+		<title level="m">Benchmarking large language models as ai research agents</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<monogr>
+		<title level="m" type="main">Understanding the planning of llm agents: A survey</title>
+		<author>
+			<persName><forename type="first">Xu</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weiwen</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaolong</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xingmei</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hao</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Defu</forename><surname>Lian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yasheng</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ruiming</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Enhong</forename><surname>Chen</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<monogr>
+		<author>
+			<persName><forename type="first">Alexandre</forename><surname>Albert Q Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Antoine</forename><surname>Sablayrolles</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Arthur</forename><surname>Roux</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Blanche</forename><surname>Mensch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chris</forename><surname>Savary</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Devendra</forename><surname>Bamford</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Diego</forename><surname>Singh Chaplot</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Emma</forename><forename type="middle">Bou</forename><surname>De Las Casas</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Florian</forename><surname>Hanna</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Bressand</surname></persName>
+		</author>
+		<title level="m">Mixtral of experts</title>
+				<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b18">
+	<monogr>
+		<title level="m" type="main">Chain of code: Reasoning with a language modelaugmented code emulator</title>
+		<author>
+			<persName><forename type="first">Chengshu</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jacky</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andy</forename><surname>Zeng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xinyun</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karol</forename><surname>Hausman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dorsa</forename><surname>Sadigh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergey</forename><surname>Levine</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Li</forename><surname>Fei-Fei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fei</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brian</forename><surname>Ichter</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b19">
+	<analytic>
+		<title level="a" type="main">Code as policies: Language model programs for embodied control</title>
+		<author>
+			<persName><forename type="first">Jacky</forename><surname>Liang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenlong</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fei</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peng</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karol</forename><surname>Hausman</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Brian</forename><surname>Ichter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pete</forename><surname>Florence</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Andy</forename><surname>Zeng</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">ICRA</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b20">
+	<monogr>
+		<title level="m" type="main">Controlllm: Augment language models with tools by searching on graphs</title>
+		<author>
+			<persName><forename type="first">Zhaoyang</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zeqiang</forename><surname>Lai</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhangwei</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Erfei</forename><surname>Cui</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhiheng</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xizhou</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lewei</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qifeng</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu</forename><surname>Qiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jifeng</forename><surname>Dai</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b21">
+	<monogr>
+		<title level="m" type="main">Winning solutions and postchallenge analyses of the chalearn autodl challenge</title>
+		<author>
+			<persName><forename type="first">Zhengying</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Adrien</forename><surname>Pavao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhen</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sergio</forename><surname>Escalera</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fabio</forename><surname>Ferreira</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Isabelle</forename><surname>Guyon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sirui</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Frank</forename><surname>Hutter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rongrong</forename><surname>Ji</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Julio Cs Jacques</forename><surname>Junior</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2019">2019. 2021</date>
+			<publisher>TPAMI</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b22">
+	<monogr>
+		<title level="m" type="main">Chameleon: Plug-and-play compositional reasoning with large language models</title>
+		<author>
+			<persName><forename type="first">Pan</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Baolin</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hao</forename><surname>Cheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Michel</forename><surname>Galley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kai-Wei</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ying</forename><forename type="middle">Nian</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Song-Chun</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jianfeng</forename><surname>Gao</surname></persName>
+		</author>
+		<imprint>
+			<publisher>NeurIPS</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b23">
+	<monogr>
+		<title level="m" type="main">GitHub -KillianLucas/open-interpreter: A natural language interface for computers -github</title>
+		<author>
+			<persName><forename type="first">Killian</forename><surname>Lucas</surname></persName>
+		</author>
+		<ptr target="https://github.com/KillianLucas/open-interpreter" />
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b24">
+	<monogr>
+		<title level="m" type="main">Self-refine: Iterative refinement with self-feedback</title>
+		<author>
+			<persName><forename type="first">Aman</forename><surname>Madaan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Niket</forename><surname>Tandon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Prakhar</forename><surname>Gupta</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Skyler</forename><surname>Hallinan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Luyu</forename><surname>Gao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sarah</forename><surname>Wiegreffe</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Uri</forename><surname>Alon</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nouha</forename><surname>Dziri</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shrimai</forename><surname>Prabhumoye</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yiming</forename><surname>Yang</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<publisher>NeurIPS</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b25">
+	<analytic>
+		<title level="a" type="main">Ml-plan: Automated machine learning via hierarchical planning</title>
+		<author>
+			<persName><forename type="first">Felix</forename><surname>Mohr</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marcel</forename><surname>Wever</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eyke</forename><surname>Hüllermeier</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Machine Learning</title>
+				<imprint>
+			<date type="published" when="2018">2018</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b26">
+	<analytic>
+		<title level="a" type="main">Hierarchical automated machine learning (automl) for advanced unconventional reservoir characterization</title>
+		<author>
+			<persName><forename type="first">Yousef</forename><surname>Mubarak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ardiansyah</forename><surname>Koeshidayatullah</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="s">Scientific Reports</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b27">
+	<monogr>
+		<author>
+			<persName><forename type="first">Bhargavi</forename><surname>Paranjape</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Scott</forename><surname>Lundberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sameer</forename><surname>Singh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hannaneh</forename><surname>Hajishirzi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Luke</forename><surname>Zettlemoyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Marco</forename><surname>Tulio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ribeiro</forename></persName>
+		</author>
+		<title level="m">Automatic multi-step reasoning and tool-use for large language models</title>
+				<meeting><address><addrLine>Art</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b28">
+	<analytic>
+		<title level="a" type="main">Creator: Tool creation for disentangling abstract and concrete reasoning of large language models</title>
+		<author>
+			<persName><forename type="first">Chi</forename><surname>Cheng Qian</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yi</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yujia</forename><surname>Fung</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhiyuan</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Heng</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Ji</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Findings of EMNLP</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b29">
+	<monogr>
+		<author>
+			<persName><forename type="first">Bo</forename><surname>Qiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Liqun</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xu</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shilin</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yu</forename><surname>Kang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chaoyun</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fangkai</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hang</forename><surname>Dong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jue</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lu</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Minghua</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pu</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Si</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaoting</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chao</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yong</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qingwei</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Saravan</forename><surname>Rajmohan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dongmei</forename><surname>Zhang</surname></persName>
+		</author>
+		<title level="m">Taskweaver: A code-first agent framework</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b30">
+	<analytic>
+		<title level="a" type="main">Mathematical discoveries from program search with large language models</title>
+		<author>
+			<persName><forename type="first">Bernardino</forename><surname>Romera-Paredes</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mohammadamin</forename><surname>Barekatain</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Alexander</forename><surname>Novikov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matej</forename><surname>Balog</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pawan</forename><surname>Kumar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Emilien</forename><surname>Dupont</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francisco</forename><forename type="middle">Jr</forename><surname>Ruiz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jordan</forename><forename type="middle">S</forename><surname>Ellenberg</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pengming</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Omar</forename><surname>Fawzi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">Nature</title>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b31">
+	<monogr>
+		<title level="m" type="main">Large language models to the rescue: Reducing the complexity in scientific workflow development using chatgpt</title>
+		<author>
+			<persName><forename type="first">Mario</forename><surname>Sänger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ninon</forename><forename type="middle">De</forename><surname>Mecquenem</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ewa</forename><surname>Katarzyna</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vasilis</forename><surname>Lewińska</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fabian</forename><surname>Bountris</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ulf</forename><surname>Lehmann</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Leser</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Kosch</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b32">
+	<monogr>
+		<title level="m" type="main">Toolformer: Language models can teach themselves to use tools</title>
+		<author>
+			<persName><forename type="first">Timo</forename><surname>Schick</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jane</forename><surname>Dwivedi-Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Roberto</forename><surname>Dessì</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Roberta</forename><surname>Raileanu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maria</forename><surname>Lomeli</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Eric</forename><surname>Hambro</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Luke</forename><surname>Zettlemoyer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nicola</forename><surname>Cancedda</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Thomas</forename><surname>Scialom</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<publisher>NeurIPS</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b33">
+	<monogr>
+		<title level="m" type="main">Algorithm of thoughts: Enhancing exploration of ideas in large language models</title>
+		<author>
+			<persName><forename type="first">Bilgehan</forename><surname>Sel</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ahmad</forename><surname>Al-Tawaha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vanshaj</forename><surname>Khattar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lu</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ruoxi</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ming</forename><surname>Jin</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b34">
+	<analytic>
+		<title level="a" type="main">Hugginggpt: Solving ai tasks with chatgpt and its friends in hugging face</title>
+		<author>
+			<persName><forename type="first">Yongliang</forename><surname>Shen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kaitao</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xu</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dongsheng</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weiming</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yueting</forename><surname>Zhuang</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">NeurIPS</title>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b35">
+	<monogr>
+		<title level="m" type="main">Past as a guide: Leveraging retrospective learning for python code completion</title>
+		<author>
+			<persName><forename type="first">Seunggyoon</forename><surname>Shin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Seunggyu</forename><surname>Chang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sungjoon</forename><surname>Choi</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b36">
+	<analytic>
+		<title level="a" type="main">Reflexion: Language agents with verbal reinforcement learning</title>
+		<author>
+			<persName><forename type="first">Noah</forename><surname>Shinn</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Federico</forename><surname>Cassano</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ashwin</forename><surname>Gopinath</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karthik</forename><surname>Narasimhan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shunyu</forename><surname>Yao</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Neural Information Processing Systems</title>
+				<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b37">
+	<monogr>
+		<title level="m" type="main">Prioritizing safeguarding over autonomy: Risks of llm agents for science</title>
+		<author>
+			<persName><forename type="first">Xiangru</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qiao</forename><surname>Jin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kunlun</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tongxin</forename><surname>Yuan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yichi</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wangchunshu</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Meng</forename><surname>Qu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yilun</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jian</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhuosheng</forename><surname>Zhang</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b38">
+	<monogr>
+		<title level="m" type="main">Xagent: An autonomous agent for complex task solving</title>
+		<author>
+			<persName><forename type="first">Xagent</forename><surname>Team</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b39">
+	<monogr>
+		<title level="m" type="main">Llama 2: Open foundation and fine-tuned chat models</title>
+		<author>
+			<persName><forename type="first">Hugo</forename><surname>Touvron</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Louis</forename><surname>Martin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kevin</forename><surname>Stone</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Peter</forename><surname>Albert</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Amjad</forename><surname>Almahairi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yasmine</forename><surname>Babaei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nikolay</forename><surname>Bashlykov</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Soumya</forename><surname>Batra</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Prajjwal</forename><surname>Bhargava</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shruti</forename><surname>Bhosale</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b40">
+	<monogr>
+		<title level="m" type="main">Fast longest prefix matching: algorithms, analysis, and applications</title>
+		<author>
+			<persName><forename type="first">Marcel</forename><surname>Waldvogel</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2000">2000</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b41">
+	<monogr>
+		<title level="m" type="main">Voyager: An open-ended embodied agent with large language models</title>
+		<author>
+			<persName><forename type="first">Guanzhi</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuqi</forename><surname>Xie</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yunfan</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ajay</forename><surname>Mandlekar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chaowei</forename><surname>Xiao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuke</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Linxi</forename><surname>Fan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anima</forename><surname>Anandkumar</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b42">
+	<analytic>
+		<title level="a" type="main">Autogen: Enabling next-gen llm applications via multiagent conversation framework</title>
+		<author>
+			<persName><forename type="first">Jason</forename><surname>Wei</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xuezhi</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dale</forename><surname>Schuurmans</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Maarten</forename><surname>Bosma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Fei</forename><surname>Xia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ed</forename><surname>Chi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Denny</forename><surname>Quoc V Le</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Zhou</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="j">NeurIPS</title>
+		<imprint>
+			<date type="published" when="2022">2022. 2023a</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note>Chain-of-thought prompting elicits reasoning in large language models</note>
+</biblStruct>
+
+<biblStruct xml:id="b43">
+	<monogr>
+		<author>
+			<persName><forename type="first">Yiran</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Feiran</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shaokun</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Qingyun</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Hangyu</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Erkang</forename><surname>Zhu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yue</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yin Tat</forename><surname>Lee</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Richard</forename><surname>Peng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Chi</forename><surname>Wang</surname></persName>
+		</author>
+		<title level="m">An empirical study on challenging math problem solving with gpt-4</title>
+				<imprint>
+			<date type="published" when="2023">2023b</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b44">
+	<monogr>
+		<title level="m" type="main">Matplotagent: Method and evaluation for llm-based agentic scientific data visualization</title>
+		<author>
+			<persName><forename type="first">Zhiyu</forename><surname>Yang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zihan</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuo</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xin</forename><surname>Cong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xu</forename><surname>Han</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yukun</forename><surname>Yan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhenghao</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhixing</forename><surname>Tan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pengyuan</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dong</forename><surname>Yu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b45">
+	<monogr>
+		<author>
+			<persName><forename type="first">Shunyu</forename><surname>Yao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeffrey</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dian</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Nan</forename><surname>Du</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Izhak</forename><surname>Shafran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karthik</forename><surname>Narasimhan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuan</forename><surname>Cao</surname></persName>
+		</author>
+		<title level="m">React: Synergizing reasoning and acting in language models</title>
+				<imprint>
+			<date type="published" when="2022">2022</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b46">
+	<monogr>
+		<title level="m" type="main">Tree of thoughts: Deliberate problem solving with large language models</title>
+		<author>
+			<persName><forename type="first">Shunyu</forename><surname>Yao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dian</forename><surname>Yu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jeffrey</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Izhak</forename><surname>Shafran</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tom</forename><surname>Griffiths</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuan</forename><surname>Cao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Karthik</forename><surname>Narasimhan</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+			<publisher>NeurIPS</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b47">
+	<monogr>
+		<title level="m" type="main">Igniting language intelligence: The hitchhiker&apos;s guide from chain-of-thought reasoning to language agents</title>
+		<author>
+			<persName><forename type="first">Zhuosheng</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yao</forename><surname>Yao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Aston</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiangru</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xinbei</forename><surname>Ma</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zhiwei</forename><surname>He</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yiming</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mark</forename><surname>Gerstein</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Rui</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gongshen</forename><surname>Liu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b48">
+	<monogr>
+		<title level="m" type="main">Expel: Llm agents are experiential learners</title>
+		<author>
+			<persName><forename type="first">Andrew</forename><surname>Zhao</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Daniel</forename><surname>Huang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Quentin</forename><surname>Xu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Matthieu</forename><surname>Lin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yong-Jin</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Gao</forename><surname>Huang</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b49">
+	<monogr>
+		<title level="m" type="main">Evolving fully automated machine learning via lifelong knowledge anchors</title>
+		<author>
+			<persName><forename type="first">Xiawu</forename><surname>Zheng</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yang</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sirui</forename><surname>Hong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Huixia</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Lang</forename><surname>Tang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Youcheng</forename><surname>Xiong</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jin</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yan</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Xiaoshuai</forename><surname>Sun</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Pengfei</forename><surname>Zhu</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2021">2021</date>
+			<publisher>TPAMI</publisher>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b50">
+	<monogr>
+		<title level="m" type="main">Solving challenging math word problems using gpt-4 code interpreter with code-based self-verification</title>
+		<author>
+			<persName><forename type="first">Aojun</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ke</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zimu</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Weikang</forename><surname>Shi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Sichun</forename><surname>Luo</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Zipeng</forename><surname>Qin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shaoqing</forename><surname>Lu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anya</forename><surname>Jia</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Linqi</forename><surname>Song</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Mingjie</forename><surname>Zhan</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023a</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b51">
+	<monogr>
+		<title level="m" type="main">Agents: An open-source framework for autonomous language agents</title>
+		<author>
+			<persName><forename type="first">Wangchunshu</forename><surname>Zhou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Yuchen</forename><forename type="middle">Eleanor</forename><surname>Jiang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Long</forename><surname>Li</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jialong</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Tiannan</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shi</forename><surname>Qiu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jintian</forename><surname>Zhang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jing</forename><surname>Chen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ruipu</forename><surname>Wu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Shuai</forename><surname>Wang</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023b</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b52">
+	<monogr>
+		<author>
+			<persName><forename type="first">Mingchen</forename><surname>Zhuge</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Haozhe</forename><surname>Liu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francesco</forename><surname>Faccio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dylan</forename><forename type="middle">R</forename><surname>Ashley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Róbert</forename><surname>Csordás</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Anand</forename><surname>Gopalakrishnan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abdullah</forename><surname>Hamdi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Abed</forename><surname>Hasan</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kader</forename><surname>Al</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Vincent</forename><surname>Hammoud</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Kazuki</forename><surname>Herrmann</surname></persName>
+		</author>
+		<author>
+			<persName><surname>Irie</surname></persName>
+		</author>
+		<title level="m">Mindstorms in natural language-based societies of mind</title>
+				<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+</biblStruct>
+
+<biblStruct xml:id="b53">
+	<monogr>
+		<title level="m" type="main">One-shot tool usage prompt 1 # Capabilities 2 -You can utilize pre-defined tools in any code lines from &apos; → Available Tools</title>
+		<author>
+			<persName><forename type="first">Mingchen</forename><surname>Zhuge</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Wenyi</forename><surname>Wang</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Louis</forename><surname>Kirsch</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Francesco</forename><surname>Faccio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Dmitrii</forename><surname>Khizbullin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Jurgen</forename><surname>Schmidhuber</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2024">2024</date>
+		</imprint>
+	</monogr>
+	<note type="report_type">arXiv preprint</note>
+	<note>Language agents as optimizable graphs. in the form of Python Class</note>
+</biblStruct>
+
+<biblStruct xml:id="b54">
+	<monogr>
+		<title level="m" type="main">You can freely combine the use of any other public packages, → like sklearn, numpy, pandas</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b55">
+	<monogr>
+		<title level="m"># Available Tools: 6 Each Class tool is described in JSON format. When you call a tool → , import the tool from its path first</title>
+				<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b56">
+	<monogr>
+		<title level="m" type="main">when the current task is &quot;do data preprocess, like fill missing → value, handle outliers, etc</title>
+		<author>
+			<persName><surname>Output</surname></persName>
+		</author>
+		<idno>Example: 10</idno>
+		<imprint/>
+	</monogr>
+	<note>the code can be like: 11 &apos;&apos;&apos;python</note>
+</biblStruct>
+
+<biblStruct xml:id="b57">
+	<monogr>
+		<title level="m" type="main"># Step 1: fill missing value</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b58">
+	<analytic>
+		<title level="a" type="main">14 from metagpt.tools.libs.data_preprocess import FillMissingValue 15 16 train_processed = train.copy() 17 test_processed = test.copy() 18 num_cols = train_processed.select_dtypes(include=&apos;number&apos;). → columns.tolist() 19 if &apos;label</title>
+	</analytic>
+	<monogr>
+		<title level="m"># Tools used</title>
+				<imprint/>
+	</monogr>
+	<note>in num_cols: 20 num_cols.remove(&apos;label&apos;</note>
+</biblStruct>
+
+<biblStruct xml:id="b59">
+	<monogr>
+		<title level="m">fill_missing_value = FillMissingValue(features=num_cols, strategy → =&apos;mean&apos;)</title>
+				<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b60">
+	<analytic>
+		<title/>
+	</analytic>
+	<monogr>
+		<title level="j">fill_missing_value.fit</title>
+		<imprint/>
+	</monogr>
+	<note>train_processed</note>
+</biblStruct>
+
+<biblStruct xml:id="b61">
+	<monogr>
+		<title level="m"># Step 2: handle outliers 27 for col in num_cols: 28 low</title>
+				<imprint/>
+	</monogr>
+	<note>high = train_processed[col].quantile([0.01, 0.99</note>
+</biblStruct>
+
+<biblStruct xml:id="b62">
+	<monogr>
+		<title level="m" type="main">clip(low, high) 30 test_processed[col] = test_processed[col].clip(low, high) 31</title>
+		<imprint/>
+	</monogr>
+	<note>end 32 33 # Constraints: 34 -Ensure the output new code is executable in the same Jupyter → notebook with the previous tasks code have been executed</note>
+</biblStruct>
+
+<biblStruct xml:id="b63">
+	<monogr>
+		<title level="m" type="main">Always prioritize using pre-defined tools for the same → functionality</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b64">
+	<monogr>
+		<title level="m" type="main">Always copy the DataFrame before processing it and use the copy → to process</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b65">
+	<monogr>
+		<title level="m" type="main">ADDITIONAL RESULTS For a deeper understanding, Table 6 presents the results on the ML-benchmark for both Completion Rate and Normalized Performance Score metrics. Additionally, Table 7 showcases the results of ablation experiments on the ML-benchmark, focusing on the Completion Rate and Normalized Performance Score metrics</title>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b66">
+	<monogr>
+		<title level="m" type="main">ML-BENCHMARK DATASET DESCRIPTION Here are the details about the ML-Benchmark dataset. We collect several typical datasets from Kaggle 1 and machine learning</title>
+		<imprint/>
+	</monogr>
+	<note>Details are in Table 8</note>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>

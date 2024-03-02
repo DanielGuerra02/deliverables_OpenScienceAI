@@ -1,0 +1,747 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEI xml:space="preserve" xmlns="http://www.tei-c.org/ns/1.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.tei-c.org/ns/1.0 https://raw.githubusercontent.com/kermitt2/grobid/master/grobid-home/schemas/xsd/Grobid.xsd"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+	<teiHeader xml:lang="en">
+		<fileDesc>
+			<titleStmt>
+				<title level="a" type="main">Commonsense Ontology Micropatterns</title>
+			</titleStmt>
+			<publicationStmt>
+				<publisher/>
+				<availability status="unknown"><licence/></availability>
+				<date type="published" when="2024-02-28">28 Feb 2024</date>
+			</publicationStmt>
+			<sourceDesc>
+				<biblStruct>
+					<analytic>
+						<author>
+							<persName><forename type="first">Andrew</forename><surname>Eells</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Kansas State University</orgName>
+								<address>
+									<settlement>Manhattan</settlement>
+									<region>KS</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Brandon</forename><surname>Dave</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Wright State University</orgName>
+								<address>
+									<settlement>Dayton</settlement>
+									<region>OH</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Pascal</forename><surname>Hitzler</surname></persName>
+							<affiliation key="aff0">
+								<orgName type="institution">Kansas State University</orgName>
+								<address>
+									<settlement>Manhattan</settlement>
+									<region>KS</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<author>
+							<persName><forename type="first">Cogan</forename><surname>Shimizu</surname></persName>
+							<affiliation key="aff1">
+								<orgName type="institution">Wright State University</orgName>
+								<address>
+									<settlement>Dayton</settlement>
+									<region>OH</region>
+									<country key="US">USA</country>
+								</address>
+							</affiliation>
+						</author>
+						<title level="a" type="main">Commonsense Ontology Micropatterns</title>
+					</analytic>
+					<monogr>
+						<imprint>
+							<date type="published" when="2024-02-28">28 Feb 2024</date>
+						</imprint>
+					</monogr>
+					<idno type="MD5">110E7DE521AD6A72250255B2BF7F0E1F</idno>
+					<idno type="arXiv">arXiv:2402.18715v1[cs.AI]</idno>
+				</biblStruct>
+			</sourceDesc>
+		</fileDesc>
+		<encodingDesc>
+			<appInfo>
+				<application version="0.7.2" ident="GROBID" when="2024-03-01T18:58+0000">
+					<desc>GROBID - A machine learning software for extracting information from scholarly documents</desc>
+					<ref target="https://github.com/kermitt2/grobid"/>
+				</application>
+			</appInfo>
+		</encodingDesc>
+		<profileDesc>
+			<abstract>
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>The previously introduced Modular Ontology Modeling methodology (MOMo) attempts to mimic the human analogical process by using modular patterns to assemble more complex concepts. To support this, MOMo organizes organizes ontology design patterns into design libraries, which are programmatically queryable, to support accelerated ontology development, for both human and automated processes. However, a major bottleneck to large-scale deployment of MOMo is the (todate) limited availability of ready-to-use ontology design patterns. At the same time, Large Language Models have quickly become a source of common knowledge and, in some cases, replacing search engines for questions. In this paper, we thus present a collection of 104 ontology design patterns representing often occurring nouns, curated from the common-sense knowledge available in LLMs, organized into a fully-annotated modular ontology design library ready for use with MOMo.</p></div>
+			</abstract>
+		</profileDesc>
+	</teiHeader>
+	<text xml:lang="en">
+		<body>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="1">Introduction</head><p>Humans perform transfer learning through analogous connections in understanding the unknowns of the world with previously acquired knowledge <ref type="bibr" target="#b5">[6,</ref><ref type="bibr" target="#b6">7]</ref>. In the scope of problem-solving, humans find similarities in their current problem to draw logical connections that may aid in finding a working solution, which, regardless of success, becomes part of the learning process for the next iteration of problem-solving. The task of drawing similarities requires humans to utilize their logical skills for generalizing a problem or concept to allow for adaptations from their acquired knowledge.</p><p>Neurosymbolic Artificial Intelligence (AI) systems, in their pursuit of General AI, also seek this ability to conduct transfer and analogy learning. We posit that the use of modular ontology is one way that this can be accomplished <ref type="bibr" target="#b10">[11]</ref>. In particular, the notion of starting with a simple and (perhaps) wellunderstood pattern of knowledge and adapting it to new scenarios and usecases; the mechanism by which we accomplish this we call modularization. This overarching methodology is known as Modular Ontology Modeling (MOMo), and it is by now an established paradigm for constructing knowledge graphs (KG) and their schemas (i.e., an ontology) <ref type="bibr" target="#b14">[14]</ref>.</p><p>Ontology design patterns, which are tiny ontologies that are intended to solve domain-invariant modeling problems <ref type="bibr" target="#b4">[5]</ref>, are the usual starting point for the MOMo methodology. They may be sourced from many places, including the Ontology Design Pattern Portal<ref type="foot" target="#foot_0">3</ref> or Modular Ontology Design Libraries (MODLs) <ref type="bibr" target="#b15">[15]</ref>. MODLs are annotated, curated collections of ODPs, combined with an index ontology that can be queried for patterns of different types and relationships between patterns.</p><p>In this paper, we provide such a design library, which we call CS-MODL, composed of commonsense micropatterns. For the purposes of this work, we define our title.</p><p>-commonsense we loosely mean "what first comes to mind." In this case, we ask an LLM about common properties of common nouns (as discussed below) and receive some simple and naïve responses, which are then encoded into: -micropatterns we contrast micropatterns versus ODPs. In this case, micropatterns do not have a sophisticated or rich semantics. Indeed, they are defined using rdfs:domain and rdfs:range, without more complicated OWL axioms. Concretely, we describe the methodology we used to construct the 104 commonsense micropatterns contained in CS-MODL, discuss an example, and provide the library as an online resource.</p><p>The rest of the paper is organized as follows: Section 2 introduces our methodologies for obtaining the appropriate information from our chosen LLM and constructing the commonsense micropatterns. Section 3 provides an example of a generated commonsense micropattern. Section 4 summarizes the contributions of our commonsense library of patterns. Section 5 wraps up the paper with notes on future areas we observe as next steps to this research.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2">Methodology</head><p>The construction of these commonsense patterns was completed in two steps. First, we prompt an LLM in several ways (Section 2.3) to produce an ontology design pattern for each noun in question (Section 2.2). Then, the responses are consolidated into patterns via a set of heuristics (Section 2.4), and the patterns are packaged into a MODL (Section 4).</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.1">Large Language Models as Commonsense</head><p>LLMs, like GPT-4, ingest and learn from more information than any human possibly could. While it is certainly arguable that any LLM demonstrates humanlevel intelligence, it is also inarguable that it can present a commonsense view of the world -in particular through the a declarative memory, having learned, perhaps as an accident of learning from "mostly correct" language, facts about the world <ref type="bibr" target="#b1">[2]</ref>.</p><p>They are able to represent this information and "knowledge" in humanreadable ways with surprising fluency, and as we demonstrate below: frequently  in valid RDF <ref type="bibr" target="#b2">[3]</ref>. The following sections describe how we decided on which facts to extract (i.e., which commonsense notions to prompt), how we prompted for them, and the resultant collection of patterns.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.2">Noun Selection</head><p>The nouns selected are the 101 most common nouns in American English, as listed in the Corpus of Contemporary American English (COCA) <ref type="bibr" target="#b0">[1]</ref>. We additionally include the nouns "chair", "sofa", and "loveseat" from our preliminary explorations for viability of our idea. All 104 nouns in our investigation are listed in Figure <ref type="figure" target="#fig_0">1</ref>.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.3">Prompt Engineering</head><p>We prompted the LLM 4 in several different ways, as we wished to test how it would respond to multiple variants of the same prompts. The initial prompts were a command (1) and a request (2), and then variations were added to include the noun as "the following" (3 and 4), as seen below.</p><p>1 </p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="2.4">Response Consolidation</head><p>As noted, the LLM generated 80 responses for each of the 104 nouns in our collection. These responses were stored in a tab-delimited (TSV) file. However, not every response contained valid RDF and some contained no RDF at all. The number of responses was too large for manual processing, so we developed a script that would apply heuristics to each response file in order to integrate the responses into a single micropattern. The script consists of three parts, applied to each noun:</p><p>1. extraction -for each specific prompt response (i.e., a row in the TSV), the script attempts to identify and extract the portion of the response in RDF. Unfortunately, not every response output an ODP or easily recognizable RDF. Generally speaking, cleaning required the removal of extra text (even when prompted not to provide extra text) and surrounding Markdown formatting (e.g., code fencing).</p><p>2. cleaning -a set of heuristics was applied to each extract RDF (generally in turtle format) to allow for ingestion of the RDF into an rdflib<ref type="foot" target="#foot_1">5</ref> graph structure. The most common type of cleaning necessary was the usage of newline characters. The LLM understood how to comment (i.e., separating class declarations from properties from assertions) but did not understand new lines. This frequently resulted in malformed Turtle, since the first part of the triple would be commented out. 3. integration -once each valid (or cleanable) TTL file was extracted from the response, we combine the properties (removing all triples pertaining to individuals), and annotate the result, giving us a commonsense micropattern for the noun. The annotations are further discussed in Section 4. While we note that we combine all (valid and cleanable) responses into a single micropattern, the script is set up in a much more flexible way.</p><p>First, it is necessary to recall that the process by which ODPs are utilized in the MOMo process is based on customization to the use-case at hand; that is properties are frequently removed, added, or renamed for best fit. This process is known as template-based instantiation <ref type="bibr" target="#b7">[8]</ref>, and it is a core aspect of the methodology. Specifically, each property with (explicit or inferred) domain and range, is assessed for fit. If it is not applicable (i.e., out of scope or too specific or general), the property and associated sub-graphs are removed. Conversely, if there are parts of the use-case that are not covered by the ODP, these must be added. In automated processes, it is generally easier to pare down an overly superfluous pattern. That is, if there are no matches or fillers for the slots that a pattern provides, they should be dropped. We follow this strategy for our micropatterns, meaning that we include each property from every response, which includes variants of the same property. For example, in Figure <ref type="figure">2</ref>, which shows a schema diagram of a commonsense micropattern for Air, hasHumidity has a range of both Humidity and xsd:float. It is conceivable that one or the other is unnecessary, or that they may be used in tandem (i.e., where a connection from Humidity is made to the xsd:string), e.g., as a type of shortcut or view <ref type="bibr" target="#b13">[13,</ref><ref type="bibr" target="#b17">17]</ref>.</p><p>Yet, this strategy may not be applicable for all systems. As such, the script allows for a voting mechanism to take place. This might be useful if additional prompt variants are used or if multiple LLMs are prompted for ODPs, thus allowing for properties (with domains and ranges) that appear in multiple patterns from multiple sources are those that appear in the final micropattern. The voting mechanism is as follows.</p><p>For the usable response, we extracted 3-tuples expressing Properties associated with a noun, and the Property's respective described scoped domain and range. This process also included the notion of a voting process, which would decide the final noun pattern's implemented properties based on occurrence per generated noun ontology. Our noun ontologies ended up with limited duplicate occurrences of the same triplets (s, p, o) (ranging from 1 to 4 total occurrences), and so, we chose not to implement the voting process and a threshold to implement properties to the final noun pattern. This allows us to maximally express Fig. <ref type="figure">2</ref>. A graphical schema diagram of the Air ontology the noun's ontology as stripping the ontology down would be an easier task than building around a concept.</p><p>Finally, when generating the micropattern, we minimally describe the properties and classes. That is, we use only rdfs:Class, rdfs:subClassOf, rdfs:range, and rdfs:domain. The script, however, is designed in such a way to be easily modifiable to improve the semantic expressivity of the patterns. For example, we could use a simple heuristics, plus a set of axiom patterns (i.e., taken from <ref type="bibr" target="#b3">[4]</ref>), to assert the most common types of constraints for a particular property.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3">Example Pattern</head><p>We have selected a pattern, Air, which exemplifies many interesting properties of our commonsense micropatterns. The schema diagram for this micropattern is shown in Figure <ref type="figure">2</ref>. The gold boxes reflect classes. The yellow ellipses indicate datatypes. Black filled arrows are binary relations. When labels overlap multiple arrows, we use this to show that there are multiple ranges for the property.</p><p>As noted in Section 2.4, there are some reuse of property names (e.g., hasHumidity) that would technically be not allowed in OWL. However, we suggest that pruning is easier than growing, so a system that utilizes CS-MODL can simply remove the unused property, as necessary.</p><p>The turtle file for this example can be found in the repository.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="3.1">License &amp; Availability</head><p>Our artifacts are made available online through a GitHub repository. <ref type="foot" target="#foot_2">6</ref> All data (which includes documentation, prompts, responses, extracted and cleaned TTL files, integrated patterns, and CS-MODL itself) and the supporting scripts that generated the data are provided under an open and permissive license (GNU Lesser General Public License v2.1), and it is also included explicitly in the repository.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="4">A Commonsense Modular Ontology Design Library</head><p>The purpose of a MODL is to collect together (curate) a set of ontology design patterns. In the first version <ref type="bibr" target="#b15">[15]</ref>, these were generally well-documented and useful patterns. A forthcoming second version has many more, spanning a wider set of application scenarios. <ref type="foot" target="#foot_3">7</ref> This particular MODL, CS-MODL, is similar insofar that it also satisfies broad use-cases. The purpose of which is to collect together patterns of similar quality, abstraction, and expressivity for the purpose of modeling commonly occurring entities (e.g., in informal language or the real world). The CS-MODL, like other MODLs, is programmatically queryable through OPaL annotations <ref type="bibr" target="#b9">[10,</ref><ref type="bibr" target="#b8">9]</ref> indicating that CS-MODL contains sufficient metadata scaffolding such that top-level conceptual components (i.e., the key notion) of patterns can be easily matched to external entities detected by a framework. <ref type="foot" target="#foot_4">8</ref>For example, if a vision interpreter finds something with four legs, it could match to the Chair pattern. Inversely, if a chair is detected, most chairs have four legs, and this can be inferred from the matched pattern. This matching process can also be used for inferring behaviors or functionalities of said items, which is even more applicable to this use case.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head n="5">Conclusion</head><p>Large language models have quickly become a source of commonsense information, in some cases supplanting search engine use. This easily available source of knowledge can enhance transfer and analogy learning, especially in combination with knowledge engineering methodologies (such as modular ontology modeling).</p><p>In this paper, we have described our methodology for obtaining 104 commonsense micropatterns from an LLM. This process is generalizable from our chosen list, and the code to produce additional patterns is available online and permissibly licensed. These patterns are organized into a modular ontology design library (MODL), which we call CS-MODL, also available in the same repository. CS-MODL can facilitate the construction of internal knowledge frameworks of automated systems through specializing or generalizing from the commonsenese micropatterns.</p></div>
+<div xmlns="http://www.tei-c.org/ns/1.0"><head>Future Work</head><p>We have identified some areas for future enhancement.</p><p>1. The list of nouns that we utilized to seed our prompts for patterns is naïve. That is, no effort was put into organizing them into a subsumption hierarchy or otherwise identifying unifying concepts. Creating both this hierarchy, as well as examining similar hierarchies for relations between these concepts, is an immediate next step. Additionally, these relations can be encoded in the CS-MODL index allowing for substantially more sophisticated pattern identification. 2. We will evaluate the use of CS-MODL in a more principled way (i.e., through use in a case study) pertaining to ontology learning from text, and in a multiagent teaming, visual sensor fusion exercise. 3. Describe the patterns more expressively (i.e., fully describe the patterns in OWL instead of only using RDFS). 4. Improved documentation: schema diagrams, summaries, and explanation of the formalization (i.e., in the style of <ref type="bibr" target="#b16">[16]</ref> and <ref type="bibr" target="#b12">[12]</ref>) will be explored.</p></div><figure xmlns="http://www.tei-c.org/ns/1.0" xml:id="fig_0"><head>Fig. 1 .</head><label>1</label><figDesc>Fig. 1. The 104 nouns conceptualized into our commonsense micropatterns.</figDesc></figure>
+<figure xmlns="http://www.tei-c.org/ns/1.0" type="table" xml:id="tab_1"><head></head><label></label><figDesc>. Generate an ontology that covers [noun]. 2. Could you develop a basic design pattern for representing [noun] in an ontology? 3. Generate an ontology that covers the following: [noun]. 4. Could you develop a basic design pattern for representing the following in an ontology: [noun]. Finally, the LLM was prompted to generate 9 additional variations of each prompt. See below for Prompt 1's variations. In each case, the prompt was tried with and without the additional instruction of "Provide it in valid Turtle/RDF format, excluding any extra text." for a total of 20 prompts per noun.</figDesc><table><row><cell>1. Generate an ontology that covers [noun].</cell></row><row><cell>2. Develop an ontology dedicated to [noun].</cell></row><row><cell>3. Construct an ontology focused on [noun].</cell></row><row><cell>4. Build an ontology surrounding the concept of a [noun].</cell></row><row><cell>5. Formulate an ontology related to [noun].</cell></row><row><cell>6. Establish an ontology based on [noun].</cell></row><row><cell>7. Design an ontology to encompass [noun].</cell></row><row><cell>8. Produce an ontology specifically for [noun].</cell></row><row><cell>9. Compose an ontology to represent [noun].</cell></row><row><cell>10. Make an ontology that pertains to [noun].</cell></row></table></figure>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="3" xml:id="foot_0">https://ontologydesignpatterns.org/</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="5" xml:id="foot_1">https://rdflib.readthedocs.io/en/stable/</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="6" xml:id="foot_2">https://github.com/kastle-lab/commonsense-micropatterns/</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="7" xml:id="foot_3">https://github.com/kastle-lab/modular-ontology-design-library</note>
+			<note xmlns="http://www.tei-c.org/ns/1.0" place="foot" n="8" xml:id="foot_4">We note that we are trying to have a better acronym -OPaL -instead of the previously published acronym!</note>
+		</body>
+		<back>
+
+			<div type="acknowledgement">
+<div xmlns="http://www.tei-c.org/ns/1.0"><p>Acknowledgement. The authors acknowledge partial funding by the National Science Foundation under grant 2333532 "Proto-OKN Theme 3: An Education Gateway for the Proto-OKN."</p></div>
+			</div>
+
+			<div type="references">
+
+				<listBibl>
+
+<biblStruct xml:id="b0">
+	<monogr>
+		<author>
+			<persName><surname>English-Corpora</surname></persName>
+		</author>
+		<ptr target="https://www.english-corpora.org/coca/" />
+		<title level="m">COCA</title>
+				<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b1">
+	<monogr>
+		<title level="m" type="main">Crawling the internal knowledgebase of language models</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Cohen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Geva</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Berant</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Globerson</surname></persName>
+		</author>
+		<imprint>
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b2">
+	<monogr>
+		<title level="m" type="main">RDF 1.1 Concepts and Abstract Syntax. W3C Recommendation</title>
+		<author>
+			<persName><forename type="first">R</forename><surname>Cyganiak</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Wood</surname></persName>
+		</author>
+		<ptr target="http://www.w3.org/TR/rdf11-concepts/" />
+		<editor>Lanthaler, M.</editor>
+		<imprint>
+			<date type="published" when="2014-02-25">25 February 2014. 2014</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b3">
+	<analytic>
+		<title level="a" type="main">Expressibility of OWL axioms with patterns</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Eberhart</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Shimizu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Chowdhury</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">K</forename><surname>Sarker</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hitzler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Verborgh</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hose</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">H</forename><surname>Paulheim</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Champin</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Maleshkova</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ó</forename><surname>Corcho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Ristoski</surname></persName>
+		</author>
+		<idno type="DOI">10.1007/978-3-030-77385-4_14</idno>
+		<ptr target="https://doi.org/10.1007/978-3-030-77385-4_14" />
+	</analytic>
+	<monogr>
+		<title level="m">The Semantic Web -18th International Conference, ESWC 2021, Virtual Event</title>
+		<title level="s">Proceedings. Lecture Notes in Computer Science</title>
+		<editor>
+			<persName><forename type="first">M</forename><surname>Alam</surname></persName>
+		</editor>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2021">June 6-10, 2021. 2021</date>
+			<biblScope unit="volume">12731</biblScope>
+			<biblScope unit="page" from="230" to="245" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b4">
+	<analytic>
+		<title level="a" type="main">Ontology design patterns</title>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gangemi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Presutti</surname></persName>
+		</author>
+		<idno type="DOI">10.1007/978-3-540-92673-3_10</idno>
+		<ptr target="https://doi.org/10.1007/978-3-540-92673-3_10" />
+	</analytic>
+	<monogr>
+		<title level="m">Handbook on Ontologies</title>
+				<editor>
+			<persName><forename type="first">S</forename><surname>Staab</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">R</forename><surname>Studer</surname></persName>
+		</editor>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2009">2009</date>
+			<biblScope unit="page" from="221" to="243" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b5">
+	<analytic>
+		<title level="a" type="main">Analogical reasoning</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Gentner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><surname>Smith</surname></persName>
+		</author>
+		<idno type="DOI">10.1016/B978-0-12-375000-6.00022-7</idno>
+		<ptr target="https://www.sciencedirect.com/science/article/pii/B9780123750006000227" />
+	</analytic>
+	<monogr>
+		<title level="m">Encyclopedia of Human Behavior</title>
+				<editor>
+			<persName><forename type="first">V</forename><surname>Ramachandran</surname></persName>
+		</editor>
+		<meeting><address><addrLine>San Diego</addrLine></address></meeting>
+		<imprint>
+			<publisher>Academic Press</publisher>
+			<date type="published" when="2012">2012</date>
+			<biblScope unit="page" from="130" to="136" />
+		</imprint>
+	</monogr>
+	<note>Second Edition. second edition edn</note>
+</biblStruct>
+
+<biblStruct xml:id="b6">
+	<monogr>
+		<title level="m" type="main">Analogical learning and reasoning</title>
+		<author>
+			<persName><forename type="first">D</forename><surname>Gentner</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">L</forename><forename type="middle">A</forename><surname>Smith</surname></persName>
+		</author>
+		<idno type="DOI">10.1093/oxfordhb/9780195376746.001.0001</idno>
+		<ptr target="https://doi.org/10.1093/oxfordhb/9780195376746.001.0001" />
+		<imprint>
+			<date type="published" when="2013">2013</date>
+			<publisher>Oxford University Press</publisher>
+			<biblScope unit="page" from="668" to="681" />
+			<pubPlace>New York, NY, US</pubPlace>
+		</imprint>
+	</monogr>
+	<note>Oxford library of psychology</note>
+</biblStruct>
+
+<biblStruct xml:id="b7">
+	<analytic>
+		<title level="a" type="main">Template-based content ODP instantiation</title>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hammar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Presutti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hammar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hitzler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Krisnadhi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lawrynowicz</surname></persName>
+		</author>
+		<idno type="DOI">10.3233/978-1-61499-826-6-1</idno>
+		<ptr target="https://doi.org/10.3233/978-1-61499-826-6-1" />
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Ontology Design and Patterns</title>
+				<editor>
+			<persName><forename type="first">A</forename><forename type="middle">G</forename><surname>Nuzzolese</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">M</forename><surname>Solanki</surname></persName>
+		</editor>
+		<meeting><address><addrLine>Kobe, Japan</addrLine></address></meeting>
+		<imprint>
+			<publisher>IOS Press</publisher>
+			<date type="published" when="2016-10-18">18th October 2016. 2016</date>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="page" from="1" to="13" />
+		</imprint>
+	</monogr>
+	<note>Studies on the Semantic Web</note>
+</biblStruct>
+
+<biblStruct xml:id="b8">
+	<analytic>
+		<title level="a" type="main">Extensions to the ontology design pattern representation language</title>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Hirt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Shimizu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hitzler</surname></persName>
+		</author>
+		<ptr target="http://ceur-ws.org/Vol-2459/short2.pdf" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 10th Workshop on Ontology Design and Patterns (WOP 2019) co-located with 18th International Semantic Web Conference (ISWC 2019)</title>
+				<editor>
+			<persName><forename type="first">K</forename><surname>Janowicz</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">A</forename><forename type="middle">A</forename><surname>Krisnadhi</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">M</forename><surname>Poveda-Villalón</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">K</forename><surname>Hammar</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">C</forename><surname>Shimizu</surname></persName>
+		</editor>
+		<meeting>the 10th Workshop on Ontology Design and Patterns (WOP 2019) co-located with 18th International Semantic Web Conference (ISWC 2019)<address><addrLine>Auckland, New Zealand</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2019-10-27">October 27. 2019. 2019</date>
+			<biblScope unit="volume">2459</biblScope>
+			<biblScope unit="page" from="76" to="75" />
+		</imprint>
+	</monogr>
+	<note>CEUR Workshop Proceedings</note>
+</biblStruct>
+
+<biblStruct xml:id="b9">
+	<analytic>
+		<title level="a" type="main">Towards a simple but useful ontology design pattern representation language</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hitzler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Gangemi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Janowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">A</forename><surname>Krisnadhi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">V</forename><surname>Presutti</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Blomqvist</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Ó</forename><surname>Corcho</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Horridge</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Carral</surname></persName>
+		</author>
+		<ptr target="http://ceur-ws.org/Vol-2043/paper-09.pdf" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 8th Workshop on Ontology Design and Patterns (WOP 2017) co-located with the 16th International Semantic Web Conference (ISWC 2017)</title>
+		<title level="s">CEUR Workshop Proceedings</title>
+		<editor>
+			<persName><forename type="first">R</forename><surname>Hoekstra</surname></persName>
+		</editor>
+		<meeting>the 8th Workshop on Ontology Design and Patterns (WOP 2017) co-located with the 16th International Semantic Web Conference (ISWC 2017)<address><addrLine>Vienna, Austria</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2017-10-21">October 21, 2017. 2017</date>
+			<biblScope unit="volume">2043</biblScope>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b10">
+	<monogr>
+		<title level="m" type="main">Modular ontologies as a bridge between human conceptualization and data</title>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hitzler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Shimizu</surname></persName>
+		</author>
+		<editor>Chapman, P., Endres, D., Pernelle, N.</editor>
+		<imprint/>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b11">
+	<analytic>
+		<title level="a" type="main">Proceedings</title>
+		<idno type="DOI">10.1007/978-3-319-91379-7_1</idno>
+		<ptr target="https://doi.org/10.1007/978-3-319-91379-7_1" />
+	</analytic>
+	<monogr>
+		<title level="m">Representation and Reasoning -23rd International Conference on Conceptual Structures, ICCS 2018</title>
+		<title level="s">Lecture Notes in Computer Science</title>
+		<meeting><address><addrLine>Edinburgh, UK</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2018">June 20-22. 2018. 2018</date>
+			<biblScope unit="volume">10872</biblScope>
+			<biblScope unit="page" from="3" to="6" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b12">
+	<analytic>
+		<title level="a" type="main">How to document ontology design patterns</title>
+		<author>
+			<persName><forename type="first">N</forename><surname>Karima</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hammar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hitzler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hammar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hitzler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Lawrynowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Krisnadhi</surname></persName>
+		</author>
+	</analytic>
+	<monogr>
+		<title level="m">Advances in Ontology Design and Patterns, Studies on the Semantic Web</title>
+				<editor>
+			<persName><forename type="first">A</forename><surname>Nuzzolese</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">M</forename><surname>Solanki</surname></persName>
+		</editor>
+		<meeting><address><addrLine>Amsterdam</addrLine></address></meeting>
+		<imprint>
+			<publisher>IOS Press</publisher>
+			<date type="published" when="2017">2017</date>
+			<biblScope unit="volume">32</biblScope>
+			<biblScope unit="page" from="15" to="28" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b13">
+	<analytic>
+		<title level="a" type="main">On the capabilities and limitations of OWL regarding typecasting and ontology design pattern views</title>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">A</forename><surname>Krisnadhi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hitzler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Janowicz</surname></persName>
+		</author>
+		<idno type="DOI">10.1007/978-3-319-33245-1_11</idno>
+		<ptr target="https://doi.org/10.1007/978-3-319-33245-1_11" />
+	</analytic>
+	<monogr>
+		<title level="m">Ontology Engineering -12th International Experiences and Directions Workshop on OWL, OWLED 2015, co-located with ISWC 2015</title>
+		<title level="s">Lecture Notes in Computer Science</title>
+		<editor>
+			<persName><forename type="first">V</forename><forename type="middle">A M</forename><surname>Tamma</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">M</forename><surname>Dragoni</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">R</forename><forename type="middle">S</forename><surname>Gonçalves</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">A</forename><surname>Lawrynowicz</surname></persName>
+		</editor>
+		<meeting><address><addrLine>Bethlehem, PA, USA</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2015">October 9-10, 2015. 2015</date>
+			<biblScope unit="volume">9557</biblScope>
+			<biblScope unit="page" from="105" to="116" />
+		</imprint>
+	</monogr>
+	<note>Revised Selected Papers</note>
+</biblStruct>
+
+<biblStruct xml:id="b14">
+	<analytic>
+		<title level="a" type="main">Modular ontology modeling</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Shimizu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Hammar</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hitzler</surname></persName>
+		</author>
+		<idno type="DOI">10.3233/SW-222886</idno>
+		<ptr target="https://doi.org/10.3233/SW-222886" />
+	</analytic>
+	<monogr>
+		<title level="j">Semantic Web</title>
+		<imprint>
+			<biblScope unit="volume">14</biblScope>
+			<biblScope unit="issue">3</biblScope>
+			<biblScope unit="page" from="459" to="489" />
+			<date type="published" when="2023">2023</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b15">
+	<analytic>
+		<title level="a" type="main">MODL: A modular ontology design library</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Shimizu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Hirt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hitzler</surname></persName>
+		</author>
+		<ptr target="http://ceur-ws.org/Vol-2459/paper4.pdf" />
+	</analytic>
+	<monogr>
+		<title level="m">Proceedings of the 10th Workshop on Ontology Design and Patterns (WOP 2019) co-located with 18th International Semantic Web Conference (ISWC 2019)</title>
+		<title level="s">CEUR Workshop Proceedings</title>
+		<editor>
+			<persName><forename type="first">K</forename><surname>Janowicz</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">A</forename><forename type="middle">A</forename><surname>Krisnadhi</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">M</forename><surname>Poveda-Villalón</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">K</forename><surname>Hammar</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">C</forename><surname>Shimizu</surname></persName>
+		</editor>
+		<meeting>the 10th Workshop on Ontology Design and Patterns (WOP 2019) co-located with 18th International Semantic Web Conference (ISWC 2019)<address><addrLine>Auckland, New Zealand</addrLine></address></meeting>
+		<imprint>
+			<date type="published" when="2019-10-27">October 27. 2019. 2019</date>
+			<biblScope unit="volume">2459</biblScope>
+			<biblScope unit="page" from="47" to="58" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b16">
+	<analytic>
+		<title level="a" type="main">The enslaved ontology: Peoples of the historic slave trade</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Shimizu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hitzler</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">Q</forename><surname>Hirt</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Rehberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">G</forename><surname>Estrecha</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><surname>Foley</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><forename type="middle">M</forename><surname>Sheill</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">W</forename><surname>Hawthorne</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">J</forename><surname>Mixter</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">E</forename><surname>Watrall</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">R</forename><surname>Carty</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Tarr</surname></persName>
+		</author>
+		<idno type="DOI">10.1016/j.websem.2020.100567</idno>
+		<ptr target="https://doi.org/10.1016/j.websem.2020.100567" />
+	</analytic>
+	<monogr>
+		<title level="j">J. Web Semant</title>
+		<imprint>
+			<biblScope unit="volume">63</biblScope>
+			<biblScope unit="page">100567</biblScope>
+			<date type="published" when="2020">2020</date>
+		</imprint>
+	</monogr>
+</biblStruct>
+
+<biblStruct xml:id="b17">
+	<analytic>
+		<title level="a" type="main">Knowwheregraph-lite: A perspective of the knowwheregraph</title>
+		<author>
+			<persName><forename type="first">C</forename><surname>Shimizu</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><surname>Stephen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Christou</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Currier</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><forename type="middle">S</forename><surname>Mahdavinejad</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">S</forename><forename type="middle">S</forename><surname>Norouzi</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Dalal</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>Barua</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">C</forename><forename type="middle">K</forename><surname>Fisher</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">A</forename><surname>D'onofrio</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">T</forename><surname>Thelen</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">K</forename><surname>Janowicz</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">D</forename><surname>Rehberger</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">M</forename><surname>Schildhauer</surname></persName>
+		</author>
+		<author>
+			<persName><forename type="first">P</forename><surname>Hitzler</surname></persName>
+		</author>
+		<idno type="DOI">10.1007/978-3-031-47745-4_15</idno>
+		<ptr target="https://doi.org/10.1007/978-3-031-47745-4_15" />
+	</analytic>
+	<monogr>
+		<title level="m">Knowledge Graphs and Semantic Web -5th Iberoamerican Conference and 4th Indo-American Conference, KGSWC 2023</title>
+		<title level="s">Proceedings. Lecture Notes in Computer Science</title>
+		<editor>
+			<persName><forename type="first">F</forename><surname>Ortiz-Rodríguez</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">B</forename><surname>Villazón-Terrazas</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">S</forename><surname>Tiwari</surname></persName>
+		</editor>
+		<editor>
+			<persName><forename type="first">C</forename><surname>Bobed</surname></persName>
+		</editor>
+		<meeting><address><addrLine>Zaragoza, Spain</addrLine></address></meeting>
+		<imprint>
+			<publisher>Springer</publisher>
+			<date type="published" when="2023">November 13-15, 2023. 2023</date>
+			<biblScope unit="volume">14382</biblScope>
+			<biblScope unit="page" from="199" to="212" />
+		</imprint>
+	</monogr>
+</biblStruct>
+
+				</listBibl>
+			</div>
+		</back>
+	</text>
+</TEI>
