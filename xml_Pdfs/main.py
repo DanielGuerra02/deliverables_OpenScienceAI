@@ -1,40 +1,84 @@
-from os import listdir
-from os.path import isfile, join
-from xml.etree import ElementTree
+import os
+from xml.etree import ElementTree as ET
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
-def extract_abstracts(xml_directory):
-    abstracts = []
-    xml_files = [f for f in listdir(xml_directory) if isfile(join(xml_directory, f))]
+# Define el espacio de nombres predeterminado (sin prefijo)
+namespace_map = {'': 'http://www.tei-c.org/ns/1.0'}
 
+# Función para obtener el resumen del artículo
+def get_abstract(xml_file_path):
+    tree = ET.parse(xml_file_path)
+    root = tree.getroot()
+    # Actualiza la búsqueda para usar el espacio de nombres predeterminado
+    abstract_elements = root.findall('.//{http://www.tei-c.org/ns/1.0}abstract/{http://www.tei-c.org/ns/1.0}div/{http://www.tei-c.org/ns/1.0}p', namespaces=namespace_map)
+    abstract_text = " ".join([element.text.strip() for element in abstract_elements if element.text])
+    return abstract_text
+
+# Función para crear la nube de palabras
+def create_wordcloud(directory_path):
+    xml_files = [file for file in os.listdir(directory_path) if file.endswith(".xml")]
+    abstracts = {}
+    
     for xml_file in xml_files:
-        try:
-            tree = ElementTree.parse(join(xml_directory, xml_file))
-            root = tree.getroot()
-            for abstract in root.findall(".//abstract"):
-                abstract_text = abstract.text.strip() if abstract.text else ""
-                abstracts.append(abstract_text)
-        except ElementTree.ParseError as e:
-            print(f"Error parsing {xml_file}: {e}")
-            continue
+        xml_path = os.path.join(directory_path, xml_file)
+        abstract = get_abstract(xml_path)
+        abstracts[xml_file] = abstract
     
-    return abstracts
+    all_text = " ".join(abstracts.values())
+    wordcloud = WordCloud(width=800, height=400, random_state=21, max_font_size=110).generate(all_text)
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.savefig('/home/daniwar/deliverables_OpenScienceAI/results/wordcloud.png')
+    plt.close()
 
+# Función para contar las figuras en cada artículo
+def count_figures(xml_file_path):
+    tree = ET.parse(xml_file_path)
+    root = tree.getroot()
+    # Usa el espacio de nombres predeterminado para buscar elementos <figure>
+    figure_elements = root.findall('.//{http://www.tei-c.org/ns/1.0}figure', namespaces=namespace_map)
+    return len(figure_elements)
 
-def generate_wordcloud(abstracts):
-    text = " ".join(abstracts)
+# Función para crear la visualización del número de figuras por artículo
+def create_figures_visualization(xml_directory):
+    xml_files = [file for file in os.listdir(xml_directory) if file.endswith(".xml")]
+    figures_per_article = {file: count_figures(os.path.join(xml_directory, file)) for file in xml_files}
     
-    
-    wordcloud = WordCloud(width=800, height=400, background_color="white").generate(text)
+    plt.bar(range(len(figures_per_article)), list(figures_per_article.values()), align='center')
+    plt.xticks(range(len(figures_per_article)), list(figures_per_article.keys()), rotation=90)
+    plt.xlabel('Artículos')
+    plt.ylabel('Número de figuras')
+    plt.title('Número de figuras por artículo')
+    plt.tight_layout()
+    plt.savefig('/home/daniwar/deliverables_OpenScienceAI/results/figures_per_article.png')
+    plt.close()
 
-    plt.figure(figsize=(10, 5))
-    plt.imshow(wordcloud, interpolation="bilinear")
-    plt.axis("off")
-    plt.show()
+# Función para extraer enlaces internos de cada artículo
+def extract_links(xml_file_path):
+    tree = ET.parse(xml_file_path)
+    root = tree.getroot()
+    # Busca elementos <ref> con el atributo type="bibr"
+    link_elements = root.findall('.//{http://www.tei-c.org/ns/1.0}ref[@type="bibr"]', namespaces=namespace_map)
+    # Extrae el valor del atributo 'target' y filtra los que no son None
+    links = [element.get('target') for element in link_elements if element.get('target') is not None]
+    return links
+
+# Función principal para ejecutar las funcionalidades
+def run_main():
+    xml_data_directory = '/home/daniwar/deliverables_OpenScienceAI/xml_Pdfs'
+    links_per_article = {}
+    
+    for xml_file in sorted(os.listdir(xml_data_directory)):
+        if xml_file.endswith(".xml"):
+            file_path = os.path.join(xml_data_directory, xml_file)
+            links = extract_links(file_path)
+            links_per_article[xml_file] = links
+    
+    # Escribe los resultados en el archivo
+    with open('/home/daniwar/deliverables_OpenScienceAI/results/links_per_article.txt', 'w') as file:
+        for article, links in links_per_article.items():
+            file.write(f'{article}: {links}\n')
 
 if __name__ == "__main__":
-    xml_directory = "/home/daniwar/deliverables_OpenScienceAI/xml_Pdfs"  # Directorio donde se encuentran los archivos XML
-
-    abstracts = extract_abstracts(xml_directory)
-    generate_wordcloud(abstracts)
+    run_main()
