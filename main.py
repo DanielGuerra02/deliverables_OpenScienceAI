@@ -72,16 +72,18 @@ def run_main():
     xml_data_directory = '/home/daniwar/deliverables_OpenScienceAI/xml_Pdfs'
     links_per_article = {}
     
+    create_wordcloud(xml_data_directory)
+    
+    create_figures_visualization(xml_data_directory)
+    
     for xml_file in sorted(os.listdir(xml_data_directory)):
         if xml_file.endswith(".xml"):
             file_path = os.path.join(xml_data_directory, xml_file)
             links = extract_links(file_path)
             links_per_article[xml_file] = links
     
-    # Escribe los resultados en el archivo
     with open('/home/daniwar/deliverables_OpenScienceAI/results/links_per_article.txt', 'w') as file:
         for article, links in links_per_article.items():
             file.write(f'{article}: {links}\n')
-
 if __name__ == "__main__":
     run_main()
