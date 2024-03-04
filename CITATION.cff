@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "Si utiliza este software, por favor cítelo como se muestra a continuación."
+authors:
+  - family-names: "Guerra Pantojo"
+    given-names: "Daniel"
+    orcid: "https://orcid.org/0000-0002-1825-0097"
+title: "Individual assessment 1"
+version: "1.0.0"
+doi: "10.5281/zenodo.1234567"
+date-released: "2024-03-04"
+url: "https://github.com/DanielGuerra02/deliverables_OpenScienceAI.git"
