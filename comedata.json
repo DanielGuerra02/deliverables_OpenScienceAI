@@ -1,0 +1,28 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "name": "Individual assessment 1",
+    "description": "This project includes a main.py program that generates a keyword cloud based on the summary information, creates a visualization displaying the number of figures per article, and generates a list of links found in each article. Additionally, it includes extract.py, which is responsible for converting PDFs to XML",
+    "license": "https://opensource.org/licenses/MIT",
+    "version": "1.0.0",
+    "author": [
+      {
+        "@type": "Person",
+        "name": "Daniel",
+        "email": "d.gpantojo@alumnos.upm.es"
+      }
+    ],
+    "codeRepository": "https://github.com/DanielGuerra02/deliverables_OpenScienceAI.git",
+    "datePublished": "2024-03-04",
+    "programmingLanguage": "Python",
+    "keywords": [
+      "nube de palabras",
+      "visualización",
+      "análisis de texto",
+      "procesamiento de artículos",
+      "extracción de enlaces"
+    ],
+    "softwareRequirements": "Python, wordcloud, matplotlib, grobid-client",
+    "softwareSuggestions": "IDE de Python, Docker"
+  }
+  
