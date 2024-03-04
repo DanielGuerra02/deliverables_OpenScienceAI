@@ -3,14 +3,13 @@ from xml.etree import ElementTree as ET
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
-# Define el espacio de nombres predeterminado (sin prefijo)
+
 namespace_map = {'': 'http://www.tei-c.org/ns/1.0'}
 
 # Función para obtener el resumen del artículo
 def get_abstract(xml_file_path):
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
-    # Actualiza la búsqueda para usar el espacio de nombres predeterminado
     abstract_elements = root.findall('.//{http://www.tei-c.org/ns/1.0}abstract/{http://www.tei-c.org/ns/1.0}div/{http://www.tei-c.org/ns/1.0}p', namespaces=namespace_map)
     abstract_text = " ".join([element.text.strip() for element in abstract_elements if element.text])
     return abstract_text
@@ -36,7 +35,7 @@ def create_wordcloud(directory_path):
 def count_figures(xml_file_path):
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
-    # Usa el espacio de nombres predeterminado para buscar elementos <figure>
+    
     figure_elements = root.findall('.//{http://www.tei-c.org/ns/1.0}figure', namespaces=namespace_map)
     return len(figure_elements)
 
@@ -58,7 +57,6 @@ def create_figures_visualization(xml_directory):
 def extract_links(xml_file_path):
     tree = ET.parse(xml_file_path)
     root = tree.getroot()
-    # Busca elementos <biblStruct> y luego <ptr> dentro de ellos
     biblStruct_elements = root.findall('.//{http://www.tei-c.org/ns/1.0}biblStruct', namespaces=namespace_map)
     links = []
     for biblStruct in biblStruct_elements:
@@ -69,10 +67,9 @@ def extract_links(xml_file_path):
 
 # Función principal para ejecutar las funcionalidades
 def run_main():
-    # Usa una ruta relativa basada en el WORKDIR del Dockerfile
     xml_data_directory = './xml_Pdfs'
     results_directory = './results'
-    os.makedirs(results_directory, exist_ok=True)  # Crea el directorio de resultados si no existe
+    os.makedirs(results_directory, exist_ok=True)  
 
     create_wordcloud(xml_data_directory)
     
