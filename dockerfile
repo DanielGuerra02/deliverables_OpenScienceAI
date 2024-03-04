@@ -2,16 +2,16 @@
 FROM python:3.8
 
 # Establece el directorio de trabajo en el contenedor
-WORKDIR /home/daniwar/deliverables_OpenScienceAI
+WORKDIR /app
 
 # Copia los archivos del proyecto al contenedor
-COPY . /home/daniwar/deliverables_OpenScienceAI
+COPY . /app
 
 # Asegúrate de que el script de inicio es ejecutable
-RUN chmod +x /home/daniwar/deliverables_OpenScienceAI/start.sh
+RUN chmod +x /app/start.sh
 
 # Instala las dependencias del proyecto
 RUN pip install -r requirements.txt
 
 # Configura el script de inicio como ENTRYPOINT
-ENTRYPOINT ["/home/daniwar/deliverables_OpenScienceAI/start.sh"]
+ENTRYPOINT ["/app/start.sh"]

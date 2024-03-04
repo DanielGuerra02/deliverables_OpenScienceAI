@@ -29,7 +29,7 @@ def create_wordcloud(directory_path):
     wordcloud = WordCloud(width=800, height=400, random_state=21, max_font_size=110).generate(all_text)
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
-    plt.savefig('/home/daniwar/deliverables_OpenScienceAI/results/wordcloud.png')
+    plt.savefig('./results/wordcloud.png')
     plt.close()
 
 # Función para contar las figuras en cada artículo
@@ -51,7 +51,7 @@ def create_figures_visualization(xml_directory):
     plt.ylabel('Número de figuras')
     plt.title('Número de figuras por artículo')
     plt.tight_layout()
-    plt.savefig('/home/daniwar/deliverables_OpenScienceAI/results/figures_per_article.png')
+    plt.savefig('./results/figures_per_article.png')
     plt.close()
 
 # Función para extraer enlaces internos de cada artículo
@@ -69,21 +69,25 @@ def extract_links(xml_file_path):
 
 # Función principal para ejecutar las funcionalidades
 def run_main():
-    xml_data_directory = '/home/daniwar/deliverables_OpenScienceAI/xml_Pdfs'
-    links_per_article = {}
-    
+    # Usa una ruta relativa basada en el WORKDIR del Dockerfile
+    xml_data_directory = './xml_Pdfs'
+    results_directory = './results'
+    os.makedirs(results_directory, exist_ok=True)  # Crea el directorio de resultados si no existe
+
     create_wordcloud(xml_data_directory)
     
     create_figures_visualization(xml_data_directory)
     
+    links_per_article = {}
     for xml_file in sorted(os.listdir(xml_data_directory)):
         if xml_file.endswith(".xml"):
             file_path = os.path.join(xml_data_directory, xml_file)
             links = extract_links(file_path)
             links_per_article[xml_file] = links
     
-    with open('/home/daniwar/deliverables_OpenScienceAI/results/links_per_article.txt', 'w') as file:
+    with open(os.path.join(results_directory, 'links_per_article.txt'), 'w') as file:
         for article, links in links_per_article.items():
             file.write(f'{article}: {links}\n')
+
 if __name__ == "__main__":
     run_main()
