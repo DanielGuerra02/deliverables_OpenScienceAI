@@ -1,0 +1,11 @@
+# Ignorar MAKEFILE
+MAKEFILE
+
+# Ignorar make.bat
+make.bat
+
+# Ignorar el directorio 'source'
+source/
+
+# Ignorar directorios de caché de Python
+__pycache__/
