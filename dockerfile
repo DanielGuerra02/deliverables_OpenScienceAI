@@ -13,5 +13,6 @@ RUN chmod +x /app/start.sh
 # Instala las dependencias del proyecto
 RUN pip install -r requirements.txt
 
-# Configura el script de inicio como ENTRYPOINT
-ENTRYPOINT ["/app/start.sh"]
+# Configura el script de inicio 
+CMD ["/app/start.sh"]
+

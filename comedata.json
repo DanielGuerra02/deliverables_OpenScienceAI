@@ -3,7 +3,7 @@
     "@type": "SoftwareSourceCode",
     "name": "Individual assessment 1",
     "description": "This project includes a main.py program that generates a keyword cloud based on the summary information, creates a visualization displaying the number of figures per article, and generates a list of links found in each article. Additionally, it includes extract.py, which is responsible for converting PDFs to XML",
-    "license": "https://opensource.org/licenses/MIT",
+    "license": "GPL-3.0-only",
     "version": "1.0.0",
     "author": [
       {
