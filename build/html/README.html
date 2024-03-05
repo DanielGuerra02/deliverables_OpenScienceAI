@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+
+<html lang="english">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>&lt;no title&gt; &#8212; Individual assessment 1 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to Individual assessment 1&#39;s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <p>[![DOI](<a class="reference external" href="https://zenodo.org/badge/759483919.svg)](https://zenodo.org/doi/10.5281/zenodo.10779299">https://zenodo.org/badge/759483919.svg)](https://zenodo.org/doi/10.5281/zenodo.10779299</a>)</p>
+<p># Scientific Article Analysis with Grobid and Data Visualization</p>
+<p>This project utilizes text analysis tools to process open-access scientific articles and generate useful visualizations from the extracted data. The main program, main.py, is responsible for drawing a keyword cloud based on abstract information and creating visualizations showing the number of figures per article. Additionally, a list of links found in each article is generated.</p>
+<p>## Project Structure</p>
+<p>-<cite>main.py</cite>: Main script responsible for executing the analysis and visualization generation.
+-<cite>extract.py</cite>: Script that utilizes the Grobid client to convert PDF documents to XML.
+-<cite>test.py</cite>: Contains tests to ensure that the code functions as expected.
+-<cite>Dockerfile</cite>: Contains all instructions to build the Docker image of the project.</p>
+<p>## Getting Started</p>
+<p>Before running the project, it's necessary to install Grobid client, which is used to convert PDF documents to XML. Execute the following commands to clone the Grobid client repository and perform the installation:</p>
+<p>git clone <a class="reference external" href="https://github.com/kermitt2/grobid_client_python">https://github.com/kermitt2/grobid_client_python</a>
+cd grobid_client_python
+python3 setup.py install</p>
+<p>## Project Execution</p>
+<p>### In Your Local Environment</p>
+<p>To execute <cite>main.py</cite> in your local environment, ensure you have all necessary dependencies installed, as described in <cite>requirements.txt</cite>.</p>
+<p>### Using Docker</p>
+<p>For those who prefer to use Docker, detailed instructions are provided for building and running the container.</p>
+<p>#### Build Docker Image</p>
+<p>Run the following command to build the Docker image:</p>
+<p>docker build -t your_image_name .</p>
+<p>#### Run Docker Containerr</p>
+<p>To start the container and execute the project:</p>
+<p>docker run -it --name your_container_name your_image_name</p>
+<p>If you wish to view the results directly within the container, open a new terminal and execute:</p>
+<p>docker exec -it your_container_name /bin/bash</p>
+<p>Navigate to the results folder to view the generated files.</p>
+<p>#### Copy Results to Local Environment</p>
+<p>If you prefer to copy the results to the local environment, use:</p>
+<p>docker cp your_container_name:/app/results ./results</p>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Individual assessment 1</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Individual assessment 1's documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2024, Daniel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/README.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
