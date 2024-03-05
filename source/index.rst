@@ -10,7 +10,6 @@ Welcome to Individual assessment 1's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   README.md
 
 
 
